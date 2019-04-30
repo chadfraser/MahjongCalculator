@@ -52,24 +52,4 @@ namespace Mahjong
             return hash;
         }
     }
-
-    public enum Suit
-    {
-        Pin,
-        Sou,
-        Man,
-        Wind,
-        Dragon
-    }
-
-    public enum HonorType
-    {
-        Haku,
-        Hatsu,
-        Chun,
-        Ton,
-        Nan,
-        Xia,
-        Pei
-    }
 }
