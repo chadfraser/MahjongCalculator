@@ -17,7 +17,7 @@ namespace Mahjong
 
         public bool IsWinningHand()
         {
-            if (IsKokushiMusou() || IsChiitoitsu())
+            if (IsThirteenOrphans() || IsSevenPairs())
             {
                 return true;
             }
@@ -31,21 +31,8 @@ namespace Mahjong
         public void SortHand()
         {
             var suitedTiles = UncalledTiles.OfType<SuitedTile>().ToList();
-            Console.WriteLine();
-            foreach (var t in suitedTiles.OfType<SuitedTile>())
-            {
-                System.Console.WriteLine($"{t.Rank} {t.Suit}");
-            }
             var honorTiles = UncalledTiles.OfType<HonorTile>().ToList();
             var orderedSuitedTiles = suitedTiles.OrderBy(t => t.Suit).ThenBy(t => t.Rank).ToList();
-            Console.WriteLine();
-            foreach (var t in orderedSuitedTiles.OfType<SuitedTile>())
-            {
-                System.Console.WriteLine($"{t.Rank} {t.Suit}");
-            }
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine();
             var orderedHonorTiles = honorTiles.OrderBy(t => t.Suit).ThenBy(t => t.HonorType).ToList();
             List<Tile> orderedCastedSuitedTiles = new List<Tile>(orderedSuitedTiles.ToArray());
             List<Tile> orderedCastedHonorTiles = new List<Tile>(orderedHonorTiles.ToArray());
@@ -54,10 +41,8 @@ namespace Mahjong
 
             foreach (var t in UncalledTiles.OfType<SuitedTile>())
             {
-                System.Console.WriteLine($"{t.Rank} {t.Suit}");
+                Console.WriteLine(t);
             }
-            Console.WriteLine();
-            Console.WriteLine();
             Console.WriteLine();
         }
 
@@ -66,7 +51,7 @@ namespace Mahjong
             List<Tile> remainingTiles;
             for (int i = 0; i < UncalledTiles.Count - 2; i += 2)
             {
-                if (UncalledTiles[i] == UncalledTiles[i + 1])
+                if (UncalledTiles[i].Equals(UncalledTiles[i + 1]))
                 {
                     List<Tile> leftSubList = new List<Tile>();
                     List<Tile> rightSubList = new List<Tile>();
@@ -93,9 +78,9 @@ namespace Mahjong
 
         private bool CanBreakIntoTripletsAndSequences(List<Tile> remainingTiles)
         {
-            if (remainingTiles[0] == remainingTiles[1])
+            if (remainingTiles[0].Equals(remainingTiles[1]))
             {
-                if (remainingTiles[1] == remainingTiles[2])
+                if (remainingTiles[1].Equals(remainingTiles[2]))
                 {
                     // Remove tiles and call CanBreakInto...
                 }
@@ -109,35 +94,58 @@ namespace Mahjong
             return true;
         }
 
-        private bool IsKokushiMusou()
+        private bool IsThirteenOrphans()
         {
-            var kokushiSet = new HashSet<Tile> { };
-
             if (UncalledTiles.Count != WinningHandBaseTileCount || CalledSets.Any())
             {
                 return false;
             }
 
-            return UncalledTiles.ToHashSet().SetEquals(kokushiSet);
+            return UncalledTiles.ToHashSet().SetEquals(GetThirteenOrphansSet());
         }
 
-        private bool IsChiitoitsu()
+        private bool IsSevenPairs()
         {
             if (UncalledTiles.Count != WinningHandBaseTileCount || CalledSets.Any())
             {
                 return false;
             }
-            SortHand();
+            if (UncalledTiles.ToHashSet().Count != WinningHandBaseTileCount / 2)
+            {
+                Console.WriteLine("HERE");
+                return false;
+            }
 
+            SortHand();
             for (int i = 0; i < UncalledTiles.Count - 2; i += 2)
             {
-                if (UncalledTiles[i] != UncalledTiles[i + 1])
+                Console.WriteLine(i);
+                if (!UncalledTiles[i].Equals(UncalledTiles[i + 1]))
                 {
+                    Console.WriteLine(">>" + i);
                     return false;
                 }
             }
 
             return true;
+        }
+
+        private HashSet<Tile> GetThirteenOrphansSet()
+        {
+           return new HashSet<Tile> {
+                new SuitedTile(Suit.Dots, 1),
+                new SuitedTile(Suit.Dots, 9),
+                new SuitedTile(Suit.Bamboo, 1),
+                new SuitedTile(Suit.Bamboo, 9),
+                new SuitedTile(Suit.Characters, 1),
+                new SuitedTile(Suit.Characters, 9),
+                new HonorTile(Suit.Wind, HonorType.East),
+                new HonorTile(Suit.Wind, HonorType.South),
+                new HonorTile(Suit.Wind, HonorType.West),
+                new HonorTile(Suit.Wind, HonorType.North),
+                new HonorTile(Suit.Dragon, HonorType.White),
+                new HonorTile(Suit.Dragon, HonorType.Green),
+                new HonorTile(Suit.Dragon, HonorType.Red)};
         }
     }
 }

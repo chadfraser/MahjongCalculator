@@ -72,6 +72,11 @@ namespace Mahjong
             return a.Rank > b.Rank;
         }
 
+        public override string ToString()
+        {
+            return $"{Rank} of {Suit.Name}";
+        }
+
         public override bool Equals(Object obj)
         {
             if ((obj is null) || !GetType().Equals(obj.GetType()))

@@ -43,7 +43,10 @@ namespace Mahjong
             return (new HashSet<HonorTile>(tiles).Count != 1);
         }
 
-
+        public override string ToString()
+        {
+            return $"{HonorType.Name} {Suit.Name}";
+        }
 
         public override bool Equals(Object obj)
         {

@@ -68,6 +68,142 @@ namespace MahjongLogicUnitTest
             Assert.IsTrue(result);
         }
 
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_ProperThirteenOrphansDataSuitedPair_IsTrue()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
+            handA.UncalledTiles.Add(new SuitedTile(Suit.Characters, 1));
+
+            var result = handA.IsWinningHand();
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_ProperThirteenOrphansDataHonorPair_IsTrue()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
+            handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.Red));
+
+            var result = handA.IsWinningHand();
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_TooFewTilesThirteenOrphansData_IsFalse()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
+
+            var result = handA.IsWinningHand();
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_TooManyPairsThirteenOrphansData_IsFalse()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
+            handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.Red));
+            handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.White));
+
+            var result = handA.IsWinningHand();
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_NonPairThirteenOrphansData_IsFalse()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
+            handA.UncalledTiles.Add(new SuitedTile(Suit.Bamboo, 5));
+
+            var result = handA.IsWinningHand();
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_CalledSetsProperThirteenOrphansData_IsFalse()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
+            handA.UncalledTiles.Add(new SuitedTile(Suit.Bamboo, 1));
+            handA.CalledSets.Add(new List<Tile>() {
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5)
+            });
+
+            var result = handA.IsWinningHand();
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_ProperSevenPairsData_IsTrue()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetUnsortedSevenPairsTiles();
+            foreach (var t in handA.UncalledTiles)
+            {
+                System.Console.WriteLine(t);
+            }
+            System.Console.WriteLine();
+
+            var result = handA.IsWinningHand();
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_SevenPairsTooManyPairs_IsFalse()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetUnsortedSevenPairsTiles();
+            handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.Red));
+            handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.Red));
+
+            var result = handA.IsWinningHand();
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_SevenPairsTooFewPairs_IsFalse()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetUnsortedSevenPairsTiles();
+            var firstTileData = handA.UncalledTiles[0];
+            handA.UncalledTiles.Remove(firstTileData);
+            handA.UncalledTiles.Remove(firstTileData);
+
+            var result = handA.IsWinningHand();
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_SevenPairsWithQuads_IsFalse()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetUnsortedSevenPairsTilesWithQuads();
+
+            var result = handA.IsWinningHand();
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_CalledSetsProperSevenPairsData_IsFalse()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetUnsortedSevenPairsTiles();
+            handA.CalledSets.Add(new List<Tile>() {
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5)
+            });
+
+            var result = handA.IsWinningHand();
+            Assert.IsFalse(result);
+        }
+
         private List<Tile> GetSimpleHandOfSuitedTiles()
         {
             var tiles = new List<Tile> {
@@ -195,6 +331,71 @@ namespace MahjongLogicUnitTest
                 new HonorTile(Suit.Dragon, HonorType.White),
                 new HonorTile(Suit.Dragon, HonorType.Green),
                 new HonorTile(Suit.Dragon, HonorType.Red)
+            };
+
+            return tiles;
+        }
+
+        private List<Tile> GetPairlessThirteenOrphansTiles()
+        {
+            var tiles = new List<Tile> {
+                new SuitedTile(Suit.Dots, 1),
+                new SuitedTile(Suit.Dots, 9),
+                new SuitedTile(Suit.Bamboo, 1),
+                new SuitedTile(Suit.Bamboo, 9),
+                new SuitedTile(Suit.Characters, 1),
+                new SuitedTile(Suit.Characters, 9),
+                new HonorTile(Suit.Wind, HonorType.East),
+                new HonorTile(Suit.Wind, HonorType.South),
+                new HonorTile(Suit.Wind, HonorType.West),
+                new HonorTile(Suit.Wind, HonorType.North),
+                new HonorTile(Suit.Dragon, HonorType.White),
+                new HonorTile(Suit.Dragon, HonorType.Green),
+                new HonorTile(Suit.Dragon, HonorType.Red)
+            };
+
+            return tiles;
+        }
+
+        private List<Tile> GetUnsortedSevenPairsTiles()
+        {
+            var tiles = new List<Tile> {
+                new SuitedTile(Suit.Bamboo, 4),
+                new SuitedTile(Suit.Bamboo, 8),
+                new SuitedTile(Suit.Dots, 2),
+                new HonorTile(Suit.Wind, HonorType.South),
+                new HonorTile(Suit.Dragon, HonorType.Red),
+                new SuitedTile(Suit.Bamboo, 4),
+                new SuitedTile(Suit.Dots, 2),
+                new SuitedTile(Suit.Characters, 3),
+                new SuitedTile(Suit.Characters, 7),
+                new SuitedTile(Suit.Characters, 3),
+                new SuitedTile(Suit.Bamboo, 8),
+                new HonorTile(Suit.Dragon, HonorType.Red),
+                new SuitedTile(Suit.Characters, 7),
+                new HonorTile(Suit.Wind, HonorType.South)
+            };
+
+            return tiles;
+        }
+
+        private List<Tile> GetUnsortedSevenPairsTilesWithQuads()
+        {
+            var tiles = new List<Tile> {
+                new SuitedTile(Suit.Bamboo, 4),
+                new SuitedTile(Suit.Bamboo, 8),
+                new SuitedTile(Suit.Dots, 2),
+                new SuitedTile(Suit.Bamboo, 8),
+                new HonorTile(Suit.Dragon, HonorType.Red),
+                new SuitedTile(Suit.Bamboo, 4),
+                new SuitedTile(Suit.Dots, 2),
+                new SuitedTile(Suit.Characters, 3),
+                new SuitedTile(Suit.Dots, 2),
+                new SuitedTile(Suit.Characters, 3),
+                new SuitedTile(Suit.Bamboo, 8),
+                new HonorTile(Suit.Dragon, HonorType.Red),
+                new SuitedTile(Suit.Dots, 2),
+                new SuitedTile(Suit.Bamboo, 8),
             };
 
             return tiles;
