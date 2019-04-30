@@ -7,18 +7,18 @@ namespace Mahjong
     {
         public Suit Suit { get; set; }
 
-        public abstract bool CanMakeShuntsu();
+        public abstract bool CanMakeSequence();
 
         public abstract bool IsTerminal();
 
         public abstract bool IsTerminalOrHonor();
 
-        public static bool IsKoutsu(Tile[] tiles)
+        public static bool IsTriplet(Tile[] tiles)
         {
             return (tiles.Length == 3 && IsArrayOfEqualTiles(tiles));
         }
 
-        public static bool IsKantsu(Tile[] tiles)
+        public static bool IsQuad(Tile[] tiles)
         {
             return (tiles.Length == 4 && IsArrayOfEqualTiles(tiles));
         }

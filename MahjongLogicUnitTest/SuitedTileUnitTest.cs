@@ -139,48 +139,48 @@ namespace MahjongLogicUnitTest
         }
 
         [TestMethod]
-        public void SuitedTileIsNextInShuntsuTest_SucceedingTiles_IsTrue()
+        public void SuitedTileIsNextInSequenceTest_SucceedingTiles_IsTrue()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 4);
 
-            Assert.IsTrue(tileA.IsNextInShuntsu(tileB));
+            Assert.IsTrue(tileA.IsNextInSequence(tileB));
         }
 
         [TestMethod]
-        public void SuitedTileIsNextInShuntsuTest_IdenticalTiles_IsFalse()
+        public void SuitedTileIsNextInSequenceTest_IdenticalTiles_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 3);
 
-            Assert.IsFalse(tileA.IsNextInShuntsu(tileB));
+            Assert.IsFalse(tileA.IsNextInSequence(tileB));
         }
 
         [TestMethod]
-        public void SuitedTileIsNextInShuntsuTest_PreceedingTiles_IsFalse()
+        public void SuitedTileIsNextInSequenceTest_PreceedingTiles_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 2);
 
-            Assert.IsFalse(tileA.IsNextInShuntsu(tileB));
+            Assert.IsFalse(tileA.IsNextInSequence(tileB));
         }
 
         [TestMethod]
-        public void SuitedTileIsNextInShuntsuTest_SucceedingWrongSuitTiles_IsFalse()
+        public void SuitedTileIsNextInSequenceTest_SucceedingWrongSuitTiles_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 2);
             var tileB = new SuitedTile(Suit.Bamboo, 3);
 
-            Assert.IsFalse(tileA.IsNextInShuntsu(tileB));
+            Assert.IsFalse(tileA.IsNextInSequence(tileB));
         }
 
         [TestMethod]
-        public void SuitedTileIsNextInShuntsuTest_SkipsARank_IsFalse()
+        public void SuitedTileIsNextInSequenceTest_SkipsARank_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 2);
             var tileB = new SuitedTile(Suit.Dots, 5);
 
-            Assert.IsFalse(tileA.IsNextInShuntsu(tileB));
+            Assert.IsFalse(tileA.IsNextInSequence(tileB));
         }
 
         [TestMethod]
@@ -256,131 +256,131 @@ namespace MahjongLogicUnitTest
         }
 
         [TestMethod]
-        public void SuitedTileIsShuntsuTest_ProperShuntsuData_IsTrue()
+        public void SuitedTileIsSequenceTest_ProperSequenceData_IsTrue()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 4);
             var tileC = new SuitedTile(Suit.Dots, 5);
 
-            Assert.IsTrue(SuitedTile.IsShuntsu(new SuitedTile[] { tileA, tileB, tileC }));
+            Assert.IsTrue(SuitedTile.IsSequence(new SuitedTile[] { tileA, tileB, tileC }));
         }
 
         [TestMethod]
-        public void SuitedTileIsShuntsuTest_ProperShuntsuDataTooFewTiles_IsFalse()
+        public void SuitedTileIsSequenceTest_ProperSequenceDataTooFewTiles_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 4);
 
-            Assert.IsFalse(SuitedTile.IsShuntsu(new SuitedTile[] { tileA, tileB }));
+            Assert.IsFalse(SuitedTile.IsSequence(new SuitedTile[] { tileA, tileB }));
         }
 
         [TestMethod]
-        public void SuitedTileIsShuntsuTest_ProperShuntsuDataTooCharactersyTiles_IsFalse()
+        public void SuitedTileIsSequenceTest_ProperSequenceDataTooCharactersyTiles_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 4);
             var tileC = new SuitedTile(Suit.Dots, 5);
             var tileD = new SuitedTile(Suit.Dots, 6);
 
-            Assert.IsFalse(SuitedTile.IsShuntsu(new SuitedTile[]
+            Assert.IsFalse(SuitedTile.IsSequence(new SuitedTile[]
                 { tileA, tileB, tileC, tileD }));
         }
 
         [TestMethod]
-        public void SuitedTileIsShuntsuTest_WrongSuit_IsFalse()
+        public void SuitedTileIsSequenceTest_WrongSuit_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Bamboo, 4);
             var tileC = new SuitedTile(Suit.Characters, 5);
 
-            Assert.IsFalse(SuitedTile.IsShuntsu(new SuitedTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(SuitedTile.IsSequence(new SuitedTile[] { tileA, tileB, tileC }));
         }
 
         [TestMethod]
-        public void SuitedTileIsShuntsuTest_WrongRanks_IsFalse()
+        public void SuitedTileIsSequenceTest_WrongRanks_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 4);
             var tileC = new SuitedTile(Suit.Dots, 6);
 
-            Assert.IsFalse(SuitedTile.IsShuntsu(new SuitedTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(SuitedTile.IsSequence(new SuitedTile[] { tileA, tileB, tileC }));
         }
 
         [TestMethod]
-        public void SuitedTileIsKoutsuTest_ProperKoutsuData_IsTrue()
+        public void SuitedTileIsTripletTest_ProperTripletData_IsTrue()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 3);
             var tileC = new SuitedTile(Suit.Dots, 3);
 
-            Assert.IsTrue(Tile.IsKoutsu(new SuitedTile[] { tileA, tileB, tileC }));
+            Assert.IsTrue(Tile.IsTriplet(new SuitedTile[] { tileA, tileB, tileC }));
         }
 
         [TestMethod]
-        public void SuitedTileIsKoutsuTest_ProperKoutsuDataTooFewTiles_IsFalse()
+        public void SuitedTileIsTripletTest_ProperTripletDataTooFewTiles_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 3);
 
-            Assert.IsFalse(Tile.IsKoutsu(new SuitedTile[] { tileA, tileB }));
+            Assert.IsFalse(Tile.IsTriplet(new SuitedTile[] { tileA, tileB }));
         }
 
         [TestMethod]
-        public void SuitedTileIsKoutsuTest_ProperKoutsuDataTooCharactersyTiles_IsFalse()
+        public void SuitedTileIsTripletTest_ProperTripletDataTooCharactersyTiles_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 3);
             var tileC = new SuitedTile(Suit.Dots, 3);
             var tileD = new SuitedTile(Suit.Dots, 3);
 
-            Assert.IsFalse(Tile.IsKoutsu(new SuitedTile[]
+            Assert.IsFalse(Tile.IsTriplet(new SuitedTile[]
                 { tileA, tileB, tileC, tileD }));
         }
 
         [TestMethod]
-        public void SuitedTileIsKoutsuTest_WrongSuit_IsFalse()
+        public void SuitedTileIsTripletTest_WrongSuit_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Bamboo, 3);
             var tileC = new SuitedTile(Suit.Characters, 3);
 
-            Assert.IsFalse(Tile.IsKoutsu(new SuitedTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(Tile.IsTriplet(new SuitedTile[] { tileA, tileB, tileC }));
         }
 
         [TestMethod]
-        public void SuitedTileIsIsKoutsuTest_WrongRanks_IsFalse()
+        public void SuitedTileIsIsTripletTest_WrongRanks_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 3);
             var tileC = new SuitedTile(Suit.Dots, 4);
 
-            Assert.IsFalse(Tile.IsKoutsu(new SuitedTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(Tile.IsTriplet(new SuitedTile[] { tileA, tileB, tileC }));
         }
 
         [TestMethod]
-        public void SuitedTileIsKantsuTest_ProperKantsuData_IsTrue()
+        public void SuitedTileIsQuadTest_ProperQuadData_IsTrue()
         {
             var tileA = new SuitedTile(Suit.Dots, 4);
             var tileB = new SuitedTile(Suit.Dots, 4);
             var tileC = new SuitedTile(Suit.Dots, 4);
             var tileD = new SuitedTile(Suit.Dots, 4);
 
-            Assert.IsTrue(Tile.IsKantsu(new SuitedTile[]
+            Assert.IsTrue(Tile.IsQuad(new SuitedTile[]
                 { tileA, tileB, tileC, tileD }));
         }
 
         [TestMethod]
-        public void SuitedTileIsKantsuTest_ProperKantsuDataTooFewTiles_IsFalse()
+        public void SuitedTileIsQuadTest_ProperQuadDataTooFewTiles_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 4);
             var tileB = new SuitedTile(Suit.Dots, 4);
             var tileC = new SuitedTile(Suit.Dots, 4);
 
-            Assert.IsFalse(Tile.IsKantsu(new SuitedTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(Tile.IsQuad(new SuitedTile[] { tileA, tileB, tileC }));
         }
 
         [TestMethod]
-        public void SuitedTileIsKantsuTest_ProperKantsuDataTooCharactersyTiles_IsFalse()
+        public void SuitedTileIsQuadTest_ProperQuadDataTooCharactersyTiles_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 4);
             var tileB = new SuitedTile(Suit.Dots, 4);
@@ -388,31 +388,31 @@ namespace MahjongLogicUnitTest
             var tileD = new SuitedTile(Suit.Dots, 4);
             var tileE = new SuitedTile(Suit.Dots, 4);
 
-            Assert.IsFalse(Tile.IsKantsu(new SuitedTile[]
+            Assert.IsFalse(Tile.IsQuad(new SuitedTile[]
                 { tileA, tileB, tileC, tileD, tileE }));
         }
 
         [TestMethod]
-        public void SuitedTileIsKantsuTest_WrongSuit_IsFalse()
+        public void SuitedTileIsQuadTest_WrongSuit_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 4);
             var tileB = new SuitedTile(Suit.Bamboo, 4);
             var tileC = new SuitedTile(Suit.Characters, 4);
             var tileD = new SuitedTile(Suit.Dots, 4);
 
-            Assert.IsFalse(Tile.IsKantsu(new SuitedTile[]
+            Assert.IsFalse(Tile.IsQuad(new SuitedTile[]
                 { tileA, tileB, tileC, tileD }));
         }
 
         [TestMethod]
-        public void SuitedTileIsKantsuTest_WrongRanks_IsFalse()
+        public void SuitedTileIsQuadTest_WrongRanks_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 4);
             var tileC = new SuitedTile(Suit.Dots, 4);
             var tileD = new SuitedTile(Suit.Dots, 4);
 
-            Assert.IsFalse(Tile.IsKantsu(new SuitedTile[]
+            Assert.IsFalse(Tile.IsQuad(new SuitedTile[]
                 { tileA, tileB, tileC, tileD }));
         }
     }

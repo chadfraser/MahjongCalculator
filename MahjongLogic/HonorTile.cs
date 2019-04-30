@@ -13,7 +13,7 @@ namespace Mahjong
 
         public HonorType HonorType { get; set; }
 
-        public override bool CanMakeShuntsu()
+        public override bool CanMakeSequence()
         {
             return false;
         }
@@ -28,12 +28,12 @@ namespace Mahjong
             return true;
         }
 
-        public static bool IsKoutsu(HonorTile[] tiles)
+        public static bool IsTriplet(HonorTile[] tiles)
         {
             return (tiles.Length == 3 && IsArrayOfEqualTiles(tiles));
         }
 
-        public static bool IsKantsu(HonorTile[] tiles)
+        public static bool IsQuad(HonorTile[] tiles)
         {
             return (tiles.Length == 4 && IsArrayOfEqualTiles(tiles));
         }

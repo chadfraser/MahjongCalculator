@@ -14,12 +14,12 @@ namespace Mahjong
 
         public int Rank { get; set; }
 
-        public bool IsNextInShuntsu(SuitedTile other)
+        public bool IsNextInSequence(SuitedTile other)
         {
             return (Suit == other.Suit && Rank + 1 == other.Rank);
         }
 
-        public static bool IsShuntsu(SuitedTile[] tiles)
+        public static bool IsSequence(SuitedTile[] tiles)
         {
             if (tiles.Length != 3)
             {
@@ -57,7 +57,7 @@ namespace Mahjong
             return Rank.CompareTo(other.Rank);
         }
 
-        public override bool CanMakeShuntsu()
+        public override bool CanMakeSequence()
         {
             return true;
         }

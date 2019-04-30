@@ -107,80 +107,80 @@ namespace MahjongLogicUnitTest
         }
 
         [TestMethod]
-        public void HonorTileIsKoutsuTest_ProperKoutsuData_IsTrue()
+        public void HonorTileIsTripletTest_ProperTripletData_IsTrue()
         {
             var tileA = new HonorTile(Suit.Wind, HonorType.East);
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
             var tileC = new HonorTile(Suit.Wind, HonorType.East);
 
-            Assert.IsTrue(Tile.IsKoutsu(new HonorTile[] { tileA, tileB, tileC }));
+            Assert.IsTrue(Tile.IsTriplet(new HonorTile[] { tileA, tileB, tileC }));
         }
 
         [TestMethod]
-        public void HonorTileIsKoutsuTest_ProperKoutsuDataTooFewTiles_IsFalse()
+        public void HonorTileIsTripletTest_ProperTripletDataTooFewTiles_IsFalse()
         {
             var tileA = new HonorTile(Suit.Wind, HonorType.East);
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
 
-            Assert.IsFalse(Tile.IsKoutsu(new HonorTile[] { tileA, tileB }));
+            Assert.IsFalse(Tile.IsTriplet(new HonorTile[] { tileA, tileB }));
         }
 
         [TestMethod]
-        public void HonorTileIsKoutsuTest_ProperKoutsuDataTooManyTiles_IsFalse()
+        public void HonorTileIsTripletTest_ProperTripletDataTooManyTiles_IsFalse()
         {
             var tileA = new HonorTile(Suit.Wind, HonorType.East);
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
             var tileC = new HonorTile(Suit.Wind, HonorType.East);
             var tileD = new HonorTile(Suit.Wind, HonorType.East);
 
-            Assert.IsFalse(Tile.IsKoutsu(new HonorTile[]
+            Assert.IsFalse(Tile.IsTriplet(new HonorTile[]
                 { tileA, tileB, tileC, tileD }));
         }
 
         [TestMethod]
-        public void HonorTileIsKoutsuTest_WrongSuit_IsFalse()
+        public void HonorTileIsTripletTest_WrongSuit_IsFalse()
         {
             var tileA = new HonorTile(Suit.Wind, HonorType.East);
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
             var tileC = new HonorTile(Suit.Dragon, HonorType.Red);
 
-            Assert.IsFalse(Tile.IsKoutsu(new HonorTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(Tile.IsTriplet(new HonorTile[] { tileA, tileB, tileC }));
         }
 
         [TestMethod]
-        public void HonorTileIsIsKoutsuTest_WrongHonorTypes_IsFalse()
+        public void HonorTileIsIsTripletTest_WrongHonorTypes_IsFalse()
         {
             var tileA = new HonorTile(Suit.Wind, HonorType.East);
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
             var tileC = new HonorTile(Suit.Wind, HonorType.South);
 
-            Assert.IsFalse(Tile.IsKoutsu(new HonorTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(Tile.IsTriplet(new HonorTile[] { tileA, tileB, tileC }));
         }
 
         [TestMethod]
-        public void HonorTileIsKantsuTest_ProperKantsuData_IsTrue()
+        public void HonorTileIsQuadTest_ProperQuadData_IsTrue()
         {
             var tileA = new HonorTile(Suit.Wind, HonorType.East);
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
             var tileC = new HonorTile(Suit.Wind, HonorType.East);
             var tileD = new HonorTile(Suit.Wind, HonorType.East);
 
-            Assert.IsTrue(SuitedTile.IsKantsu(new HonorTile[]
+            Assert.IsTrue(SuitedTile.IsQuad(new HonorTile[]
                 { tileA, tileB, tileC, tileD }));
         }
 
         [TestMethod]
-        public void HonorTileIsKantsuTest_ProperKantsuDataTooFewTiles_IsFalse()
+        public void HonorTileIsQuadTest_ProperQuadDataTooFewTiles_IsFalse()
         {
             var tileA = new HonorTile(Suit.Wind, HonorType.East);
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
             var tileC = new HonorTile(Suit.Wind, HonorType.East);
 
-            Assert.IsFalse(SuitedTile.IsKantsu(new HonorTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(SuitedTile.IsQuad(new HonorTile[] { tileA, tileB, tileC }));
         }
 
         [TestMethod]
-        public void HonorTileIsKantsuTest_ProperKantsuDataTooManyTiles_IsFalse()
+        public void HonorTileIsQuadTest_ProperQuadDataTooManyTiles_IsFalse()
         {
             var tileA = new HonorTile(Suit.Wind, HonorType.East);
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
@@ -188,31 +188,31 @@ namespace MahjongLogicUnitTest
             var tileD = new HonorTile(Suit.Wind, HonorType.East);
             var tileE = new HonorTile(Suit.Wind, HonorType.East);
 
-            Assert.IsFalse(SuitedTile.IsKantsu(new HonorTile[]
+            Assert.IsFalse(SuitedTile.IsQuad(new HonorTile[]
                 { tileA, tileB, tileC, tileD, tileE }));
         }
 
         [TestMethod]
-        public void HonorTileIsKantsuTest_WrongSuit_IsFalse()
+        public void HonorTileIsQuadTest_WrongSuit_IsFalse()
         {
             var tileA = new HonorTile(Suit.Wind, HonorType.East);
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
             var tileC = new HonorTile(Suit.Dragon, HonorType.Red);
             var tileD = new HonorTile(Suit.Dragon, HonorType.Red);
 
-            Assert.IsFalse(SuitedTile.IsKantsu(new HonorTile[]
+            Assert.IsFalse(SuitedTile.IsQuad(new HonorTile[]
                 { tileA, tileB, tileC, tileD }));
         }
 
         [TestMethod]
-        public void HonorTileIsKantsuTest_WrongRanks_IsFalse()
+        public void HonorTileIsQuadTest_WrongRanks_IsFalse()
         {
             var tileA = new HonorTile(Suit.Wind, HonorType.East);
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
             var tileC = new HonorTile(Suit.Wind, HonorType.South);
             var tileD = new HonorTile(Suit.Wind, HonorType.East);
 
-            Assert.IsFalse(SuitedTile.IsKantsu(new HonorTile[]
+            Assert.IsFalse(SuitedTile.IsQuad(new HonorTile[]
                 { tileA, tileB, tileC, tileD }));
         }
     }
