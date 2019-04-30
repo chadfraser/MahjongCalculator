@@ -1,0 +1,17 @@
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\obj\Debug\netcoreapp2.2\MahjongLogicUnitTest.csprojAssemblyReference.cache
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\obj\Debug\netcoreapp2.2\MahjongLogicUnitTest.csproj.CoreCompileInputs.cache
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\obj\Debug\netcoreapp2.2\MahjongLogicUnitTest.AssemblyInfoInputs.cache
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\obj\Debug\netcoreapp2.2\MahjongLogicUnitTest.AssemblyInfo.cs
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\bin\Debug\netcoreapp2.2\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\bin\Debug\netcoreapp2.2\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\bin\Debug\netcoreapp2.2\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\bin\Debug\netcoreapp2.2\MahjongLogicUnitTest.deps.json
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\bin\Debug\netcoreapp2.2\MahjongLogicUnitTest.runtimeconfig.json
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\bin\Debug\netcoreapp2.2\MahjongLogicUnitTest.runtimeconfig.dev.json
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\bin\Debug\netcoreapp2.2\MahjongLogicUnitTest.dll
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\bin\Debug\netcoreapp2.2\MahjongLogicUnitTest.pdb
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\bin\Debug\netcoreapp2.2\MahjongLogic.dll
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\bin\Debug\netcoreapp2.2\MahjongLogic.pdb
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\obj\Debug\netcoreapp2.2\MahjongLogicUnitTest.csproj.CopyComplete
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\obj\Debug\netcoreapp2.2\MahjongLogicUnitTest.dll
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogicUnitTest\obj\Debug\netcoreapp2.2\MahjongLogicUnitTest.pdb

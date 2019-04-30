@@ -1,0 +1,11 @@
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogic\obj\Debug\netcoreapp2.2\MahjongLogic.csprojAssemblyReference.cache
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogic\obj\Debug\netcoreapp2.2\MahjongLogic.csproj.CoreCompileInputs.cache
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogic\obj\Debug\netcoreapp2.2\MahjongLogic.AssemblyInfoInputs.cache
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogic\obj\Debug\netcoreapp2.2\MahjongLogic.AssemblyInfo.cs
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogic\bin\Debug\netcoreapp2.2\MahjongLogic.deps.json
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogic\bin\Debug\netcoreapp2.2\MahjongLogic.runtimeconfig.json
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogic\bin\Debug\netcoreapp2.2\MahjongLogic.runtimeconfig.dev.json
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogic\bin\Debug\netcoreapp2.2\MahjongLogic.dll
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogic\bin\Debug\netcoreapp2.2\MahjongLogic.pdb
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogic\obj\Debug\netcoreapp2.2\MahjongLogic.dll
+C:\Users\Chad\Desktop\C#\MahjongCalculator\MahjongLogic\obj\Debug\netcoreapp2.2\MahjongLogic.pdb
