@@ -15,6 +15,9 @@ namespace Mahjong
             CalledSets = new List<List<Tile>>();
         }
 
+        public List<Tile> UncalledTiles { get; set; }
+        public List<List<Tile>> CalledSets { get; set; }
+
         public bool IsWinningHand()
         {
             if (GetAdjustedCountOfHandTiles() != WinningHandBaseTileCount)
@@ -29,9 +32,6 @@ namespace Mahjong
             SortHand();
             return CanRemovePairAndSplitRemainingTilesIntoSequencesAndTriplets();
         }
-
-        public List<Tile> UncalledTiles { get; set; }
-        public List<List<Tile>> CalledSets { get; set; }
 
         public void SortHand()
         {
