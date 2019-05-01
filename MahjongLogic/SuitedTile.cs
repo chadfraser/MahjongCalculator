@@ -14,12 +14,21 @@ namespace Mahjong
 
         public int Rank { get; set; }
 
-        public bool IsNextInShuntsu(SuitedTile other)
+        public bool IsNextInSequence(SuitedTile other)
         {
             return (Suit == other.Suit && Rank + 1 == other.Rank);
         }
 
-        public static bool IsShuntsu(SuitedTile[] tiles)
+        public bool IsWithinBoundsOfSameSequence(SuitedTile other)
+        {
+            var lowerRank = (Rank < other.Rank) ? Rank : other.Rank;
+            var higherRank = (Rank > other.Rank) ? Rank : other.Rank;
+
+            return (Suit == other.Suit && !(higherRank > lowerRank + 2));
+            //return (Suit == other.Suit && higherRank != lowerRank && !(higherRank > lowerRank + 2));
+        }
+
+        public static bool IsSequence(SuitedTile[] tiles)
         {
             if (tiles.Length != 3)
             {
@@ -57,7 +66,7 @@ namespace Mahjong
             return Rank.CompareTo(other.Rank);
         }
 
-        public override bool CanMakeShuntsu()
+        public override bool CanMakeSequence()
         {
             return true;
         }
@@ -70,6 +79,11 @@ namespace Mahjong
         public static bool operator >(SuitedTile a, SuitedTile b)
         {
             return a.Rank > b.Rank;
+        }
+
+        public override string ToString()
+        {
+            return $"{Rank} of {Suit.Name}";
         }
 
         public override bool Equals(Object obj)
