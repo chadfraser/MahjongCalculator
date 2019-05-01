@@ -22,7 +22,7 @@ namespace Mahjong
                 return true;
             }
             SortHand();
-            return false;
+            return CanRemovePairAndSplitRemainingTilesIntoSequencesAndTriplets();
         }
 
         public List<Tile> UncalledTiles { get; set; }
@@ -38,18 +38,12 @@ namespace Mahjong
             List<Tile> orderedCastedHonorTiles = new List<Tile>(orderedHonorTiles.ToArray());
 
             UncalledTiles = orderedCastedSuitedTiles.Concat(orderedCastedHonorTiles).ToList();
-
-            foreach (var t in UncalledTiles.OfType<SuitedTile>())
-            {
-                Console.WriteLine(t);
-            }
-            Console.WriteLine();
         }
 
-        public bool FindAndRemovePair()
+        private bool CanRemovePairAndSplitRemainingTilesIntoSequencesAndTriplets()
         {
-            List<Tile> remainingTiles;
-            for (int i = 0; i < UncalledTiles.Count - 2; i += 2)
+            List<Tile> uncheckedTiles;
+            for (int i = 0; i < UncalledTiles.Count - 1; i++)
             {
                 if (UncalledTiles[i].Equals(UncalledTiles[i + 1]))
                 {
@@ -65,33 +59,83 @@ namespace Mahjong
                         rightSubList = UncalledTiles.GetRange(i + 2, UncalledTiles.Count - i - 2);
                     }
 
-                    remainingTiles = leftSubList.Concat(rightSubList).ToList();
+                    uncheckedTiles = leftSubList.Concat(rightSubList).ToList();
+                    var suitedTiles = uncheckedTiles.OfType<SuitedTile>().ToList();
+                    var honorTiles = uncheckedTiles.OfType<HonorTile>().ToList();
+                    List<Tile> castedSuitedTiles = new List<Tile>(suitedTiles.ToArray());
+                    List<Tile> castedHonorTiles = new List<Tile>(honorTiles.ToArray());
 
-                    if (CanBreakIntoTripletsAndSequences(remainingTiles))
+                    if (CanSplitIntoTripletsAndSequences(castedSuitedTiles) && CanSplitIntoTripletsAndSequences(castedHonorTiles))
                     {
                         return true;
                     }
+                    i++;
                 }
             }
             return false;
         }
 
-        private bool CanBreakIntoTripletsAndSequences(List<Tile> remainingTiles)
+        private bool CanSplitIntoTripletsAndSequences(List<Tile> uncheckedTiles)
         {
-            if (remainingTiles[0].Equals(remainingTiles[1]))
+            if (uncheckedTiles.Count == 0)
             {
-                if (remainingTiles[1].Equals(remainingTiles[2]))
-                {
-                    // Remove tiles and call CanBreakInto...
-                }
-                else if (((SuitedTile)remainingTiles[0]).IsNextInSequence(((SuitedTile)remainingTiles[2])))
-                {
-                    // Check for third tile in run
-
-                }
+                return true;
+            }
+            if (uncheckedTiles.Count < 3)
+            {
+                return false;
             }
 
-            return true;
+            if (CanSplitByRemovingSequence(uncheckedTiles) || CanSplitByRemovingTriplet(uncheckedTiles))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool CanSplitByRemovingSequence(List<Tile> uncheckedTiles)
+        {
+            if (uncheckedTiles[0].GetType() != typeof(SuitedTile))
+            {
+                return false;
+            }
+
+            List<SuitedTile> suitedUncheckedTiles = uncheckedTiles.Cast<SuitedTile>().ToList();
+
+            for (int i = 1; i <= suitedUncheckedTiles.Count - 2; i++)
+            {
+                if (!suitedUncheckedTiles[0].IsWithinBoundsOfSameSequence(suitedUncheckedTiles[i]))
+                {
+                    break;
+                }
+
+                for (int j = i + 1; j <= uncheckedTiles.Count - 1; j++)
+                {
+                    if (!suitedUncheckedTiles[0].IsWithinBoundsOfSameSequence(suitedUncheckedTiles[j]))
+                    {
+                        break;
+                    }
+                    if (SuitedTile.IsSequence(new SuitedTile[] { suitedUncheckedTiles[0], suitedUncheckedTiles[i], suitedUncheckedTiles[j] }))
+                    {
+                        List<Tile> copyList = new List<Tile>(uncheckedTiles.ToArray());
+                        copyList.RemoveAt(j);
+                        copyList.RemoveAt(i);
+                        copyList.RemoveAt(0);
+                        return (uncheckedTiles.Count == 3 || CanSplitIntoTripletsAndSequences(copyList));
+                    }
+                }
+            }
+            return false;
+        }
+        
+        private bool CanSplitByRemovingTriplet(List<Tile> uncheckedTiles)
+        {
+            if (uncheckedTiles[0].Equals(uncheckedTiles[1]) && uncheckedTiles[1].Equals(uncheckedTiles[2]))
+            {
+                return (uncheckedTiles.Count == 3 || CanSplitIntoTripletsAndSequences(uncheckedTiles.GetRange(3, uncheckedTiles.Count - 3)));
+            }
+            return false;
         }
 
         private bool IsThirteenOrphans()
@@ -112,17 +156,14 @@ namespace Mahjong
             }
             if (UncalledTiles.ToHashSet().Count != WinningHandBaseTileCount / 2)
             {
-                Console.WriteLine("HERE");
                 return false;
             }
 
             SortHand();
             for (int i = 0; i < UncalledTiles.Count - 2; i += 2)
             {
-                Console.WriteLine(i);
                 if (!UncalledTiles[i].Equals(UncalledTiles[i + 1]))
                 {
-                    Console.WriteLine(">>" + i);
                     return false;
                 }
             }

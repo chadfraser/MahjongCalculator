@@ -28,7 +28,6 @@ namespace Mahjong
             return (new HashSet<Tile>(tiles).Count == 1);
         }
 
-
         public override bool Equals(Object obj)
         {
             if ((obj is null) || !this.GetType().Equals(obj.GetType()))

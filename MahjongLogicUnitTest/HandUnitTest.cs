@@ -144,12 +144,6 @@ namespace MahjongLogicUnitTest
         {
             var handA = new Hand();
             handA.UncalledTiles = GetUnsortedSevenPairsTiles();
-            foreach (var t in handA.UncalledTiles)
-            {
-                System.Console.WriteLine(t);
-            }
-            System.Console.WriteLine();
-
             var result = handA.IsWinningHand();
             Assert.IsTrue(result);
         }
@@ -202,6 +196,21 @@ namespace MahjongLogicUnitTest
 
             var result = handA.IsWinningHand();
             Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_ProperSuitedTiles_IsTrue()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetSimpleHandOfSuitedTiles();
+            handA.CalledSets.Add(new List<Tile>() {
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5)
+            });
+
+            var result = handA.IsWinningHand();
+            Assert.IsTrue(result);
         }
 
         private List<Tile> GetSimpleHandOfSuitedTiles()

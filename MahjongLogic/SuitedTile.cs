@@ -19,6 +19,15 @@ namespace Mahjong
             return (Suit == other.Suit && Rank + 1 == other.Rank);
         }
 
+        public bool IsWithinBoundsOfSameSequence(SuitedTile other)
+        {
+            var lowerRank = (Rank < other.Rank) ? Rank : other.Rank;
+            var higherRank = (Rank > other.Rank) ? Rank : other.Rank;
+
+            return (Suit == other.Suit && !(higherRank > lowerRank + 2));
+            //return (Suit == other.Suit && higherRank != lowerRank && !(higherRank > lowerRank + 2));
+        }
+
         public static bool IsSequence(SuitedTile[] tiles)
         {
             if (tiles.Length != 3)
