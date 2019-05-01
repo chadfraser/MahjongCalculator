@@ -9,12 +9,12 @@ namespace MahjongLogicUnitTest
     public class HandUnitTest
     {
         [TestMethod]
-        public void HandSortHandMethodTest_SimpleSuitedTilesEqualsSortedTiles_IsTrue()
+        public void HandSortHandMethodTest_NonWinningSuitedTilesEqualsSortedTiles_IsTrue()
         {
             var handA = new Hand();
-            handA.UncalledTiles = GetSimpleHandOfSuitedTiles();
+            handA.UncalledTiles = GetWinningHandOfSuitedTiles();
             handA.SortHand();
-            var result = handA.UncalledTiles.SequenceEqual(GetSortedSimpleHandOfSuitedTiles());
+            var result = handA.UncalledTiles.SequenceEqual(GetSortedWinningHandOfSuitedTiles());
             Assert.IsTrue(result);
         }
 
@@ -22,19 +22,19 @@ namespace MahjongLogicUnitTest
         public void HandSortHandMethodTest_AlreadySortedSuitedTilesEqualsSortedTiles_IsTrue()
         {
             var handA = new Hand();
-            handA.UncalledTiles = GetSortedSimpleHandOfSuitedTiles();
+            handA.UncalledTiles = GetSortedWinningHandOfSuitedTiles();
             handA.SortHand();
-            var result = handA.UncalledTiles.SequenceEqual(GetSortedSimpleHandOfSuitedTiles());
+            var result = handA.UncalledTiles.SequenceEqual(GetSortedWinningHandOfSuitedTiles());
             Assert.IsTrue(result);
         }
 
         [TestMethod]
-        public void HandSortHandMethodTest_SimpleHonorTilesEqualsSortedTiles_IsTrue()
+        public void HandSortHandMethodTest_NonWinningHonorTilesEqualsSortedTiles_IsTrue()
         {
             var handA = new Hand();
-            handA.UncalledTiles = GetSimpleHandOfHonorTiles();
+            handA.UncalledTiles = GetNonWinningHandOfHonorTiles();
             handA.SortHand();
-            var result = handA.UncalledTiles.SequenceEqual(GetSortedSimpleHandOfHonorTiles());
+            var result = handA.UncalledTiles.SequenceEqual(GetSortedNonWinningHandOfHonorTiles());
             Assert.IsTrue(result);
         }
 
@@ -42,19 +42,19 @@ namespace MahjongLogicUnitTest
         public void HandSortHandMethodTest_AlreadySortedHonorTilesEqualsSortedTiles_IsTrue()
         {
             var handA = new Hand();
-            handA.UncalledTiles = GetSortedSimpleHandOfHonorTiles();
+            handA.UncalledTiles = GetSortedNonWinningHandOfHonorTiles();
             handA.SortHand();
-            var result = handA.UncalledTiles.SequenceEqual(GetSortedSimpleHandOfHonorTiles());
+            var result = handA.UncalledTiles.SequenceEqual(GetSortedNonWinningHandOfHonorTiles());
             Assert.IsTrue(result);
         }
 
         [TestMethod]
-        public void HandSortHandMethodTest_SimpleMixedTilesEqualsSortedTiles_IsTrue()
+        public void HandSortHandMethodTest_NonWinningMixedTilesEqualsSortedTiles_IsTrue()
         {
             var handA = new Hand();
-            handA.UncalledTiles = GetSimpleHandOfMixedTiles();
+            handA.UncalledTiles = GetNonWinningHandOfMixedTiles();
             handA.SortHand();
-            var result = handA.UncalledTiles.SequenceEqual(GetSortedSimpleHandOfMixedTiles());
+            var result = handA.UncalledTiles.SequenceEqual(GetSortedNonWinningHandOfMixedTiles());
             Assert.IsTrue(result);
         }
 
@@ -62,9 +62,9 @@ namespace MahjongLogicUnitTest
         public void HandSortHandMethodTest_AlreadySortedMixedTilesEqualsSortedTiles_IsTrue()
         {
             var handA = new Hand();
-            handA.UncalledTiles = GetSortedSimpleHandOfMixedTiles();
+            handA.UncalledTiles = GetSortedNonWinningHandOfMixedTiles();
             handA.SortHand();
-            var result = handA.UncalledTiles.SequenceEqual(GetSortedSimpleHandOfMixedTiles());
+            var result = handA.UncalledTiles.SequenceEqual(GetSortedNonWinningHandOfMixedTiles());
             Assert.IsTrue(result);
         }
 
@@ -202,8 +202,34 @@ namespace MahjongLogicUnitTest
         public void HandIsWinningHandMethodTest_ProperSuitedTiles_IsTrue()
         {
             var handA = new Hand();
-            handA.UncalledTiles = GetSimpleHandOfSuitedTiles();
+            handA.UncalledTiles = GetWinningHandOfSuitedTiles();
+
+            var result = handA.IsWinningHand();
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_ProperSuitedTilesWithExtraCalledSet_IsFalse()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetWinningHandOfSuitedTiles();
             handA.CalledSets.Add(new List<Tile>() {
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5)
+            });
+
+            var result = handA.IsWinningHand();
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_OneSetShortSuitedTilesWithExtraCalledSet_IsTrue()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetHandOfSuitedTilesWithTooFewTiles();
+            handA.CalledSets.Add(new List<Tile>() {
+                new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5)
@@ -213,7 +239,170 @@ namespace MahjongLogicUnitTest
             Assert.IsTrue(result);
         }
 
-        private List<Tile> GetSimpleHandOfSuitedTiles()
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_IncompleteSuitedTiles_IsFalse()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetNonWinningHandOfSuitedTiles();
+
+            var result = handA.IsWinningHand();
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_ProperHonorTiles_IsTrue()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetWinningHandOfHonorTiles();
+
+            var result = handA.IsWinningHand();
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_ProperHonorTilesWithTwoExtraCalledSets_IsFalse()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetWinningHandOfHonorTiles();
+            handA.CalledSets.Add(new List<Tile>() {
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5)
+            });
+
+            var result = handA.IsWinningHand();
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_TwoSetsShortHonorTilesWithExtraCalledSet_IsTrue()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetHandOfHonorTilesWithTooFewTiles();
+            handA.CalledSets.Add(new List<Tile>() {
+                new SuitedTile(Suit.Bamboo, 4),
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 6)
+            });
+            handA.CalledSets.Add(new List<Tile>() {
+                new HonorTile(Suit.Dragon, HonorType.Green),
+                new HonorTile(Suit.Dragon, HonorType.Green),
+                new HonorTile(Suit.Dragon, HonorType.Green),
+                new HonorTile(Suit.Dragon, HonorType.Green)
+            });
+
+            var result = handA.IsWinningHand();
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_IncompleteHandOfHonorTiles_IsFalse()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetNonWinningHandOfHonorTiles();
+
+            var result = handA.IsWinningHand();
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_ProperMixedTiles_IsTrue()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetWinningHandOfMixedTiles();
+
+            var result = handA.IsWinningHand();
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_ProperMixedTilesWithTwoExtraCalledSets_IsFalse()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetWinningHandOfMixedTiles();
+            handA.CalledSets.Add(new List<Tile>() {
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5)
+            });
+            handA.CalledSets.Add(new List<Tile>() {
+                new SuitedTile(Suit.Characters, 7),
+                new SuitedTile(Suit.Characters, 8),
+                new SuitedTile(Suit.Characters, 9)
+            });
+
+            var result = handA.IsWinningHand();
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_OneSetShortMixedTilesWithExtraCalledSet_IsTrue()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetHandOfMixedTilesWithTooFewTiles();
+            handA.CalledSets.Add(new List<Tile>() {
+                new SuitedTile(Suit.Bamboo, 4),
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 6)
+            });
+
+            var result = handA.IsWinningHand();
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_IncompleteHandOfMixedTiles_IsFalse()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetNonWinningHandOfMixedTiles();
+
+            var result = handA.IsWinningHand();
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_PairWithFourExtraCalledSets_IsTrue()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.White));
+            handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.White));
+
+            handA.CalledSets.Add(new List<Tile>() {
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5)
+            });
+            handA.CalledSets.Add(new List<Tile>() {
+                new SuitedTile(Suit.Characters, 7),
+                new SuitedTile(Suit.Characters, 8),
+                new SuitedTile(Suit.Characters, 9)
+            });
+            handA.CalledSets.Add(new List<Tile>() {
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5),
+                new SuitedTile(Suit.Bamboo, 5)
+            });
+            handA.CalledSets.Add(new List<Tile>() {
+                new SuitedTile(Suit.Characters, 7),
+                new SuitedTile(Suit.Characters, 8),
+                new SuitedTile(Suit.Characters, 9)
+            });
+
+            var result = handA.IsWinningHand();
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void HandIsWinningHandMethodTest_ComplicatedNineGatesHand_IsTrue()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetNineGatesHand();
+
+            var result = handA.IsWinningHand();
+            Assert.IsTrue(result);
+        }
+
+        private List<Tile> GetWinningHandOfSuitedTiles()
         {
             var tiles = new List<Tile> {
                 new SuitedTile(Suit.Dots, 2),
@@ -235,7 +424,48 @@ namespace MahjongLogicUnitTest
             return tiles;
         }
 
-        private List<Tile> GetSortedSimpleHandOfSuitedTiles()
+        private List<Tile> GetNonWinningHandOfSuitedTiles()
+        {
+            var tiles = new List<Tile> {
+                new SuitedTile(Suit.Dots, 2),
+                new SuitedTile(Suit.Dots, 3),
+                new SuitedTile(Suit.Dots, 4),
+                new SuitedTile(Suit.Dots, 5),
+                new SuitedTile(Suit.Dots, 2),
+                new SuitedTile(Suit.Dots, 2),
+                new SuitedTile(Suit.Bamboo, 6),
+                new SuitedTile(Suit.Bamboo, 7),
+                new SuitedTile(Suit.Bamboo, 8),
+                new SuitedTile(Suit.Characters, 3),
+                new SuitedTile(Suit.Characters, 4),
+                new SuitedTile(Suit.Dots, 5),
+                new SuitedTile(Suit.Dots, 6),
+                new SuitedTile(Suit.Dots, 6)
+            };
+
+            return tiles;
+        }
+
+        private List<Tile> GetHandOfSuitedTilesWithTooFewTiles()
+        {
+            var tiles = new List<Tile> {
+                new SuitedTile(Suit.Dots, 2),
+                new SuitedTile(Suit.Dots, 3),
+                new SuitedTile(Suit.Dots, 4),
+                new SuitedTile(Suit.Dots, 5),
+                new SuitedTile(Suit.Dots, 2),
+                new SuitedTile(Suit.Dots, 2),
+                new SuitedTile(Suit.Characters, 3),
+                new SuitedTile(Suit.Characters, 4),
+                new SuitedTile(Suit.Characters, 5),
+                new SuitedTile(Suit.Dots, 6),
+                new SuitedTile(Suit.Dots, 6)
+            };
+
+            return tiles;
+        }
+
+        private List<Tile> GetSortedWinningHandOfSuitedTiles()
         {
             var tiles = new List<Tile> {
                 new SuitedTile(Suit.Dots, 2),
@@ -257,7 +487,7 @@ namespace MahjongLogicUnitTest
             return tiles;
         }
 
-        private List<Tile> GetSimpleHandOfHonorTiles()
+        private List<Tile> GetNonWinningHandOfHonorTiles()
         {
             var tiles = new List<Tile> {
                 new HonorTile(Suit.Wind, HonorType.East),
@@ -279,7 +509,45 @@ namespace MahjongLogicUnitTest
             return tiles;
         }
 
-        private List<Tile> GetSortedSimpleHandOfHonorTiles()
+        private List<Tile> GetWinningHandOfHonorTiles()
+        {
+            var tiles = new List<Tile> {
+                new HonorTile(Suit.Wind, HonorType.East),
+                new HonorTile(Suit.Wind, HonorType.North),
+                new HonorTile(Suit.Wind, HonorType.South),
+                new HonorTile(Suit.Wind, HonorType.East),
+                new HonorTile(Suit.Wind, HonorType.North),
+                new HonorTile(Suit.Wind, HonorType.South),
+                new HonorTile(Suit.Dragon, HonorType.White),
+                new HonorTile(Suit.Wind, HonorType.North),
+                new HonorTile(Suit.Dragon, HonorType.White),
+                new HonorTile(Suit.Dragon, HonorType.White),
+                new HonorTile(Suit.Wind, HonorType.South),
+                new HonorTile(Suit.Wind, HonorType.East),
+                new HonorTile(Suit.Dragon, HonorType.Green),
+                new HonorTile(Suit.Dragon, HonorType.Green)
+            };
+
+            return tiles;
+        }
+
+        private List<Tile> GetHandOfHonorTilesWithTooFewTiles()
+        {
+            var tiles = new List<Tile> {
+                new HonorTile(Suit.Wind, HonorType.West),
+                new HonorTile(Suit.Wind, HonorType.South),
+                new HonorTile(Suit.Dragon, HonorType.Red),
+                new HonorTile(Suit.Wind, HonorType.West),
+                new HonorTile(Suit.Wind, HonorType.West),
+                new HonorTile(Suit.Wind, HonorType.South),
+                new HonorTile(Suit.Wind, HonorType.South),
+                new HonorTile(Suit.Dragon, HonorType.Red)
+            };
+
+            return tiles;
+        }
+
+        private List<Tile> GetSortedNonWinningHandOfHonorTiles()
         {
             var tiles = new List<Tile> {
                 new HonorTile(Suit.Wind, HonorType.East),
@@ -301,7 +569,7 @@ namespace MahjongLogicUnitTest
             return tiles;
         }
 
-        private List<Tile> GetSimpleHandOfMixedTiles()
+        private List<Tile> GetNonWinningHandOfMixedTiles()
         {
             var tiles = new List<Tile> {
                 new HonorTile(Suit.Wind, HonorType.East),
@@ -323,7 +591,48 @@ namespace MahjongLogicUnitTest
             return tiles;
         }
 
-        private List<Tile> GetSortedSimpleHandOfMixedTiles()
+        private List<Tile> GetWinningHandOfMixedTiles()
+        {
+            var tiles = new List<Tile> {
+                new HonorTile(Suit.Wind, HonorType.West),
+                new HonorTile(Suit.Dragon, HonorType.Red),
+                new SuitedTile(Suit.Dots, 5),
+                new SuitedTile(Suit.Characters, 2),
+                new HonorTile(Suit.Wind, HonorType.West),
+                new HonorTile(Suit.Dragon, HonorType.White),
+                new SuitedTile(Suit.Characters, 3),
+                new HonorTile(Suit.Wind, HonorType.West),
+                new HonorTile(Suit.Dragon, HonorType.White),
+                new HonorTile(Suit.Dragon, HonorType.White),
+                new SuitedTile(Suit.Characters, 1),
+                new SuitedTile(Suit.Dots, 7),
+                new SuitedTile(Suit.Dots, 6),
+                new HonorTile(Suit.Dragon, HonorType.Red)
+            };
+
+            return tiles;
+        }
+
+        private List<Tile> GetHandOfMixedTilesWithTooFewTiles()
+        {
+            var tiles = new List<Tile> {
+                new HonorTile(Suit.Wind, HonorType.West),
+                new HonorTile(Suit.Dragon, HonorType.Red),
+                new SuitedTile(Suit.Dots, 5),
+                new SuitedTile(Suit.Characters, 2),
+                new HonorTile(Suit.Wind, HonorType.West),
+                new SuitedTile(Suit.Characters, 3),
+                new HonorTile(Suit.Wind, HonorType.West),
+                new SuitedTile(Suit.Characters, 1),
+                new SuitedTile(Suit.Dots, 7),
+                new SuitedTile(Suit.Dots, 6),
+                new HonorTile(Suit.Dragon, HonorType.Red)
+            };
+
+            return tiles;
+        }
+
+        private List<Tile> GetSortedNonWinningHandOfMixedTiles()
         {
             var tiles = new List<Tile> {
                 new SuitedTile(Suit.Dots, 5),
@@ -405,6 +714,28 @@ namespace MahjongLogicUnitTest
                 new HonorTile(Suit.Dragon, HonorType.Red),
                 new SuitedTile(Suit.Dots, 2),
                 new SuitedTile(Suit.Bamboo, 8),
+            };
+
+            return tiles;
+        }
+
+        private List<Tile> GetNineGatesHand()
+        {
+            var tiles = new List<Tile> {
+                new SuitedTile(Suit.Dots, 1),
+                new SuitedTile(Suit.Dots, 1),
+                new SuitedTile(Suit.Dots, 2),
+                new SuitedTile(Suit.Dots, 8),
+                new SuitedTile(Suit.Dots, 1),
+                new SuitedTile(Suit.Dots, 4),
+                new SuitedTile(Suit.Dots, 9),
+                new SuitedTile(Suit.Dots, 3),
+                new SuitedTile(Suit.Dots, 9),
+                new SuitedTile(Suit.Dots, 6),
+                new SuitedTile(Suit.Dots, 7),
+                new SuitedTile(Suit.Dots, 9),
+                new SuitedTile(Suit.Dots, 5),
+                new SuitedTile(Suit.Dots, 5),
             };
 
             return tiles;

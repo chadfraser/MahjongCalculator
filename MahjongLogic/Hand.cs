@@ -17,6 +17,11 @@ namespace Mahjong
 
         public bool IsWinningHand()
         {
+            if (GetAdjustedCountOfHandTiles() != WinningHandBaseTileCount)
+            {
+                return false;
+            }
+
             if (IsThirteenOrphans() || IsSevenPairs())
             {
                 return true;
@@ -136,6 +141,11 @@ namespace Mahjong
                 return (uncheckedTiles.Count == 3 || CanSplitIntoTripletsAndSequences(uncheckedTiles.GetRange(3, uncheckedTiles.Count - 3)));
             }
             return false;
+        }
+
+        private int GetAdjustedCountOfHandTiles()
+        {
+            return UncalledTiles.Count + (3 * CalledSets.Count);
         }
 
         private bool IsThirteenOrphans()
