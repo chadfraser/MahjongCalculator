@@ -51,14 +51,15 @@ namespace Mahjong
         {
         }
 
-        private bool CanRemovePairAndSplitRemainingTilesIntoSequencesAndTriplets(List<Tile> uncheckedTiles)
+        private bool CanRemovePairAndSplitRemainingTilesIntoSequencesAndTriplets(List<Tile> tiles)
         {
+            List<Tile> uncheckedTiles;
             SortHand();
-            for (int i = 0; i < uncheckedTiles.Count - 2; i++)
+            for (int i = 0; i < tiles.Count - 2; i++)
             {
-                if (uncheckedTiles[i].Equals(uncheckedTiles[i + 1]))
+                if (tiles[i].Equals(tiles[i + 1]))
                 {
-                    uncheckedTiles = GetListWithConsecutiveNTilesRemoved(uncheckedTiles, i, 2);
+                    uncheckedTiles = GetListWithConsecutiveNTilesRemoved(tiles, i, 2);
                     OutputDistinctListsOfTiles(uncheckedTiles, out List<List<Tile>> castedSuitedTilesGroupedBySuit, out List<Tile> castedHonorTiles);
 
                     if (CanSplitIntoTripletsAndSequences(castedHonorTiles) &&
@@ -77,14 +78,14 @@ namespace Mahjong
             return false;
         }
 
-        public void RemovePairAndSplitRemainingTilesIntoAllPossibleSequencesAndTriplets(List<Tile> tiles)
+        public List<List<TileGrouping>> FindAllPossibleWaysToSplitHandIntoOnePairWithSequencesAndTriplets(List<Tile> tiles)
         {
             List<Tile> uncheckedTiles;
             var allWaysToSplitTiles = new List<List<TileGrouping>>();
 
             tiles = SortTiles(tiles);
 
-            for (int i = 0; i < tiles.Count - 1; i++)
+            for (int i = 0; i < tiles.Count - 2; i++)
             {
                 if (tiles[i].Equals(tiles[i + 1]))
                 {
@@ -139,19 +140,20 @@ namespace Mahjong
                     i++;
                 }
             }
-            foreach (var a in allWaysToSplitTiles)
-            {
-                foreach (var group in a)
-                {
-                    Console.Write("[");
-                    foreach (var t in group)
-                    {
-                        Console.Write(t + ", ");
-                    }
-                    Console.Write("],   ");
-                }
-                Console.WriteLine();
-            }
+            return allWaysToSplitTiles;
+            //foreach (var a in allWaysToSplitTiles)
+            //{
+            //    foreach (var group in a)
+            //    {
+            //        Console.Write("[");
+            //        foreach (var t in group)
+            //        {
+            //            Console.Write(t + ", ");
+            //        }
+            //        Console.Write("],   ");
+            //    }
+            //    Console.WriteLine();
+            //    }
         }
 
         private List<Tile> GetListWithConsecutiveNTilesRemoved(List<Tile> tiles, int indexOfFirstTileToRemove, int n)
