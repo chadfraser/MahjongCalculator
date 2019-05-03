@@ -26,7 +26,7 @@ namespace Mahjong
             }
 
             return IsThirteenOrphans(UncalledTiles, CalledSets) || IsSevenPairs(UncalledTiles, CalledSets) ||
-                CanRemovePairAndSplitRemainingTilesIntoSequencesAndTriplets();
+                CanRemovePairAndSplitRemainingTilesIntoSequencesAndTriplets(UncalledTiles);
         }
 
         public void SortHand()
@@ -49,47 +49,36 @@ namespace Mahjong
 
         private void FindAllWaysToSplitHandIntoSequencesAndTriplets()
         {
-            // 1. Iteratively remove pair, add to new splitGroups, send rest of hand to 2. then 4. On no pair, return allSplitGroups
-            // 2. Remove first chii in order, add to tempSplitGroups, run check on current tempSplitGroups (i).
-            //   (i)  if all groups in tempSplitGroups are in one of the lists in allSplitGroups, stop searching with this chii/pon
-            // 3. Send rest of hand to 2, then 4.
-            // 4. Remove first pon in order, add to tempSplitGroups, run check on current tempSplitGroups (i).
-            // 5. Send rest of hand to 2, then 4.
-            // 6. Add tempSplitGroups to allSplitGroups
         }
 
-        private bool CanRemovePairAndSplitRemainingTilesIntoSequencesAndTriplets()
+        private bool CanRemovePairAndSplitRemainingTilesIntoSequencesAndTriplets(List<Tile> uncheckedTiles)
         {
-            List<Tile> uncheckedTiles;
-
             SortHand();
-            for (int i = 0; i < UncalledTiles.Count - 1; i++)
+            for (int i = 0; i < uncheckedTiles.Count - 2; i++)
             {
-                if (UncalledTiles[i].Equals(UncalledTiles[i + 1]))
+                if (uncheckedTiles[i].Equals(uncheckedTiles[i + 1]))
                 {
-                    List<Tile> leftSubList = new List<Tile>();
-                    List<Tile> rightSubList = new List<Tile>();
+                    uncheckedTiles = GetListWithConsecutiveNTilesRemoved(uncheckedTiles, i, 2);
+                    OutputDistinctListsOfTiles(uncheckedTiles, out List<List<Tile>> castedSuitedTilesGroupedBySuit, out List<Tile> castedHonorTiles);
 
-                    if (i != 0)
+                    if (!CanSplitIntoTripletsAndSequences(castedHonorTiles))
                     {
-                        leftSubList = UncalledTiles.GetRange(0, i);
+                        // If the tiles at index i and i+1 make a pair, and removing that pair does not give us a hand that can be split into
+                        // sequences and triplets, there's no point to see if we can remove a pair using tile i+1, since that will give us the
+                        // same result.
+                        // For this purpose, we increment i a second time here if we fail to fully split the hand after removing the pair.
+                        i++;
+                        continue;
                     }
-                    if (i != UncalledTiles.Count - 2)
+                    foreach (var tilesOfSpecificSuit in castedSuitedTilesGroupedBySuit)
                     {
-                        rightSubList = UncalledTiles.GetRange(i + 2, UncalledTiles.Count - i - 2);
+                        if (!CanSplitIntoTripletsAndSequences(tilesOfSpecificSuit))
+                        {
+                            i++;
+                            continue;
+                        }
                     }
-
-                    uncheckedTiles = leftSubList.Concat(rightSubList).ToList();
-                    var suitedTiles = uncheckedTiles.OfType<SuitedTile>().ToList();
-                    var honorTiles = uncheckedTiles.OfType<HonorTile>().ToList();
-                    List<Tile> castedSuitedTiles = new List<Tile>(suitedTiles.ToArray());
-                    List<Tile> castedHonorTiles = new List<Tile>(honorTiles.ToArray());
-
-                    if (CanSplitIntoTripletsAndSequences(castedSuitedTiles) && CanSplitIntoTripletsAndSequences(castedHonorTiles))
-                    {
-                        return true;
-                    }
-                    i++;
+                    return true;
                 }
             }
             return false;
@@ -107,7 +96,6 @@ namespace Mahjong
                 if (tiles[i].Equals(tiles[i + 1]))
                 {
                     var pair = new TileGrouping(tiles[i], tiles[i + 1]);
-                    //var  = new List<TileGrouping> { pair };
 
                     // If we've already seen all ways of splitting these tiles starting with an identical pair to this one, we won't find any new ways to split the tiles
                     if (IsTileGroupingAlreadyContainedInSeenWaysToSplitGroups(pair, allWaysToSplitTiles))
@@ -510,15 +498,9 @@ namespace Mahjong
                 new HonorTile(Suit.Dragon, HonorType.Red)};
         }
 
-        private static List<List<List<T>>> GetAllCombinationsOfNestedLists<T>(List<List<List<T>>> nestedList)
+        private static List<List<T>> GetAllCombinationsOfNestedLists<T>(List<List<List<T>>> nestedList)
         {
-            //if (typeof(T) == typeof(List<>))
-            //{
-            //    return GetAllCombinationsOfNestedLists
-            //}
-
             var combinationsList = new List<List<T>>(nestedList[0]);
-            var temp = new List<List<T>>();
             for (int i = 1; i < nestedList.Count; i++)
             {
                 var sublist = nestedList[i];
@@ -529,13 +511,9 @@ namespace Mahjong
                 {
                     combinationsList.Add(c[j].SelectMany(x => x).ToList());
                 }
-                //combinationsList = new List<List<T>>(temp);
-                //temp.Clear();
-                //var a = combinationsList.Select(g => g.AddRange(sublist.SelectMany(c => c))).ToList();
             }
 
-
-            return nestedList;
+            return combinationsList;
         }
 
         private static bool IsTileGroupingAlreadyContainedInSeenWaysToSplitGroups(TileGrouping grouping, List<List<TileGrouping>> seenWaysToSplitGroups)
