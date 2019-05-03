@@ -94,9 +94,8 @@ namespace Mahjong
         {
             List<List<TileGrouping>> waysToSplitTiles;
 
-            OutputListOfTilesBySuitOrType(tiles,
-                out List<List<Tile>> castedSuitedTilesGroupedBySuitAndType);
-            waysToSplitTiles = FindAllWaysToSplitNestedTileList(castedSuitedTilesGroupedBySuitAndType);
+            OutputTileListsGroupedBySuit(tiles, out List<List<Tile>> tilesGroupedBySuit);
+            waysToSplitTiles = FindAllWaysToSplitNestedTileList(tilesGroupedBySuit);
 
             return GetSortedListOfTileGroupings(waysToSplitTiles);
         }
@@ -110,11 +109,9 @@ namespace Mahjong
                 if (tiles[i].Equals(tiles[i + 1]))
                 {
                     uncheckedTiles = GetListWithConsecutiveNTilesRemoved(tiles, i, 2);
-                    OutputListOfTilesBySuitOrType(uncheckedTiles,
-                        out List<List<Tile>> castedSuitedTilesGroupedBySuitAndType);
+                    OutputTileListsGroupedBySuit(uncheckedTiles, out List<List<Tile>> tilesGroupedBySuit);
 
-                    if (castedSuitedTilesGroupedBySuitAndType.All(tilesOfSuitX => 
-                        CanSplitIntoTripletsAndSequences(tilesOfSuitX)))
+                    if (tilesGroupedBySuit.All(tilesOfSuitX => CanSplitIntoTripletsAndSequences(tilesOfSuitX)))
                     {
                         return true;
                     }
@@ -175,50 +172,43 @@ namespace Mahjong
             return leftSubList.Concat(rightSubList).ToList();
         }
 
-        private void OutputListOfTilesBySuitOrType(List<Tile> tiles, out List<List<Tile>> castedTilesGroupedBySuitAndType)
+        private void OutputTileListsGroupedBySuit(List<Tile> tiles, out List<List<Tile>> castedTilesGroupedBySuit)
         {
-            var suitedTiles = tiles.OfType<SuitedTile>().ToList();
-            var honorTiles = tiles.OfType<HonorTile>().ToList();
-            castedTilesGroupedBySuitAndType = new List<List<Tile>>();
+            castedTilesGroupedBySuit = new List<List<Tile>>();
+            var remainingTiles = new List<Tile>(tiles);
 
-            while (suitedTiles.Count > 0)
+            while (remainingTiles.Count > 0)
             {
-                var suitOfFirstTile = suitedTiles[0].Suit;
-                var tilesOfSpecificSuit = suitedTiles.Where(tile => tile.Suit == suitOfFirstTile).ToList();
-                castedTilesGroupedBySuitAndType.Add(new List<Tile>(tilesOfSpecificSuit.ToArray()));
-                suitedTiles = suitedTiles.Where(tile => tile.Suit != suitOfFirstTile).ToList();
-            }
-            if (honorTiles.Count > 0)
-            {
-                castedTilesGroupedBySuitAndType.Add(new List<Tile>(honorTiles.ToArray()));
+                var suitOfFirstTile = remainingTiles[0].Suit;
+                var tilesOfSpecificSuit = remainingTiles.Where(tile => tile.Suit == suitOfFirstTile).ToList();
+                castedTilesGroupedBySuit.Add(tilesOfSpecificSuit);
+                remainingTiles = remainingTiles.Where(tile => tile.Suit != suitOfFirstTile).ToList();
             }
         }
 
+        // Find some way to make this work for groups of larger sizes, to potentially include quads
         private Dictionary<TileGrouping, List<int>> FindAllDistinctGroupsAndTheirLocationsInTiles(List<Tile> tiles)
         {
-            Tile firstTile;
-            Tile secondTile;
-            Tile thirdTile;
             var uniqueGroupsInTiles = new Dictionary<TileGrouping, List<int>>();
 
-            for (int indexOfFirstTile = 0; indexOfFirstTile <= tiles.Count - 3; indexOfFirstTile++)
+            for (int indexOfFirstTile = 0; indexOfFirstTile < tiles.Count - 2; indexOfFirstTile++)
             {
-                firstTile = tiles[indexOfFirstTile];
+                var firstTile = tiles[indexOfFirstTile];
 
-                for (int indexOfSecondTile = indexOfFirstTile + 1; indexOfSecondTile <= tiles.Count - 2;
+                for (int indexOfSecondTile = indexOfFirstTile + 1; indexOfSecondTile < tiles.Count - 1;
                     indexOfSecondTile++)
                 {
-                    secondTile = tiles[indexOfSecondTile];
+                    var secondTile = tiles[indexOfSecondTile];
 
                     if (!firstTile.CanBelongToSameGroup(secondTile))
                     {
                         break;
                     }
 
-                    for (int indexOfThirdTile = indexOfSecondTile + 1; indexOfThirdTile <= tiles.Count - 1;
+                    for (int indexOfThirdTile = indexOfSecondTile + 1; indexOfThirdTile < tiles.Count;
                         indexOfThirdTile++)
                     {
-                        thirdTile = tiles[indexOfThirdTile];
+                        var thirdTile = tiles[indexOfThirdTile];
 
                         if (!secondTile.CanBelongToSameGroup(thirdTile))
                         {
@@ -478,6 +468,16 @@ namespace Mahjong
             for (int i = 1; i < nestedList.Count; i++)
             {
                 var sublist = nestedList[i];
+                if (sublist.Count == 0)
+                {
+                    continue;
+                }
+                if (flattenedCombinationsList.Count == 0)
+                {
+                    flattenedCombinationsList = new List<List<T>>(sublist);
+                    continue;
+                }
+
                 var tempCombinationsList = flattenedCombinationsList.SelectMany(flatListValue => sublist.Select(
                     sublistValue => new List<List<T>> {flatListValue, sublistValue})).ToList();
 
