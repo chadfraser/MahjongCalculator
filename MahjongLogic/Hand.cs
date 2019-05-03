@@ -118,31 +118,38 @@ namespace Mahjong
 
                     uncheckedTiles = GetListWithConsecutiveNTilesRemoved(tiles, i, 2);
                     OutputDistinctListsOfTiles(uncheckedTiles, out List<List<Tile>> castedSuitedTilesGroupedBySuit, out List<Tile> castedHonorTiles);
-                    var waysToSplitSuitedTiles = new List<List<TileGrouping>>();
+                    //var waysToSplitSuitedTiles = new List<List<TileGrouping>>();
+                    var waysToSplitSuitedTilesBySuit = new List<List<List<TileGrouping>>>();
                     var waysToSplitHonorTiles = FindAllTripletsToSplitFromTiles(castedHonorTiles);
                     waysToSplitHonorTiles.Add(pair);
                     foreach (var suitedTileGroup in castedSuitedTilesGroupedBySuit) {
-                        waysToSplitSuitedTiles.AddRange(FindAllGroupsToSplitFromTiles(suitedTileGroup, new List<List<TileGrouping>>()));
+                        waysToSplitSuitedTilesBySuit.Add(FindAllGroupsToSplitFromTiles(suitedTileGroup, new List<List<TileGrouping>>()));
                     }
 
-                    while(waysToSplitSuitedTiles.Count > 1)
-                    {
-                        var currentSuitWays = waysToSplitSuitedTiles[0];
-                        waysToSplitSuitedTiles.RemoveAt(0);
-                        foreach (var remainingSuitWays in waysToSplitSuitedTiles)
-                        {
-                            remainingSuitWays.AddRange(currentSuitWays);
-                        }
-                    }
+                    GetAllCombinationsOfNestedLists(waysToSplitSuitedTilesBySuit);
 
-                    foreach (var currentWayToSplitSuited in waysToSplitSuitedTiles)
+                    //for (int lastIndex = waysToSplitSuitedTilesBySuit.Count - 1; lastIndex > 0; lastIndex--)
+                    //{
+                    //    var currentSuitWays = waysToSplitSuitedTilesBySuit[lastIndex];
+                    //    waysToSplitSuitedTilesBySuit.RemoveAt(lastIndex);
+
+                    //    for (int waaaay = 0; waaaay < waysToSplitSuitedTilesBySuit[0].Count; waaaay++)
+                    //    {
+                    //        waysToSplitSuitedTilesBySuit[0][waaaay] = waysToSplitSuitedTilesBySuit[0][waaaay].Add(currentSuitWays).ToList();
+                    //    }
+                    //        //combinedWaysToSplitSuitedTiles = combinedWaysToSplitSuitedTiles.Select(
+                    //        //    t => t.AddRange(waysToSplitCurrentSuit));
+                        
+                    //    //lastIndex--;
+                    //}
+
+                    foreach (var currentWayToSplitSuited in waysToSplitSuitedTilesBySuit[0])
                     {
                         currentWayToSplitSuited.AddRange(waysToSplitHonorTiles);
                         // Order the groups by the first tile in the group with sequences coming before triplets/quads
                         // e.g., 2-3-4 comes before 2-2-2
                         var a = currentWayToSplitSuited.OrderBy(group => group.Count).ThenBy(group => group.ElementAt(0)).ThenByDescending(group => group.ElementAt(1)).ToList();
                         allWaysToSplitTiles.Add(a);
-
                     }
 
                     // In this loop, we know that the tile at index i+1 is the same as the tile at index i.
@@ -501,6 +508,34 @@ namespace Mahjong
                 new HonorTile(Suit.Dragon, HonorType.White),
                 new HonorTile(Suit.Dragon, HonorType.Green),
                 new HonorTile(Suit.Dragon, HonorType.Red)};
+        }
+
+        private static List<List<List<T>>> GetAllCombinationsOfNestedLists<T>(List<List<List<T>>> nestedList)
+        {
+            //if (typeof(T) == typeof(List<>))
+            //{
+            //    return GetAllCombinationsOfNestedLists
+            //}
+
+            var combinationsList = new List<List<T>>(nestedList[0]);
+            var temp = new List<List<T>>();
+            for (int i = 1; i < nestedList.Count; i++)
+            {
+                var sublist = nestedList[i];
+                var c = combinationsList.SelectMany(a => sublist.Select(b => new List<List<T>> {a, b})).ToList();
+
+                combinationsList.Clear();
+                for (int j = 0; j < c.Count; j++)
+                {
+                    combinationsList.Add(c[j].SelectMany(x => x).ToList());
+                }
+                //combinationsList = new List<List<T>>(temp);
+                //temp.Clear();
+                //var a = combinationsList.Select(g => g.AddRange(sublist.SelectMany(c => c))).ToList();
+            }
+
+
+            return nestedList;
         }
 
         private static bool IsTileGroupingAlreadyContainedInSeenWaysToSplitGroups(TileGrouping grouping, List<List<TileGrouping>> seenWaysToSplitGroups)
