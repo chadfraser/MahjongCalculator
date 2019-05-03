@@ -61,24 +61,17 @@ namespace Mahjong
                     uncheckedTiles = GetListWithConsecutiveNTilesRemoved(uncheckedTiles, i, 2);
                     OutputDistinctListsOfTiles(uncheckedTiles, out List<List<Tile>> castedSuitedTilesGroupedBySuit, out List<Tile> castedHonorTiles);
 
-                    if (!CanSplitIntoTripletsAndSequences(castedHonorTiles))
+                    if (CanSplitIntoTripletsAndSequences(castedHonorTiles) &&
+                        castedSuitedTilesGroupedBySuit.All(tilesOfSuitX => CanSplitIntoTripletsAndSequences(tilesOfSuitX)))
                     {
-                        // If the tiles at index i and i+1 make a pair, and removing that pair does not give us a hand that can be split into
-                        // sequences and triplets, there's no point to see if we can remove a pair using tile i+1, since that will give us the
-                        // same result.
-                        // For this purpose, we increment i a second time here if we fail to fully split the hand after removing the pair.
-                        i++;
-                        continue;
+                        return true;
                     }
-                    foreach (var tilesOfSpecificSuit in castedSuitedTilesGroupedBySuit)
-                    {
-                        if (!CanSplitIntoTripletsAndSequences(tilesOfSpecificSuit))
-                        {
-                            i++;
-                            continue;
-                        }
-                    }
-                    return true;
+                    // If the tiles at index i and i+1 make a pair, and removing that pair does not give us a hand that can be split into
+                    // sequences and triplets, there's no point to see if we can remove a pair using tile i+1, since that will give us the
+                    // same result.
+                    // For this purpose, we increment i a second time here if we fail to fully split the hand after removing the pair.
+                    i++;
+                    continue;
                 }
             }
             return false;
