@@ -64,14 +64,13 @@ namespace Mahjong
 
                     // If we've already seen all ways of splitting these tiles starting with an identical pair to this one,
                     // we won't find any new ways to split the tiles by starting with this pair
-                    if (IsTileGroupingAlreadyContainedInNestedList(pair, allWaysToSplitTiles))
+                    if (IsValueAlreadyContainedInNestedList(pair, allWaysToSplitTiles))
                     {
                         i++;
                         continue;
                     }
 
                     uncheckedTiles = GetListWithConsecutiveNTilesRemoved(tiles, i, 2);
-
                     currentWaysToSplitTiles = FindAllWaysToSplitTilesIntoGroups(uncheckedTiles);
                     foreach (var listOfSplits in currentWaysToSplitTiles)
                     {
@@ -211,7 +210,7 @@ namespace Mahjong
             return false;
         }
 
-        private Dictionary<TileGrouping, List<int>> FindAllDistinctGroupsAndLocationsInTiles(List<Tile> tiles)
+        private Dictionary<TileGrouping, List<int>> FindAllDistinctGroupsAndTheirLocationsInTiles(List<Tile> tiles)
         {
             Tile firstTile;
             Tile secondTile;
@@ -268,7 +267,7 @@ namespace Mahjong
             }
 
             var listOfAllPossibleTileGroupings = new List<List<TileGrouping>>();
-            var dictOfTileGroupsAndLocations = FindAllDistinctGroupsAndLocationsInTiles(tiles);
+            var dictOfTileGroupsAndLocations = FindAllDistinctGroupsAndTheirLocationsInTiles(tiles);
             foreach (var groupData in dictOfTileGroupsAndLocations)
             {
                 var reversedLocationArray = Enumerable.Reverse(groupData.Value).ToArray();
@@ -524,12 +523,11 @@ namespace Mahjong
             return combinationsList;
         }
 
-        private static bool IsTileGroupingAlreadyContainedInNestedList(TileGrouping grouping,
-            List<List<TileGrouping>> nestedList)
+        private static bool IsValueAlreadyContainedInNestedList<T>(T value, List<List<T>> nestedList)
         {
             foreach (var sublist in nestedList)
             {
-                if (sublist.Contains(grouping))
+                if (sublist.Contains(value))
                 {
                     return true;
                 }
@@ -537,9 +535,12 @@ namespace Mahjong
             return false;
         }
 
-        private static bool AreNestedEnumerablesSequenceEqualUnordered<T>(IEnumerable<IEnumerable<T>> currentNestedEnumerable, IEnumerable<IEnumerable<T>> otherNestedEnumerable)
+        private static bool AreNestedEnumerablesSequenceEqualUnordered<T>(
+            IEnumerable<IEnumerable<T>> currentNestedEnumerable, IEnumerable<IEnumerable<T>> otherNestedEnumerable)
         {
-            return currentNestedEnumerable.All(currentSubEnumerable => otherNestedEnumerable.Any(otherSubEnumerable => otherSubEnumerable.SequenceEqual(currentSubEnumerable)));
+            return currentNestedEnumerable.All(
+                currentSubEnumerable => otherNestedEnumerable.Any(
+                    otherSubEnumerable => otherSubEnumerable.SequenceEqual(currentSubEnumerable)));
         }
     }
 }
