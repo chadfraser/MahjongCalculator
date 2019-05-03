@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Mahjong
 {
-    public class SuitedTile : Tile, IComparable<SuitedTile>
+    public class SuitedTile : Tile, IComparable, IComparable<SuitedTile>
     {
         public SuitedTile(Suit suit, int rank)
         {
@@ -63,7 +63,8 @@ namespace Mahjong
 
         public int CompareTo(SuitedTile other)
         {
-            return Rank.CompareTo(other.Rank);
+            var comparator = Suit.Equals(other.Suit) ? Rank.CompareTo(other.Rank) : Suit.CompareTo(other.Suit);
+            return comparator;
         }
 
         public override bool CanMakeSequence()
@@ -108,6 +109,19 @@ namespace Mahjong
             hash = (hash * hashFactor) ^ Suit.GetHashCode();
             hash = (hash * hashFactor) ^ Rank.GetHashCode();
             return hash;
+        }
+
+        public int CompareTo(object obj)
+        {
+            if ((obj is null) || !GetType().Equals(obj.GetType()))
+            {
+                return -1;
+            }
+            else
+            {
+                SuitedTile t = (SuitedTile)obj;
+                return CompareTo(t);
+            }
         }
     }
 }

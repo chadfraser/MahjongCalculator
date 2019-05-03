@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Mahjong
 {
-    public class HonorTile : Tile
+    public class HonorTile : Tile, IComparable, IComparable<HonorTile>
     {
         public HonorTile(Suit suit, HonorType honorType)
         {
@@ -70,6 +70,25 @@ namespace Mahjong
             hash = (hash * hashFactor) ^ Suit.GetHashCode();
             hash = (hash * hashFactor) ^ HonorType.GetHashCode();
             return hash;
+        }
+
+        public int CompareTo(HonorTile other)
+        {
+            var comparator = Suit.Equals(other.Suit) ? HonorType.CompareTo(other.HonorType) : Suit.CompareTo(other.Suit);
+            return comparator;
+        }
+
+        public int CompareTo(object obj)
+        {
+            if ((obj is null) || !GetType().Equals(obj.GetType()))
+            {
+                return 1;
+            }
+            else
+            {
+                HonorTile t = (HonorTile)obj;
+                return CompareTo(t);
+            }
         }
     }
 }
