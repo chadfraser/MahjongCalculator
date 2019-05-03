@@ -12,11 +12,11 @@ namespace Mahjong
         public Hand()
         {
             UncalledTiles = new List<Tile>();
-            CalledSets = new List<List<Tile>>();
+            CalledSets = new List<TileGrouping>();
         }
 
         public List<Tile> UncalledTiles { get; set; }
-        public List<List<Tile>> CalledSets { get; set; }
+        public List<TileGrouping> CalledSets { get; set; }
 
         public bool IsWinningHand()
         {
@@ -25,29 +25,44 @@ namespace Mahjong
                 return false;
             }
 
-            if (IsThirteenOrphans() || IsSevenPairs())
-            {
-                return true;
-            }
-            SortHand();
-            return CanRemovePairAndSplitRemainingTilesIntoSequencesAndTriplets();
+            return IsThirteenOrphans(UncalledTiles, CalledSets) || IsSevenPairs(UncalledTiles, CalledSets) ||
+                CanRemovePairAndSplitRemainingTilesIntoSequencesAndTriplets();
         }
 
         public void SortHand()
         {
-            var suitedTiles = UncalledTiles.OfType<SuitedTile>().ToList();
-            var honorTiles = UncalledTiles.OfType<HonorTile>().ToList();
+            UncalledTiles = SortTiles(UncalledTiles);
+        }
+
+        public static List<Tile> SortTiles(List<Tile> tiles)
+        {
+            var suitedTiles = tiles.OfType<SuitedTile>().ToList();
+            var honorTiles = tiles.OfType<HonorTile>().ToList();
             var orderedSuitedTiles = suitedTiles.OrderBy(t => t.Suit).ThenBy(t => t.Rank).ToList();
             var orderedHonorTiles = honorTiles.OrderBy(t => t.Suit).ThenBy(t => t.HonorType).ToList();
             List<Tile> orderedCastedSuitedTiles = new List<Tile>(orderedSuitedTiles.ToArray());
             List<Tile> orderedCastedHonorTiles = new List<Tile>(orderedHonorTiles.ToArray());
 
-            UncalledTiles = orderedCastedSuitedTiles.Concat(orderedCastedHonorTiles).ToList();
+            tiles = orderedCastedSuitedTiles.Concat(orderedCastedHonorTiles).ToList();
+            return tiles;
+        }
+
+        private void FindAllWaysToSplitHandIntoSequencesAndTriplets()
+        {
+            // 1. Iteratively remove pair, add to new splitGroups, send rest of hand to 2. then 4. On no pair, return allSplitGroups
+            // 2. Remove first chii in order, add to tempSplitGroups, run check on current tempSplitGroups (i).
+            //   (i)  if all groups in tempSplitGroups are in one of the lists in allSplitGroups, stop searching with this chii/pon
+            // 3. Send rest of hand to 2, then 4.
+            // 4. Remove first pon in order, add to tempSplitGroups, run check on current tempSplitGroups (i).
+            // 5. Send rest of hand to 2, then 4.
+            // 6. Add tempSplitGroups to allSplitGroups
         }
 
         private bool CanRemovePairAndSplitRemainingTilesIntoSequencesAndTriplets()
         {
             List<Tile> uncheckedTiles;
+
+            SortHand();
             for (int i = 0; i < UncalledTiles.Count - 1; i++)
             {
                 if (UncalledTiles[i].Equals(UncalledTiles[i + 1]))
@@ -80,6 +95,113 @@ namespace Mahjong
             return false;
         }
 
+        public void RemovePairAndSplitRemainingTilesIntoAllPossibleSequencesAndTriplets(List<Tile> tiles)
+        {
+            List<Tile> uncheckedTiles;
+            var allWaysToSplitTiles = new List<List<TileGrouping>>();
+
+            tiles = SortTiles(tiles);
+
+            for (int i = 0; i < tiles.Count - 1; i++)
+            {
+                if (tiles[i].Equals(tiles[i + 1]))
+                {
+                    var pair = new TileGrouping(tiles[i], tiles[i + 1]);
+                    //var  = new List<TileGrouping> { pair };
+
+                    // If we've already seen all ways of splitting these tiles starting with an identical pair to this one, we won't find any new ways to split the tiles
+                    if (IsTileGroupingAlreadyContainedInSeenWaysToSplitGroups(pair, allWaysToSplitTiles))
+                    {
+                        i++;
+                        continue;
+                    }
+
+                    uncheckedTiles = GetListWithConsecutiveNTilesRemoved(tiles, i, 2);
+                    OutputDistinctListsOfTiles(uncheckedTiles, out List<List<Tile>> castedSuitedTilesGroupedBySuit, out List<Tile> castedHonorTiles);
+                    var waysToSplitSuitedTiles = new List<List<TileGrouping>>();
+                    var waysToSplitHonorTiles = FindAllTripletsToSplitFromTiles(castedHonorTiles);
+                    waysToSplitHonorTiles.Add(pair);
+                    foreach (var suitedTileGroup in castedSuitedTilesGroupedBySuit) {
+                        waysToSplitSuitedTiles.AddRange(FindAllGroupsToSplitFromTiles(suitedTileGroup, new List<List<TileGrouping>>()));
+                    }
+
+                    while(waysToSplitSuitedTiles.Count > 1)
+                    {
+                        var currentSuitWays = waysToSplitSuitedTiles[0];
+                        waysToSplitSuitedTiles.RemoveAt(0);
+                        foreach (var remainingSuitWays in waysToSplitSuitedTiles)
+                        {
+                            remainingSuitWays.AddRange(currentSuitWays);
+                        }
+                    }
+
+                    foreach (var currentWayToSplitSuited in waysToSplitSuitedTiles)
+                    {
+                        currentWayToSplitSuited.AddRange(waysToSplitHonorTiles);
+                        // Order the groups by the first tile in the group with sequences coming before triplets/quads
+                        // e.g., 2-3-4 comes before 2-2-2
+                        var a = currentWayToSplitSuited.OrderBy(group => group.Count).ThenBy(group => group.ElementAt(0)).ThenByDescending(group => group.ElementAt(1)).ToList();
+                        allWaysToSplitTiles.Add(a);
+
+                    }
+
+                    // In this loop, we know that the tile at index i+1 is the same as the tile at index i.
+                    // We increment i twice at the end of the loop (including the afterthought of the loop) to skip over that tile,
+                    // since finding pairs with tile i+1 will give the same result as finding pairs with tile i.
+                    i++;
+                }
+            }
+            foreach (var a in allWaysToSplitTiles)
+            {
+                foreach (var group in a)
+                {
+                    Console.Write("[");
+                    foreach (var t in group)
+                    {
+                        Console.Write(t + ", ");
+                    }
+                    Console.Write("],   ");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        private List<Tile> GetListWithConsecutiveNTilesRemoved(List<Tile> tiles, int indexOfFirstTileToRemove, int n)
+        {
+            List<Tile> leftSubList = new List<Tile>();
+            List<Tile> rightSubList = new List<Tile>();
+
+            if (indexOfFirstTileToRemove != 0)
+            {
+                leftSubList = tiles.GetRange(0, indexOfFirstTileToRemove);
+            }
+            if (indexOfFirstTileToRemove != tiles.Count - n)
+            {
+                rightSubList = tiles.GetRange(indexOfFirstTileToRemove + n, tiles.Count - (indexOfFirstTileToRemove + n));
+            }
+
+            return leftSubList.Concat(rightSubList).ToList();
+        }
+
+        private void OutputDistinctListsOfTiles(List<Tile> tiles, out List<List<Tile>> castedSuitedTilesGroupedBySuit,
+            out List<Tile> castedHonorTiles)
+        {
+            var suitedTiles = tiles.OfType<SuitedTile>().ToList();
+            var honorTiles = tiles.OfType<HonorTile>().ToList();
+            castedSuitedTilesGroupedBySuit = new List<List<Tile>>();
+
+            while (suitedTiles.Count > 0)
+            {
+                var suitOfFirstTile = suitedTiles[0].Suit;
+                var tilesOfSpecificSuit = suitedTiles.Where(tile => tile.Suit == suitOfFirstTile).ToList();
+                List<Tile> castedTilesOfSpecificSuit = new List<Tile>(tilesOfSpecificSuit.ToArray());
+                castedSuitedTilesGroupedBySuit.Add(castedTilesOfSpecificSuit);
+                suitedTiles = suitedTiles.Where(tile => tile.Suit != suitOfFirstTile).ToList();
+            }
+
+            castedHonorTiles = new List<Tile>(honorTiles.ToArray());
+        }
+
         private bool CanSplitIntoTripletsAndSequences(List<Tile> uncheckedTiles)
         {
             if (uncheckedTiles.Count == 0)
@@ -97,6 +219,193 @@ namespace Mahjong
             }
 
             return false;
+        }
+
+        private Dictionary<TileGrouping, List<int>> FindAllDistinctGroupsAndLocationsInTiles(List<Tile> tiles)
+        {
+            var uniqueGroupsInTiles = new Dictionary<TileGrouping, List<int>>();
+            List<SuitedTile> suitedTiles = tiles.OfType<SuitedTile>().ToList();
+
+            for (int indexOfFirstTile = 0; indexOfFirstTile <= suitedTiles.Count - 3; indexOfFirstTile++)
+            {
+                for (int indexOfSecondTile = indexOfFirstTile + 1; indexOfSecondTile <= suitedTiles.Count - 2; indexOfSecondTile++)
+                {
+                    if (!suitedTiles[indexOfFirstTile].IsNextInSequence(suitedTiles[indexOfSecondTile]) &&
+                        !suitedTiles[indexOfFirstTile].Equals(suitedTiles[indexOfSecondTile]))
+                    {
+                        break;
+                    }
+
+                    for (int indexOfThirdTile = indexOfSecondTile + 1; indexOfThirdTile <= suitedTiles.Count - 1; indexOfThirdTile++)
+                    {
+                        if (!suitedTiles[indexOfSecondTile].IsNextInSequence(suitedTiles[indexOfThirdTile]) &&
+                            !suitedTiles[indexOfSecondTile].Equals(suitedTiles[indexOfThirdTile]))
+                        {
+                            break;
+                        }
+
+                        var currentTiles = new SuitedTile[] { suitedTiles[indexOfFirstTile], suitedTiles[indexOfSecondTile], suitedTiles[indexOfThirdTile] };
+
+                        if (SuitedTile.IsSequence(currentTiles) || SuitedTile.IsTriplet(currentTiles))
+                        {
+                            var removedSequence = new TileGrouping(currentTiles);
+                            uniqueGroupsInTiles[removedSequence] = new List<int> { indexOfFirstTile, indexOfSecondTile, indexOfThirdTile };
+                        }
+                    }
+                }
+            }
+            return uniqueGroupsInTiles;
+        }
+
+        private List<List<TileGrouping>> FindAllGroupsToSplitFromTiles(List<Tile> tiles, List<List<TileGrouping>> currentWaysToSplitTiles)
+        {
+            if (tiles.Count < 3)
+            {
+                return currentWaysToSplitTiles;
+            }
+
+            var listOfAllPossibleTileGroupings = new List<List<TileGrouping>>();
+            var dictOfTileGroupsAndLocations = FindAllDistinctGroupsAndLocationsInTiles(tiles);
+            foreach (var groupData in dictOfTileGroupsAndLocations)
+            {
+                var reversedLocationArray = Enumerable.Reverse(groupData.Value).ToArray();
+                var remainingTiles = GetListOfTilesWithPassedIndexesRemoved(tiles, reversedLocationArray);
+
+                var newGroups = FindAllGroupsToSplitFromTiles(remainingTiles, currentWaysToSplitTiles);
+                foreach (var tileGroups in newGroups)
+                {
+                    tileGroups.Add(groupData.Key);
+                    var isInListAlready = false;
+
+                    foreach (var possibleTileGrouping in listOfAllPossibleTileGroupings)
+                    {
+                        if (AreNestedEnumerablesSequenceEqualUnordered(tileGroups, possibleTileGrouping))
+                        {
+                            isInListAlready = true;
+                            break;
+                        }
+                    }
+
+                    if (!isInListAlready)
+                    {
+                        listOfAllPossibleTileGroupings.Add(tileGroups);
+                    }
+                }
+
+                if (newGroups.Count == 0)
+                {
+                    listOfAllPossibleTileGroupings.Add(new List<TileGrouping> { groupData.Key });
+                }
+            }
+            return listOfAllPossibleTileGroupings;
+        }
+
+        private List<TileGrouping> FindAllSequencesAndTripletsToSplitFromTiles(List<Tile> tiles, List<TileGrouping> currentWayToSplitTiles)
+        {
+            var groupsSplitFromTiles = new List<TileGrouping>();
+
+            groupsSplitFromTiles.AddRange(FindAllSequencesToSplitFromTiles(tiles));
+            groupsSplitFromTiles.AddRange(FindAllTripletsToSplitFromTiles(tiles));
+
+            return groupsSplitFromTiles;
+        }
+
+        private List<TileGrouping> FindAllSequencesToSplitFromTiles(List<Tile> tiles)
+        {
+            var sequencesSplitFromTiles = new List<TileGrouping>();
+            int previousCountOfTiles;
+
+            do
+            {
+                previousCountOfTiles = tiles.Count;
+                tiles = GetTilesWithFirstSequenceFromIndexNRemoved(tiles, 0, sequencesSplitFromTiles);
+            }
+            while (tiles.Count < previousCountOfTiles);
+
+            return sequencesSplitFromTiles;
+        }
+
+        private List<TileGrouping> FindAllTripletsToSplitFromTiles(List<Tile> tiles)
+        {
+            var tripletsSplitFromTiles = new List<TileGrouping>();
+            int previousCountOfTiles;
+
+            do
+            {
+                previousCountOfTiles = tiles.Count;
+                tiles = GetTilesWithFirstTripletFromIndexNRemoved(tiles, 0, tripletsSplitFromTiles);
+            }
+            while (tiles.Count < previousCountOfTiles);
+
+            return tripletsSplitFromTiles;
+        }
+
+        private List<Tile> GetTilesWithFirstSequenceFromIndexNRemoved(List<Tile> tiles, int n, List<TileGrouping> splitTilesGroups)
+        {
+            List<SuitedTile> suitedTiles = tiles.OfType<SuitedTile>().ToList();
+
+            for (int indexOfFirstTile = n; indexOfFirstTile <= suitedTiles.Count - 3; indexOfFirstTile++)
+            {
+                for (int indexOfSecondTile = indexOfFirstTile + 1; indexOfSecondTile <= suitedTiles.Count - 2; indexOfSecondTile++)
+                {
+                    // As the tiles are sorted, if the second tile we're checking is one rank higher than the first, it's impossible to make a sequence
+                    // using any of the later tiles combined with the first (unless the first and second are equal in rank, in which case nothing is lost by
+                    // marking the second tile as the first to begin searching from)
+                    if (!suitedTiles[indexOfFirstTile].IsNextInSequence(suitedTiles[indexOfSecondTile]))
+                    {
+                        indexOfFirstTile = indexOfSecondTile - 1;
+                        break;
+                    }
+
+                    for (int indexOfThirdTile = indexOfSecondTile + 1; indexOfThirdTile <= suitedTiles.Count - 1; indexOfThirdTile++)
+                    {
+                        // As the tiles are sorted, if the third tile we're checking is one rank higher than the second, it's impossible to make a
+                        // sequence using any of the later tiles combined with the first and second (unless the second and third are equal in rank, in which
+                        // case nothing is lost by marking the third tile as the second to begin searching from)
+                        if (!suitedTiles[indexOfSecondTile].IsNextInSequence(suitedTiles[indexOfThirdTile]))
+                        {
+                            indexOfSecondTile = indexOfThirdTile - 1;
+                            break;
+                        }
+
+                        if (SuitedTile.IsSequence(new SuitedTile[] { suitedTiles[indexOfFirstTile], suitedTiles[indexOfSecondTile], suitedTiles[indexOfThirdTile] }))
+                        {
+                            var listWithSequenceRemoved = GetListOfTilesWithPassedIndexesRemoved(suitedTiles, indexOfFirstTile, indexOfSecondTile, indexOfThirdTile);
+                            
+                            var removedSequence = new TileGrouping(suitedTiles[indexOfFirstTile], suitedTiles[indexOfSecondTile], suitedTiles[indexOfThirdTile]);
+                            splitTilesGroups.Add(removedSequence);
+                            return listWithSequenceRemoved;
+                        }
+                    }
+                }
+            }
+            return tiles;
+        }
+
+        private List<Tile> GetListOfTilesWithPassedIndexesRemoved<T>(List<T> tiles, params int[] indexesToRemoveInDescendingOrder) where T : Tile
+        {
+            List<Tile> listWithSequenceRemoved = new List<Tile>(tiles.ToArray());
+            foreach (var index in indexesToRemoveInDescendingOrder)
+            {
+                listWithSequenceRemoved.RemoveAt(index);
+            }
+            return listWithSequenceRemoved;
+        }
+
+        private List<Tile> GetTilesWithFirstTripletFromIndexNRemoved(List<Tile> tiles, int n, List<TileGrouping> splitTilesGroups)
+        {
+            for (int i = n; i < tiles.Count - 2; i++)
+            {
+                if (tiles[i].Equals(tiles[i + 1]) && tiles[i + 1].Equals(tiles[i + 2]))
+                {
+                    var removedTriplet = new TileGrouping(tiles[i], tiles[i + 1], tiles[i + 2]);
+                    splitTilesGroups.Add(removedTriplet);
+
+                    List<Tile> remainingTiles = GetListWithConsecutiveNTilesRemoved(tiles, i, 3);
+                    return remainingTiles;
+                }
+            }
+            return tiles;
         }
 
         private bool CanSplitByRemovingSequence(List<Tile> uncheckedTiles)
@@ -133,7 +442,7 @@ namespace Mahjong
             }
             return false;
         }
-        
+
         private bool CanSplitByRemovingTriplet(List<Tile> uncheckedTiles)
         {
             if (uncheckedTiles[0].Equals(uncheckedTiles[1]) && uncheckedTiles[1].Equals(uncheckedTiles[2]))
@@ -148,42 +457,37 @@ namespace Mahjong
             return UncalledTiles.Count + (3 * CalledSets.Count);
         }
 
-        private bool IsThirteenOrphans()
+        private static bool IsThirteenOrphans(List<Tile> uncalledTiles, List<TileGrouping> calledSets)
         {
-            if (UncalledTiles.Count != WinningHandBaseTileCount || CalledSets.Any())
+            if (uncalledTiles.Count != WinningHandBaseTileCount || calledSets.Any())
             {
                 return false;
             }
 
-            return UncalledTiles.ToHashSet().SetEquals(GetThirteenOrphansSet());
+            return uncalledTiles.ToHashSet().SetEquals(GetThirteenOrphansSet());
         }
 
-        private bool IsSevenPairs()
+        private static bool IsSevenPairs(List<Tile> uncalledTiles, List<TileGrouping> calledSets)
         {
-            if (UncalledTiles.Count != WinningHandBaseTileCount || CalledSets.Any())
-            {
-                return false;
-            }
-            if (UncalledTiles.ToHashSet().Count != WinningHandBaseTileCount / 2)
+            if (uncalledTiles.Count != WinningHandBaseTileCount || calledSets.Any() || uncalledTiles.ToHashSet().Count != WinningHandBaseTileCount / 2)
             {
                 return false;
             }
 
-            SortHand();
-            for (int i = 0; i < UncalledTiles.Count - 2; i += 2)
+            uncalledTiles = SortTiles(uncalledTiles);
+            for (int i = 0; i < uncalledTiles.Count - 2; i += 2)
             {
-                if (!UncalledTiles[i].Equals(UncalledTiles[i + 1]))
+                if (!uncalledTiles[i].Equals(uncalledTiles[i + 1]))
                 {
                     return false;
                 }
             }
-
             return true;
         }
 
-        private HashSet<Tile> GetThirteenOrphansSet()
+        private static HashSet<Tile> GetThirteenOrphansSet()
         {
-           return new HashSet<Tile> {
+            return new HashSet<Tile> {
                 new SuitedTile(Suit.Dots, 1),
                 new SuitedTile(Suit.Dots, 9),
                 new SuitedTile(Suit.Bamboo, 1),
@@ -197,6 +501,23 @@ namespace Mahjong
                 new HonorTile(Suit.Dragon, HonorType.White),
                 new HonorTile(Suit.Dragon, HonorType.Green),
                 new HonorTile(Suit.Dragon, HonorType.Red)};
+        }
+
+        private static bool IsTileGroupingAlreadyContainedInSeenWaysToSplitGroups(TileGrouping grouping, List<List<TileGrouping>> seenWaysToSplitGroups)
+        {
+            foreach (var previousWayToSplitGroups in seenWaysToSplitGroups)
+            {
+                if (previousWayToSplitGroups.Contains(grouping))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool AreNestedEnumerablesSequenceEqualUnordered<T>(IEnumerable<IEnumerable<T>> currentNestedEnumerable, IEnumerable<IEnumerable<T>> otherNestedEnumerable)
+        {
+            return currentNestedEnumerable.All(currentSubEnumerable => otherNestedEnumerable.Any(otherSubEnumerable => otherSubEnumerable.SequenceEqual(currentSubEnumerable)));
         }
     }
 }

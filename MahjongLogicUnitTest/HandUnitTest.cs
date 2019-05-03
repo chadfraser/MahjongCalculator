@@ -129,11 +129,11 @@ namespace MahjongLogicUnitTest
             var handA = new Hand();
             handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
             handA.UncalledTiles.Add(new SuitedTile(Suit.Bamboo, 1));
-            handA.CalledSets.Add(new List<Tile>() {
+            handA.CalledSets.Add(new TileGrouping(
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5)
-            });
+            ));
 
             var result = handA.IsWinningHand();
             Assert.IsFalse(result);
@@ -188,11 +188,11 @@ namespace MahjongLogicUnitTest
         {
             var handA = new Hand();
             handA.UncalledTiles = GetUnsortedSevenPairsTiles();
-            handA.CalledSets.Add(new List<Tile>() {
+            handA.CalledSets.Add(new TileGrouping(
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5)
-            });
+            ));
 
             var result = handA.IsWinningHand();
             Assert.IsFalse(result);
@@ -213,11 +213,11 @@ namespace MahjongLogicUnitTest
         {
             var handA = new Hand();
             handA.UncalledTiles = GetWinningHandOfSuitedTiles();
-            handA.CalledSets.Add(new List<Tile>() {
+            handA.CalledSets.Add(new TileGrouping(
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5)
-            });
+            ));
 
             var result = handA.IsWinningHand();
             Assert.IsFalse(result);
@@ -228,12 +228,12 @@ namespace MahjongLogicUnitTest
         {
             var handA = new Hand();
             handA.UncalledTiles = GetHandOfSuitedTilesWithTooFewTiles();
-            handA.CalledSets.Add(new List<Tile>() {
+            handA.CalledSets.Add(new TileGrouping(
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5)
-            });
+            ));
 
             var result = handA.IsWinningHand();
             Assert.IsTrue(result);
@@ -264,11 +264,11 @@ namespace MahjongLogicUnitTest
         {
             var handA = new Hand();
             handA.UncalledTiles = GetWinningHandOfHonorTiles();
-            handA.CalledSets.Add(new List<Tile>() {
+            handA.CalledSets.Add(new TileGrouping(
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5)
-            });
+            ));
 
             var result = handA.IsWinningHand();
             Assert.IsFalse(result);
@@ -279,17 +279,17 @@ namespace MahjongLogicUnitTest
         {
             var handA = new Hand();
             handA.UncalledTiles = GetHandOfHonorTilesWithTooFewTiles();
-            handA.CalledSets.Add(new List<Tile>() {
+            handA.CalledSets.Add(new TileGrouping(
                 new SuitedTile(Suit.Bamboo, 4),
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 6)
-            });
-            handA.CalledSets.Add(new List<Tile>() {
+            ));
+            handA.CalledSets.Add(new TileGrouping(
                 new HonorTile(Suit.Dragon, HonorType.Green),
                 new HonorTile(Suit.Dragon, HonorType.Green),
                 new HonorTile(Suit.Dragon, HonorType.Green),
                 new HonorTile(Suit.Dragon, HonorType.Green)
-            });
+            ));
 
             var result = handA.IsWinningHand();
             Assert.IsTrue(result);
@@ -320,16 +320,16 @@ namespace MahjongLogicUnitTest
         {
             var handA = new Hand();
             handA.UncalledTiles = GetWinningHandOfMixedTiles();
-            handA.CalledSets.Add(new List<Tile>() {
+            handA.CalledSets.Add(new TileGrouping(
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5)
-            });
-            handA.CalledSets.Add(new List<Tile>() {
+            ));
+            handA.CalledSets.Add(new TileGrouping(
                 new SuitedTile(Suit.Characters, 7),
                 new SuitedTile(Suit.Characters, 8),
                 new SuitedTile(Suit.Characters, 9)
-            });
+            ));
 
             var result = handA.IsWinningHand();
             Assert.IsFalse(result);
@@ -340,11 +340,11 @@ namespace MahjongLogicUnitTest
         {
             var handA = new Hand();
             handA.UncalledTiles = GetHandOfMixedTilesWithTooFewTiles();
-            handA.CalledSets.Add(new List<Tile>() {
+            handA.CalledSets.Add(new TileGrouping(
                 new SuitedTile(Suit.Bamboo, 4),
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 6)
-            });
+            ));
 
             var result = handA.IsWinningHand();
             Assert.IsTrue(result);
@@ -367,26 +367,26 @@ namespace MahjongLogicUnitTest
             handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.White));
             handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.White));
 
-            handA.CalledSets.Add(new List<Tile>() {
+            handA.CalledSets.Add(new TileGrouping(
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5)
-            });
-            handA.CalledSets.Add(new List<Tile>() {
+            ));
+            handA.CalledSets.Add(new TileGrouping(
                 new SuitedTile(Suit.Characters, 7),
                 new SuitedTile(Suit.Characters, 8),
                 new SuitedTile(Suit.Characters, 9)
-            });
-            handA.CalledSets.Add(new List<Tile>() {
+            ));
+            handA.CalledSets.Add(new TileGrouping(
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5),
                 new SuitedTile(Suit.Bamboo, 5)
-            });
-            handA.CalledSets.Add(new List<Tile>() {
+            ));
+            handA.CalledSets.Add(new TileGrouping(
                 new SuitedTile(Suit.Characters, 7),
                 new SuitedTile(Suit.Characters, 8),
                 new SuitedTile(Suit.Characters, 9)
-            });
+            ));
 
             var result = handA.IsWinningHand();
             Assert.IsTrue(result);
@@ -400,6 +400,17 @@ namespace MahjongLogicUnitTest
 
             var result = handA.IsWinningHand();
             Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void HAAAAAAND()
+        {
+            var handA = new Hand();
+            handA.UncalledTiles = GetWinningHandOfMixedTiles();
+            //handA.UncalledTiles = GetNineGatesHand();
+
+            handA.RemovePairAndSplitRemainingTilesIntoAllPossibleSequencesAndTriplets(handA.UncalledTiles);
+            //Assert.IsTrue(result);
         }
 
         private List<Tile> GetWinningHandOfSuitedTiles()
