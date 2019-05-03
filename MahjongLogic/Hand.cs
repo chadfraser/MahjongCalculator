@@ -91,7 +91,8 @@ namespace Mahjong
                 {
                     var pair = new TileGrouping(tiles[i], tiles[i + 1]);
 
-                    // If we've already seen all ways of splitting these tiles starting with an identical pair to this one, we won't find any new ways to split the tiles
+                    // If we've already seen all ways of splitting these tiles starting with an identical pair to this one, we won't find any
+                    // new ways to split the tiles by starting with this pair
                     if (IsTileGroupingAlreadyContainedInSeenWaysToSplitGroups(pair, allWaysToSplitTiles))
                     {
                         i++;
@@ -100,30 +101,15 @@ namespace Mahjong
 
                     uncheckedTiles = GetListWithConsecutiveNTilesRemoved(tiles, i, 2);
                     OutputDistinctListsOfTiles(uncheckedTiles, out List<List<Tile>> castedSuitedTilesGroupedBySuit, out List<Tile> castedHonorTiles);
-                    //var waysToSplitSuitedTiles = new List<List<TileGrouping>>();
+
                     var waysToSplitSuitedTilesBySuit = new List<List<List<TileGrouping>>>();
                     var waysToSplitHonorTiles = FindAllTripletsToSplitFromTiles(castedHonorTiles);
                     waysToSplitHonorTiles.Add(pair);
                     foreach (var suitedTileGroup in castedSuitedTilesGroupedBySuit) {
-                        waysToSplitSuitedTilesBySuit.Add(FindAllGroupsToSplitFromTiles(suitedTileGroup, new List<List<TileGrouping>>()));
+                        waysToSplitSuitedTilesBySuit.Add(FindAllGroupsToSplitFromTiles(suitedTileGroup));
                     }
 
-                    GetAllCombinationsOfNestedLists(waysToSplitSuitedTilesBySuit);
-
-                    //for (int lastIndex = waysToSplitSuitedTilesBySuit.Count - 1; lastIndex > 0; lastIndex--)
-                    //{
-                    //    var currentSuitWays = waysToSplitSuitedTilesBySuit[lastIndex];
-                    //    waysToSplitSuitedTilesBySuit.RemoveAt(lastIndex);
-
-                    //    for (int waaaay = 0; waaaay < waysToSplitSuitedTilesBySuit[0].Count; waaaay++)
-                    //    {
-                    //        waysToSplitSuitedTilesBySuit[0][waaaay] = waysToSplitSuitedTilesBySuit[0][waaaay].Add(currentSuitWays).ToList();
-                    //    }
-                    //        //combinedWaysToSplitSuitedTiles = combinedWaysToSplitSuitedTiles.Select(
-                    //        //    t => t.AddRange(waysToSplitCurrentSuit));
-                        
-                    //    //lastIndex--;
-                    //}
+                    allWaysToSplitTiles = GetAllCombinationsOfNestedLists(waysToSplitSuitedTilesBySuit);
 
                     foreach (var currentWayToSplitSuited in waysToSplitSuitedTilesBySuit[0])
                     {
@@ -245,6 +231,11 @@ namespace Mahjong
                 }
             }
             return uniqueGroupsInTiles;
+        }
+
+        private List<List<TileGrouping>> FindAllGroupsToSplitFromTiles(List<Tile> tiles)
+        {
+            return FindAllGroupsToSplitFromTiles(tiles, new List<List<TileGrouping>>());
         }
 
         private List<List<TileGrouping>> FindAllGroupsToSplitFromTiles(List<Tile> tiles, List<List<TileGrouping>> currentWaysToSplitTiles)
