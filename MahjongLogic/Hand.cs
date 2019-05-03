@@ -188,7 +188,10 @@ namespace Mahjong
                 castedTilesGroupedBySuitAndType.Add(new List<Tile>(tilesOfSpecificSuit.ToArray()));
                 suitedTiles = suitedTiles.Where(tile => tile.Suit != suitOfFirstTile).ToList();
             }
-            castedTilesGroupedBySuitAndType.Add(new List<Tile>(honorTiles.ToArray()));
+            if (honorTiles.Count > 0)
+            {
+                castedTilesGroupedBySuitAndType.Add(new List<Tile>(honorTiles.ToArray()));
+            }
         }
 
         private bool CanSplitIntoTripletsAndSequences(List<Tile> uncheckedTiles)
@@ -507,20 +510,21 @@ namespace Mahjong
 
         private static List<List<T>> GetAllCombinationsOfNestedLists<T>(List<List<List<T>>> nestedList)
         {
-            var combinationsList = new List<List<T>>(nestedList[0]);
+            var flattenedCombinationsList = new List<List<T>>(nestedList[0]);
             for (int i = 1; i < nestedList.Count; i++)
             {
                 var sublist = nestedList[i];
-                var c = combinationsList.SelectMany(a => sublist.Select(b => new List<List<T>> {a, b})).ToList();
+                var tempCombinationsList = flattenedCombinationsList.SelectMany(flatListValue => sublist.Select(
+                    sublistValue => new List<List<T>> {flatListValue, sublistValue})).ToList();
 
-                combinationsList.Clear();
-                for (int j = 0; j < c.Count; j++)
+                flattenedCombinationsList.Clear();
+                foreach (var nonFlattenedCombinations in tempCombinationsList)
                 {
-                    combinationsList.Add(c[j].SelectMany(x => x).ToList());
+                    flattenedCombinationsList.Add(nonFlattenedCombinations.SelectMany(x => x).ToList());
                 }
             }
 
-            return combinationsList;
+            return flattenedCombinationsList;
         }
 
         private static bool IsValueAlreadyContainedInNestedList<T>(T value, List<List<T>> nestedList)
