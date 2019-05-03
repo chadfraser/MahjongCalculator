@@ -8,399 +8,399 @@ namespace MahjongLogicUnitTest
     [TestClass]
     public class HandUnitTest
     {
-        [TestMethod]
-        public void HandSortHandMethodTest_NonWinningSuitedTilesEqualsSortedTiles_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetWinningHandOfSuitedTiles();
-            handA.SortHand();
-            var result = handA.UncalledTiles.SequenceEqual(GetSortedWinningHandOfSuitedTiles());
-            Assert.IsTrue(result);
-        }
+        //[TestMethod]
+        //public void HandSortHandMethodTest_NonWinningSuitedTilesEqualsSortedTiles_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetWinningHandOfSuitedTiles();
+        //    handA.SortHand();
+        //    var result = handA.UncalledTiles.SequenceEqual(GetSortedWinningHandOfSuitedTiles());
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandSortHandMethodTest_AlreadySortedSuitedTilesEqualsSortedTiles_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetSortedWinningHandOfSuitedTiles();
-            handA.SortHand();
-            var result = handA.UncalledTiles.SequenceEqual(GetSortedWinningHandOfSuitedTiles());
-            Assert.IsTrue(result);
-        }
+        //[TestMethod]
+        //public void HandSortHandMethodTest_AlreadySortedSuitedTilesEqualsSortedTiles_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetSortedWinningHandOfSuitedTiles();
+        //    handA.SortHand();
+        //    var result = handA.UncalledTiles.SequenceEqual(GetSortedWinningHandOfSuitedTiles());
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandSortHandMethodTest_NonWinningHonorTilesEqualsSortedTiles_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetNonWinningHandOfHonorTiles();
-            handA.SortHand();
-            var result = handA.UncalledTiles.SequenceEqual(GetSortedNonWinningHandOfHonorTiles());
-            Assert.IsTrue(result);
-        }
+        //[TestMethod]
+        //public void HandSortHandMethodTest_NonWinningHonorTilesEqualsSortedTiles_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetNonWinningHandOfHonorTiles();
+        //    handA.SortHand();
+        //    var result = handA.UncalledTiles.SequenceEqual(GetSortedNonWinningHandOfHonorTiles());
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandSortHandMethodTest_AlreadySortedHonorTilesEqualsSortedTiles_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetSortedNonWinningHandOfHonorTiles();
-            handA.SortHand();
-            var result = handA.UncalledTiles.SequenceEqual(GetSortedNonWinningHandOfHonorTiles());
-            Assert.IsTrue(result);
-        }
+        //[TestMethod]
+        //public void HandSortHandMethodTest_AlreadySortedHonorTilesEqualsSortedTiles_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetSortedNonWinningHandOfHonorTiles();
+        //    handA.SortHand();
+        //    var result = handA.UncalledTiles.SequenceEqual(GetSortedNonWinningHandOfHonorTiles());
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandSortHandMethodTest_NonWinningMixedTilesEqualsSortedTiles_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetNonWinningHandOfMixedTiles();
-            handA.SortHand();
-            var result = handA.UncalledTiles.SequenceEqual(GetSortedNonWinningHandOfMixedTiles());
-            Assert.IsTrue(result);
-        }
+        //[TestMethod]
+        //public void HandSortHandMethodTest_NonWinningMixedTilesEqualsSortedTiles_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetNonWinningHandOfMixedTiles();
+        //    handA.SortHand();
+        //    var result = handA.UncalledTiles.SequenceEqual(GetSortedNonWinningHandOfMixedTiles());
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandSortHandMethodTest_AlreadySortedMixedTilesEqualsSortedTiles_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetSortedNonWinningHandOfMixedTiles();
-            handA.SortHand();
-            var result = handA.UncalledTiles.SequenceEqual(GetSortedNonWinningHandOfMixedTiles());
-            Assert.IsTrue(result);
-        }
+        //[TestMethod]
+        //public void HandSortHandMethodTest_AlreadySortedMixedTilesEqualsSortedTiles_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetSortedNonWinningHandOfMixedTiles();
+        //    handA.SortHand();
+        //    var result = handA.UncalledTiles.SequenceEqual(GetSortedNonWinningHandOfMixedTiles());
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_ProperThirteenOrphansDataSuitedPair_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
-            handA.UncalledTiles.Add(new SuitedTile(Suit.Characters, 1));
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_ProperThirteenOrphansDataSuitedPair_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
+        //    handA.UncalledTiles.Add(new SuitedTile(Suit.Characters, 1));
 
-            var result = handA.IsWinningHand();
-            Assert.IsTrue(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_ProperThirteenOrphansDataHonorPair_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
-            handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.Red));
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_ProperThirteenOrphansDataHonorPair_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
+        //    handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.Red));
 
-            var result = handA.IsWinningHand();
-            Assert.IsTrue(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_TooFewTilesThirteenOrphansData_IsFalse()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_TooFewTilesThirteenOrphansData_IsFalse()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
 
-            var result = handA.IsWinningHand();
-            Assert.IsFalse(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsFalse(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_TooManyPairsThirteenOrphansData_IsFalse()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
-            handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.Red));
-            handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.White));
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_TooManyPairsThirteenOrphansData_IsFalse()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
+        //    handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.Red));
+        //    handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.White));
 
-            var result = handA.IsWinningHand();
-            Assert.IsFalse(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsFalse(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_NonPairThirteenOrphansData_IsFalse()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
-            handA.UncalledTiles.Add(new SuitedTile(Suit.Bamboo, 5));
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_NonPairThirteenOrphansData_IsFalse()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
+        //    handA.UncalledTiles.Add(new SuitedTile(Suit.Bamboo, 5));
 
-            var result = handA.IsWinningHand();
-            Assert.IsFalse(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsFalse(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_CalledSetsProperThirteenOrphansData_IsFalse()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
-            handA.UncalledTiles.Add(new SuitedTile(Suit.Bamboo, 1));
-            handA.CalledSets.Add(new TileGrouping(
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5)
-            ));
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_CalledSetsProperThirteenOrphansData_IsFalse()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetPairlessThirteenOrphansTiles();
+        //    handA.UncalledTiles.Add(new SuitedTile(Suit.Bamboo, 1));
+        //    handA.CalledSets.Add(new TileGrouping(
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5)
+        //    ));
 
-            var result = handA.IsWinningHand();
-            Assert.IsFalse(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsFalse(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_ProperSevenPairsData_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetUnsortedSevenPairsTiles();
-            var result = handA.IsWinningHand();
-            Assert.IsTrue(result);
-        }
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_ProperSevenPairsData_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetUnsortedSevenPairsTiles();
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_SevenPairsTooManyPairs_IsFalse()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetUnsortedSevenPairsTiles();
-            handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.Red));
-            handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.Red));
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_SevenPairsTooManyPairs_IsFalse()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetUnsortedSevenPairsTiles();
+        //    handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.Red));
+        //    handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.Red));
 
-            var result = handA.IsWinningHand();
-            Assert.IsFalse(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsFalse(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_SevenPairsTooFewPairs_IsFalse()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetUnsortedSevenPairsTiles();
-            var firstTileData = handA.UncalledTiles[0];
-            handA.UncalledTiles.Remove(firstTileData);
-            handA.UncalledTiles.Remove(firstTileData);
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_SevenPairsTooFewPairs_IsFalse()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetUnsortedSevenPairsTiles();
+        //    var firstTileData = handA.UncalledTiles[0];
+        //    handA.UncalledTiles.Remove(firstTileData);
+        //    handA.UncalledTiles.Remove(firstTileData);
 
-            var result = handA.IsWinningHand();
-            Assert.IsFalse(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsFalse(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_SevenPairsWithQuads_IsFalse()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetUnsortedSevenPairsTilesWithQuads();
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_SevenPairsWithQuads_IsFalse()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetUnsortedSevenPairsTilesWithQuads();
 
-            var result = handA.IsWinningHand();
-            Assert.IsFalse(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsFalse(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_CalledSetsProperSevenPairsData_IsFalse()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetUnsortedSevenPairsTiles();
-            handA.CalledSets.Add(new TileGrouping(
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5)
-            ));
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_CalledSetsProperSevenPairsData_IsFalse()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetUnsortedSevenPairsTiles();
+        //    handA.CalledSets.Add(new TileGrouping(
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5)
+        //    ));
 
-            var result = handA.IsWinningHand();
-            Assert.IsFalse(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsFalse(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_ProperSuitedTiles_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetWinningHandOfSuitedTiles();
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_ProperSuitedTiles_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetWinningHandOfSuitedTiles();
 
-            var result = handA.IsWinningHand();
-            Assert.IsTrue(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_ProperSuitedTilesWithExtraCalledSet_IsFalse()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetWinningHandOfSuitedTiles();
-            handA.CalledSets.Add(new TileGrouping(
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5)
-            ));
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_ProperSuitedTilesWithExtraCalledSet_IsFalse()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetWinningHandOfSuitedTiles();
+        //    handA.CalledSets.Add(new TileGrouping(
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5)
+        //    ));
 
-            var result = handA.IsWinningHand();
-            Assert.IsFalse(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsFalse(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_OneSetShortSuitedTilesWithExtraCalledSet_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetHandOfSuitedTilesWithTooFewTiles();
-            handA.CalledSets.Add(new TileGrouping(
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5)
-            ));
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_OneSetShortSuitedTilesWithExtraCalledSet_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetHandOfSuitedTilesWithTooFewTiles();
+        //    handA.CalledSets.Add(new TileGrouping(
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5)
+        //    ));
 
-            var result = handA.IsWinningHand();
-            Assert.IsTrue(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_IncompleteSuitedTiles_IsFalse()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetNonWinningHandOfSuitedTiles();
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_IncompleteSuitedTiles_IsFalse()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetNonWinningHandOfSuitedTiles();
 
-            var result = handA.IsWinningHand();
-            Assert.IsFalse(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsFalse(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_ProperHonorTiles_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetWinningHandOfHonorTiles();
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_ProperHonorTiles_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetWinningHandOfHonorTiles();
 
-            var result = handA.IsWinningHand();
-            Assert.IsTrue(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_ProperHonorTilesWithTwoExtraCalledSets_IsFalse()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetWinningHandOfHonorTiles();
-            handA.CalledSets.Add(new TileGrouping(
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5)
-            ));
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_ProperHonorTilesWithTwoExtraCalledSets_IsFalse()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetWinningHandOfHonorTiles();
+        //    handA.CalledSets.Add(new TileGrouping(
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5)
+        //    ));
 
-            var result = handA.IsWinningHand();
-            Assert.IsFalse(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsFalse(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_TwoSetsShortHonorTilesWithExtraCalledSet_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetHandOfHonorTilesWithTooFewTiles();
-            handA.CalledSets.Add(new TileGrouping(
-                new SuitedTile(Suit.Bamboo, 4),
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 6)
-            ));
-            handA.CalledSets.Add(new TileGrouping(
-                new HonorTile(Suit.Dragon, HonorType.Green),
-                new HonorTile(Suit.Dragon, HonorType.Green),
-                new HonorTile(Suit.Dragon, HonorType.Green),
-                new HonorTile(Suit.Dragon, HonorType.Green)
-            ));
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_TwoSetsShortHonorTilesWithExtraCalledSet_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetHandOfHonorTilesWithTooFewTiles();
+        //    handA.CalledSets.Add(new TileGrouping(
+        //        new SuitedTile(Suit.Bamboo, 4),
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 6)
+        //    ));
+        //    handA.CalledSets.Add(new TileGrouping(
+        //        new HonorTile(Suit.Dragon, HonorType.Green),
+        //        new HonorTile(Suit.Dragon, HonorType.Green),
+        //        new HonorTile(Suit.Dragon, HonorType.Green),
+        //        new HonorTile(Suit.Dragon, HonorType.Green)
+        //    ));
 
-            var result = handA.IsWinningHand();
-            Assert.IsTrue(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_IncompleteHandOfHonorTiles_IsFalse()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetNonWinningHandOfHonorTiles();
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_IncompleteHandOfHonorTiles_IsFalse()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetNonWinningHandOfHonorTiles();
 
-            var result = handA.IsWinningHand();
-            Assert.IsFalse(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsFalse(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_ProperMixedTiles_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetWinningHandOfMixedTiles();
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_ProperMixedTiles_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetWinningHandOfMixedTiles();
 
-            var result = handA.IsWinningHand();
-            Assert.IsTrue(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_ProperMixedTilesWithTwoExtraCalledSets_IsFalse()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetWinningHandOfMixedTiles();
-            handA.CalledSets.Add(new TileGrouping(
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5)
-            ));
-            handA.CalledSets.Add(new TileGrouping(
-                new SuitedTile(Suit.Characters, 7),
-                new SuitedTile(Suit.Characters, 8),
-                new SuitedTile(Suit.Characters, 9)
-            ));
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_ProperMixedTilesWithTwoExtraCalledSets_IsFalse()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetWinningHandOfMixedTiles();
+        //    handA.CalledSets.Add(new TileGrouping(
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5)
+        //    ));
+        //    handA.CalledSets.Add(new TileGrouping(
+        //        new SuitedTile(Suit.Characters, 7),
+        //        new SuitedTile(Suit.Characters, 8),
+        //        new SuitedTile(Suit.Characters, 9)
+        //    ));
 
-            var result = handA.IsWinningHand();
-            Assert.IsFalse(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsFalse(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_OneSetShortMixedTilesWithExtraCalledSet_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetHandOfMixedTilesWithTooFewTiles();
-            handA.CalledSets.Add(new TileGrouping(
-                new SuitedTile(Suit.Bamboo, 4),
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 6)
-            ));
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_OneSetShortMixedTilesWithExtraCalledSet_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetHandOfMixedTilesWithTooFewTiles();
+        //    handA.CalledSets.Add(new TileGrouping(
+        //        new SuitedTile(Suit.Bamboo, 4),
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 6)
+        //    ));
 
-            var result = handA.IsWinningHand();
-            Assert.IsTrue(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_IncompleteHandOfMixedTiles_IsFalse()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetNonWinningHandOfMixedTiles();
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_IncompleteHandOfMixedTiles_IsFalse()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetNonWinningHandOfMixedTiles();
 
-            var result = handA.IsWinningHand();
-            Assert.IsFalse(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsFalse(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_PairWithFourExtraCalledSets_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.White));
-            handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.White));
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_PairWithFourExtraCalledSets_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.White));
+        //    handA.UncalledTiles.Add(new HonorTile(Suit.Dragon, HonorType.White));
 
-            handA.CalledSets.Add(new TileGrouping(
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5)
-            ));
-            handA.CalledSets.Add(new TileGrouping(
-                new SuitedTile(Suit.Characters, 7),
-                new SuitedTile(Suit.Characters, 8),
-                new SuitedTile(Suit.Characters, 9)
-            ));
-            handA.CalledSets.Add(new TileGrouping(
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5),
-                new SuitedTile(Suit.Bamboo, 5)
-            ));
-            handA.CalledSets.Add(new TileGrouping(
-                new SuitedTile(Suit.Characters, 7),
-                new SuitedTile(Suit.Characters, 8),
-                new SuitedTile(Suit.Characters, 9)
-            ));
+        //    handA.CalledSets.Add(new TileGrouping(
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5)
+        //    ));
+        //    handA.CalledSets.Add(new TileGrouping(
+        //        new SuitedTile(Suit.Characters, 7),
+        //        new SuitedTile(Suit.Characters, 8),
+        //        new SuitedTile(Suit.Characters, 9)
+        //    ));
+        //    handA.CalledSets.Add(new TileGrouping(
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5),
+        //        new SuitedTile(Suit.Bamboo, 5)
+        //    ));
+        //    handA.CalledSets.Add(new TileGrouping(
+        //        new SuitedTile(Suit.Characters, 7),
+        //        new SuitedTile(Suit.Characters, 8),
+        //        new SuitedTile(Suit.Characters, 9)
+        //    ));
 
-            var result = handA.IsWinningHand();
-            Assert.IsTrue(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsTrue(result);
+        //}
 
-        [TestMethod]
-        public void HandIsWinningHandMethodTest_ComplicatedNineGatesHand_IsTrue()
-        {
-            var handA = new Hand();
-            handA.UncalledTiles = GetNineGatesHand();
+        //[TestMethod]
+        //public void HandIsWinningHandMethodTest_ComplicatedNineGatesHand_IsTrue()
+        //{
+        //    var handA = new Hand();
+        //    handA.UncalledTiles = GetNineGatesHand();
 
-            var result = handA.IsWinningHand();
-            Assert.IsTrue(result);
-        }
+        //    var result = handA.IsWinningHand();
+        //    Assert.IsTrue(result);
+        //}
 
         [TestMethod]
         public void HAAAAAAND()
@@ -408,8 +408,13 @@ namespace MahjongLogicUnitTest
             var handA = new Hand();
             handA.UncalledTiles = GetWinningHandOfMixedTiles();
             //handA.UncalledTiles = GetNineGatesHand();
+            handA.UncalledTiles = GetWinningHandOfSuitedTiles();
 
-            handA.RemovePairAndSplitRemainingTilesIntoAllPossibleSequencesAndTriplets(handA.UncalledTiles);
+            var a = new HonorTile(Suit.Dragon, HonorType.White);
+            var b = new HonorTile(Suit.Dragon, HonorType.White);
+            var c = new HonorTile(Suit.Dragon, HonorType.Green);
+            System.Console.WriteLine(SuitedTile.IsGroup(a, b, c));
+            handA.FindAllPossibleWaysToSplitTiles(handA.UncalledTiles);
             //Assert.IsTrue(result);
         }
 
@@ -604,6 +609,7 @@ namespace MahjongLogicUnitTest
 
         private List<Tile> GetWinningHandOfMixedTiles()
         {
+            // 567 dots, 123 characters, WWW, www, rr
             var tiles = new List<Tile> {
                 new HonorTile(Suit.Wind, HonorType.West),
                 new HonorTile(Suit.Dragon, HonorType.Red),
