@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Mahjong
 {
@@ -28,19 +29,23 @@ namespace Mahjong
             return true;
         }
 
-        public static bool IsTriplet(HonorTile[] tiles)
+        public override bool CanBelongToSameGroup(params Tile[] otherTiles)
         {
-            return (tiles.Length == 3 && IsArrayOfEqualTiles(tiles));
+            if (otherTiles.Any(t => !(t is HonorTile)))
+            {
+                return false;
+            }
+            return otherTiles.Length <= 4 && otherTiles.All(t => Equals(t));
         }
 
-        public static bool IsQuad(HonorTile[] tiles)
+        public static new bool IsGroup(params Tile[] tiles)
         {
-            return (tiles.Length == 4 && IsArrayOfEqualTiles(tiles));
-        }
-
-        private static bool IsArrayOfEqualTiles(HonorTile[] tiles)
-        {
-            return (new HashSet<HonorTile>(tiles).Count != 1);
+            HonorTile[] honorTiles = tiles.OfType<HonorTile>().ToArray();
+            if (honorTiles.Length != tiles.Length)
+            {
+                return Tile.IsGroup(tiles);
+            }
+            return IsTriplet(honorTiles) || IsQuad(honorTiles);
         }
 
         public override string ToString()
@@ -63,8 +68,8 @@ namespace Mahjong
 
         public override int GetHashCode()
         {
-            const int baseHash = 7673;
-            const int hashFactor = 95651;
+            const int baseHash = 26209;
+            const int hashFactor = 71809;
 
             int hash = baseHash;
             hash = (hash * hashFactor) ^ Suit.GetHashCode();

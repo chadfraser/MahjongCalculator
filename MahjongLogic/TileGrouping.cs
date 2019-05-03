@@ -19,6 +19,27 @@ namespace Mahjong
             tiles = new List<Tile>();
         }
 
+        public bool IsGroup()
+        {
+            var firstTile = tiles.FirstOrDefault();
+            if (firstTile is null)
+            {
+                return false;
+            }
+            return (bool)firstTile.GetType().GetMethod("IsGroup").Invoke(null, new object[] { tiles.ToArray() });
+        }
+
+        public bool IsSequence()
+        {
+            var firstTile = tiles.FirstOrDefault();
+            if (firstTile is null)
+            {
+                return false;
+            }
+            return tiles.All(t => t.CanMakeSequence() && t.GetType() == firstTile.GetType()) &&
+                (bool)firstTile.GetType().GetMethod("IsSequence").Invoke(null, new object[] { tiles.ToArray() });
+        }
+
         public int Count { get => tiles.Count; }
 
         public bool IsReadOnly => false;
@@ -67,7 +88,7 @@ namespace Mahjong
             else
             {
                 TileGrouping t = (TileGrouping)obj;
-                return (tiles.OrderBy(tile => tile.Suit)).SequenceEqual(t.tiles.OrderBy(tile => tile.Suit));
+                return tiles.OrderBy(tile => tile.Suit).SequenceEqual(t.tiles.OrderBy(tile => tile.Suit));
             }
         }
 

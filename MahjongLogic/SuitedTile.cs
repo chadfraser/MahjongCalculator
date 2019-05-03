@@ -16,7 +16,7 @@ namespace Mahjong
 
         public bool IsNextInSequence(SuitedTile other)
         {
-            return (Suit == other.Suit && Rank + 1 == other.Rank);
+            return Suit == other.Suit && Rank + 1 == other.Rank;
         }
 
         public bool IsWithinBoundsOfSameSequence(SuitedTile other)
@@ -24,18 +24,12 @@ namespace Mahjong
             var lowerRank = (Rank < other.Rank) ? Rank : other.Rank;
             var higherRank = (Rank > other.Rank) ? Rank : other.Rank;
 
-            return (Suit == other.Suit && !(higherRank > lowerRank + 2));
-            //return (Suit == other.Suit && higherRank != lowerRank && !(higherRank > lowerRank + 2));
+            return Suit == other.Suit && !(higherRank > lowerRank + 2);
         }
 
-        public static bool IsSequence(SuitedTile[] tiles)
+        public static bool IsSequence(params SuitedTile[] tiles)
         {
-            if (tiles.Length != 3)
-            {
-                return false;
-            }
-
-            if (new HashSet<Suit>(from a in tiles select a.Suit).Count != 1)
+            if (tiles.Length != 3 || new HashSet<Suit>(from t in tiles select t.Suit).Count != 1)
             {
                 return false;
             }
@@ -51,9 +45,14 @@ namespace Mahjong
             return true;
         }
 
+        public override bool CanMakeSequence()
+        {
+            return true;
+        }
+
         public override bool IsTerminal()
         {
-            return (Rank == 1 || Rank == 9);
+            return Rank == 1 || Rank == 9;
         }
 
         public override bool IsTerminalOrHonor()
@@ -61,25 +60,24 @@ namespace Mahjong
             return IsTerminal();
         }
 
-        public int CompareTo(SuitedTile other)
+        public override bool CanBelongToSameGroup(params Tile[] otherTiles)
         {
-            var comparator = Suit.Equals(other.Suit) ? Rank.CompareTo(other.Rank) : Suit.CompareTo(other.Suit);
-            return comparator;
+            if (otherTiles.Any(t => !(t is SuitedTile)))
+            {
+                return false;
+            }
+            return otherTiles.Length <= 4 && 
+                otherTiles.All(t => Equals(t) || IsWithinBoundsOfSameSequence((SuitedTile)t));
         }
 
-        public override bool CanMakeSequence()
+        public static new bool IsGroup(params Tile[] tiles)
         {
-            return true;
-        }
-
-        public static bool operator <(SuitedTile a, SuitedTile b)
-        {
-            return a.Rank < b.Rank;
-        }
-
-        public static bool operator >(SuitedTile a, SuitedTile b)
-        {
-            return a.Rank > b.Rank;
+            SuitedTile[] suitedTiles = tiles.OfType<SuitedTile>().ToArray();
+            if (suitedTiles.Length != tiles.Length)
+            {
+                return Tile.IsGroup(tiles);
+            }
+            return IsSequence(suitedTiles) || IsTriplet(suitedTiles) || IsQuad(suitedTiles);
         }
 
         public override string ToString()
@@ -102,13 +100,29 @@ namespace Mahjong
 
         public override int GetHashCode()
         {
-            const int baseHash = 7673;
-            const int hashFactor = 95651;
+            const int baseHash = 8737;
+            const int hashFactor = 74933;
 
             int hash = baseHash;
             hash = (hash * hashFactor) ^ Suit.GetHashCode();
             hash = (hash * hashFactor) ^ Rank.GetHashCode();
             return hash;
+        }
+
+        public static bool operator <(SuitedTile a, SuitedTile b)
+        {
+            return a.Rank < b.Rank;
+        }
+
+        public static bool operator >(SuitedTile a, SuitedTile b)
+        {
+            return a.Rank > b.Rank;
+        }
+
+        public int CompareTo(SuitedTile other)
+        {
+            var comparator = Suit.Equals(other.Suit) ? Rank.CompareTo(other.Rank) : Suit.CompareTo(other.Suit);
+            return comparator;
         }
 
         public int CompareTo(object obj)
