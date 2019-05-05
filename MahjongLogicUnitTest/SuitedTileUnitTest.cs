@@ -202,6 +202,15 @@ namespace MahjongLogicUnitTest
         }
 
         [TestMethod]
+        public void SuitedTileGreaterThanComparisonTest_GreaterRankDifferentSuitReversedSuits_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Characters, 9);
+            var tileB = new SuitedTile(Suit.Dots, 8);
+
+            Assert.IsTrue(tileA > tileB);
+        }
+
+        [TestMethod]
         public void SuitedTileGreaterThanComparisonTest_SameRank_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 9);
@@ -238,6 +247,15 @@ namespace MahjongLogicUnitTest
         }
 
         [TestMethod]
+        public void SuitedTileLesserThanComparisonTest_LesserRankDifferentSuitReversedSuits_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Characters, 2);
+            var tileB = new SuitedTile(Suit.Dots, 8);
+
+            Assert.IsTrue(tileA < tileB);
+        }
+
+        [TestMethod]
         public void SuitedTileLesserThanComparisonTest_SameRank_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 9);
@@ -262,7 +280,7 @@ namespace MahjongLogicUnitTest
             var tileB = new SuitedTile(Suit.Dots, 4);
             var tileC = new SuitedTile(Suit.Dots, 5);
 
-            Assert.IsTrue(SuitedTile.IsSequence(new SuitedTile[] { tileA, tileB, tileC }));
+            Assert.IsTrue(SuitedTile.IsSequence(tileA, tileB, tileC));
         }
 
         [TestMethod]
@@ -271,19 +289,18 @@ namespace MahjongLogicUnitTest
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 4);
 
-            Assert.IsFalse(SuitedTile.IsSequence(new SuitedTile[] { tileA, tileB }));
+            Assert.IsFalse(SuitedTile.IsSequence(tileA, tileB));
         }
 
         [TestMethod]
-        public void SuitedTileIsSequenceTest_ProperSequenceDataTooCharactersyTiles_IsFalse()
+        public void SuitedTileIsSequenceTest_ProperSequenceDataTooManyTiles_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 4);
             var tileC = new SuitedTile(Suit.Dots, 5);
             var tileD = new SuitedTile(Suit.Dots, 6);
 
-            Assert.IsFalse(SuitedTile.IsSequence(new SuitedTile[]
-                { tileA, tileB, tileC, tileD }));
+            Assert.IsFalse(SuitedTile.IsSequence(tileA, tileB, tileC, tileD));
         }
 
         [TestMethod]
@@ -293,7 +310,7 @@ namespace MahjongLogicUnitTest
             var tileB = new SuitedTile(Suit.Bamboo, 4);
             var tileC = new SuitedTile(Suit.Characters, 5);
 
-            Assert.IsFalse(SuitedTile.IsSequence(new SuitedTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(SuitedTile.IsSequence(tileA, tileB, tileC));
         }
 
         [TestMethod]
@@ -303,7 +320,7 @@ namespace MahjongLogicUnitTest
             var tileB = new SuitedTile(Suit.Dots, 4);
             var tileC = new SuitedTile(Suit.Dots, 6);
 
-            Assert.IsFalse(SuitedTile.IsSequence(new SuitedTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(SuitedTile.IsSequence(tileA, tileB, tileC));
         }
 
         [TestMethod]
@@ -313,7 +330,7 @@ namespace MahjongLogicUnitTest
             var tileB = new SuitedTile(Suit.Dots, 3);
             var tileC = new SuitedTile(Suit.Dots, 3);
 
-            Assert.IsTrue(Tile.IsTriplet(new SuitedTile[] { tileA, tileB, tileC }));
+            Assert.IsTrue(SuitedTile.IsTriplet(tileA, tileB, tileC));
         }
 
         [TestMethod]
@@ -322,19 +339,18 @@ namespace MahjongLogicUnitTest
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 3);
 
-            Assert.IsFalse(Tile.IsTriplet(new SuitedTile[] { tileA, tileB }));
+            Assert.IsFalse(SuitedTile.IsTriplet(tileA, tileB));
         }
 
         [TestMethod]
-        public void SuitedTileIsTripletTest_ProperTripletDataTooCharactersyTiles_IsFalse()
+        public void SuitedTileIsTripletTest_ProperTripletDataTooManyTiles_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 3);
             var tileB = new SuitedTile(Suit.Dots, 3);
             var tileC = new SuitedTile(Suit.Dots, 3);
             var tileD = new SuitedTile(Suit.Dots, 3);
 
-            Assert.IsFalse(Tile.IsTriplet(new SuitedTile[]
-                { tileA, tileB, tileC, tileD }));
+            Assert.IsFalse(SuitedTile.IsTriplet(tileA, tileB, tileC, tileD));
         }
 
         [TestMethod]
@@ -344,7 +360,7 @@ namespace MahjongLogicUnitTest
             var tileB = new SuitedTile(Suit.Bamboo, 3);
             var tileC = new SuitedTile(Suit.Characters, 3);
 
-            Assert.IsFalse(Tile.IsTriplet(new SuitedTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(SuitedTile.IsTriplet(tileA, tileB, tileC));
         }
 
         [TestMethod]
@@ -354,7 +370,7 @@ namespace MahjongLogicUnitTest
             var tileB = new SuitedTile(Suit.Dots, 3);
             var tileC = new SuitedTile(Suit.Dots, 4);
 
-            Assert.IsFalse(Tile.IsTriplet(new SuitedTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(SuitedTile.IsTriplet(tileA, tileB, tileC));
         }
 
         [TestMethod]
@@ -365,8 +381,7 @@ namespace MahjongLogicUnitTest
             var tileC = new SuitedTile(Suit.Dots, 4);
             var tileD = new SuitedTile(Suit.Dots, 4);
 
-            Assert.IsTrue(Tile.IsQuad(new SuitedTile[]
-                { tileA, tileB, tileC, tileD }));
+            Assert.IsTrue(SuitedTile.IsQuad(tileA, tileB, tileC, tileD));
         }
 
         [TestMethod]
@@ -376,11 +391,11 @@ namespace MahjongLogicUnitTest
             var tileB = new SuitedTile(Suit.Dots, 4);
             var tileC = new SuitedTile(Suit.Dots, 4);
 
-            Assert.IsFalse(Tile.IsQuad(new SuitedTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(SuitedTile.IsQuad(tileA, tileB, tileC));
         }
 
         [TestMethod]
-        public void SuitedTileIsQuadTest_ProperQuadDataTooCharactersyTiles_IsFalse()
+        public void SuitedTileIsQuadTest_ProperQuadDataTooManyTiles_IsFalse()
         {
             var tileA = new SuitedTile(Suit.Dots, 4);
             var tileB = new SuitedTile(Suit.Dots, 4);
@@ -388,8 +403,7 @@ namespace MahjongLogicUnitTest
             var tileD = new SuitedTile(Suit.Dots, 4);
             var tileE = new SuitedTile(Suit.Dots, 4);
 
-            Assert.IsFalse(Tile.IsQuad(new SuitedTile[]
-                { tileA, tileB, tileC, tileD, tileE }));
+            Assert.IsFalse(SuitedTile.IsQuad(tileA, tileB, tileC, tileD, tileE));
         }
 
         [TestMethod]
@@ -400,8 +414,7 @@ namespace MahjongLogicUnitTest
             var tileC = new SuitedTile(Suit.Characters, 4);
             var tileD = new SuitedTile(Suit.Dots, 4);
 
-            Assert.IsFalse(Tile.IsQuad(new SuitedTile[]
-                { tileA, tileB, tileC, tileD }));
+            Assert.IsFalse(SuitedTile.IsQuad(tileA, tileB, tileC, tileD));
         }
 
         [TestMethod]
@@ -412,8 +425,239 @@ namespace MahjongLogicUnitTest
             var tileC = new SuitedTile(Suit.Dots, 4);
             var tileD = new SuitedTile(Suit.Dots, 4);
 
-            Assert.IsFalse(Tile.IsQuad(new SuitedTile[]
-                { tileA, tileB, tileC, tileD }));
+            Assert.IsFalse(SuitedTile.IsQuad(tileA, tileB, tileC, tileD));
+        }
+
+        [TestMethod]
+        public void SuitedTileIsWithinBoundsOfSameSequence_SameData_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 3);
+
+            Assert.IsTrue(tileA.IsWithinBoundsOfSameSequence(tileB));
+        }
+
+        [TestMethod]
+        public void SuitedTileIsWithinBoundsOfSameSequence_NextRank_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 4);
+
+            Assert.IsTrue(tileA.IsWithinBoundsOfSameSequence(tileB));
+        }
+
+        [TestMethod]
+        public void SuitedTileIsWithinBoundsOfSameSequence_PreviousRank_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 2);
+
+            Assert.IsTrue(tileA.IsWithinBoundsOfSameSequence(tileB));
+        }
+
+        [TestMethod]
+        public void SuitedTileIsWithinBoundsOfSameSequence_TwoRanksHigher_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 5);
+
+            Assert.IsTrue(tileA.IsWithinBoundsOfSameSequence(tileB));
+        }
+
+        [TestMethod]
+        public void SuitedTileIsWithinBoundsOfSameSequence_ThreeRanksHigher_IsFalse()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 6);
+
+            Assert.IsFalse(tileA.IsWithinBoundsOfSameSequence(tileB));
+        }
+
+        [TestMethod]
+        public void SuitedTileIsWithinBoundsOfSameSequence_SameRankDifferentSuit_IsFalse()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Characters, 3);
+
+            Assert.IsFalse(tileA.IsWithinBoundsOfSameSequence(tileB));
+        }
+
+        [TestMethod]
+        public void SuitedTileIsWithinBoundsOfSameSequence_NextRankDifferentSuit_IsFalse()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Characters, 4);
+
+            Assert.IsFalse(tileA.IsWithinBoundsOfSameSequence(tileB));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_SameData_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 3);
+
+            Assert.IsTrue(tileA.CanBelongToSameGroup(tileB));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_NextRank_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 4);
+
+            Assert.IsTrue(tileA.CanBelongToSameGroup(tileB));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_PreviousRank_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 2);
+
+            Assert.IsTrue(tileA.CanBelongToSameGroup(tileB));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_TwoRanksHigher_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 5);
+
+            Assert.IsTrue(tileA.CanBelongToSameGroup(tileB));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_ThreeRanksHigher_IsFalse()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 6);
+
+            Assert.IsFalse(tileA.CanBelongToSameGroup(tileB));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_SameRankDifferentSuit_IsFalse()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Characters, 3);
+
+            Assert.IsFalse(tileA.CanBelongToSameGroup(tileB));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_NextRankDifferentSuit_IsFalse()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Characters, 4);
+
+            Assert.IsFalse(tileA.CanBelongToSameGroup(tileB));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_ThreeTilesOfSameData_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 3);
+            var tileC = new SuitedTile(Suit.Dots, 3);
+
+            Assert.IsTrue(tileA.CanBelongToSameGroup(tileB, tileC));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_FourTilesOfSameData_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 3);
+            var tileC = new SuitedTile(Suit.Dots, 3);
+            var tileD = new SuitedTile(Suit.Dots, 3);
+
+            Assert.IsTrue(tileA.CanBelongToSameGroup(tileB, tileC, tileD));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_ThreeTilesOfSameDataPlusHonorTile_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 3);
+            var tileC = new SuitedTile(Suit.Dots, 3);
+            var tileD = new HonorTile(Suit.Dragon, HonorType.White);
+
+            Assert.IsFalse(tileA.CanBelongToSameGroup(tileB, tileC, tileD));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_FiveTilesOfSameData_IsFalse()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 3);
+            var tileC = new SuitedTile(Suit.Dots, 3);
+            var tileD = new SuitedTile(Suit.Dots, 3);
+            var tileE = new SuitedTile(Suit.Dots, 3);
+
+            Assert.IsFalse(tileA.CanBelongToSameGroup(tileB, tileC, tileD, tileE));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_ThreeTilesOfProperIncreasingRankTestedOnStartTile_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 4);
+            var tileC = new SuitedTile(Suit.Dots, 5);
+
+            Assert.IsTrue(tileA.CanBelongToSameGroup(tileB, tileC));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_ThreeTilesOfProperIncreasingRankTestedOnMiddleTile_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 4);
+            var tileC = new SuitedTile(Suit.Dots, 5);
+
+            Assert.IsTrue(tileB.CanBelongToSameGroup(tileA, tileC));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_ThreeTilesOfProperIncreasingRankTestedOnEndTile_IsTrue()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 4);
+            var tileC = new SuitedTile(Suit.Dots, 5);
+
+            Assert.IsTrue(tileC.CanBelongToSameGroup(tileA, tileB));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_FourTilesOfProperIncreasingRank_IsFalse()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 4);
+            var tileC = new SuitedTile(Suit.Dots, 5);
+            var tileD = new SuitedTile(Suit.Dots, 6);
+
+            Assert.IsFalse(tileA.CanBelongToSameGroup(tileB, tileC, tileD));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_ThreeTilesOfProperIncreasingRankPlusAPairedTile_IsFalse()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 3);
+            var tileB = new SuitedTile(Suit.Dots, 3);
+            var tileC = new SuitedTile(Suit.Dots, 4);
+            var tileD = new SuitedTile(Suit.Dots, 5);
+
+            Assert.IsFalse(tileA.CanBelongToSameGroup(tileB, tileC, tileD));
+        }
+
+        [TestMethod]
+        public void SuitedTileCanBelongToSameGroup_ThreeTilesOfRankSkippingOneTestedOnMiddleTile_IsFalse()
+        {
+            var tileA = new SuitedTile(Suit.Dots, 1);
+            var tileB = new SuitedTile(Suit.Dots, 3);
+            var tileC = new SuitedTile(Suit.Dots, 5);
+
+            Assert.IsFalse(tileB.CanBelongToSameGroup(tileA, tileC));
         }
     }
 }

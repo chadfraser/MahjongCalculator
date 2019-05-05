@@ -113,7 +113,7 @@ namespace MahjongLogicUnitTest
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
             var tileC = new HonorTile(Suit.Wind, HonorType.East);
 
-            Assert.IsTrue(Tile.IsTriplet(new HonorTile[] { tileA, tileB, tileC }));
+            Assert.IsTrue(HonorTile.IsTriplet(tileA, tileB, tileC));
         }
 
         [TestMethod]
@@ -122,7 +122,7 @@ namespace MahjongLogicUnitTest
             var tileA = new HonorTile(Suit.Wind, HonorType.East);
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
 
-            Assert.IsFalse(Tile.IsTriplet(new HonorTile[] { tileA, tileB }));
+            Assert.IsFalse(HonorTile.IsTriplet(tileA, tileB));
         }
 
         [TestMethod]
@@ -133,8 +133,7 @@ namespace MahjongLogicUnitTest
             var tileC = new HonorTile(Suit.Wind, HonorType.East);
             var tileD = new HonorTile(Suit.Wind, HonorType.East);
 
-            Assert.IsFalse(Tile.IsTriplet(new HonorTile[]
-                { tileA, tileB, tileC, tileD }));
+            Assert.IsFalse(HonorTile.IsTriplet(tileA, tileB, tileC, tileD));
         }
 
         [TestMethod]
@@ -144,7 +143,7 @@ namespace MahjongLogicUnitTest
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
             var tileC = new HonorTile(Suit.Dragon, HonorType.Red);
 
-            Assert.IsFalse(Tile.IsTriplet(new HonorTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(HonorTile.IsTriplet(tileA, tileB, tileC));
         }
 
         [TestMethod]
@@ -154,7 +153,7 @@ namespace MahjongLogicUnitTest
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
             var tileC = new HonorTile(Suit.Wind, HonorType.South);
 
-            Assert.IsFalse(Tile.IsTriplet(new HonorTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(HonorTile.IsTriplet(tileA, tileB, tileC));
         }
 
         [TestMethod]
@@ -165,8 +164,7 @@ namespace MahjongLogicUnitTest
             var tileC = new HonorTile(Suit.Wind, HonorType.East);
             var tileD = new HonorTile(Suit.Wind, HonorType.East);
 
-            Assert.IsTrue(SuitedTile.IsQuad(new HonorTile[]
-                { tileA, tileB, tileC, tileD }));
+            Assert.IsTrue(HonorTile.IsQuad(tileA, tileB, tileC, tileD));
         }
 
         [TestMethod]
@@ -176,7 +174,7 @@ namespace MahjongLogicUnitTest
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
             var tileC = new HonorTile(Suit.Wind, HonorType.East);
 
-            Assert.IsFalse(SuitedTile.IsQuad(new HonorTile[] { tileA, tileB, tileC }));
+            Assert.IsFalse(HonorTile.IsQuad(tileA, tileB, tileC));
         }
 
         [TestMethod]
@@ -188,8 +186,7 @@ namespace MahjongLogicUnitTest
             var tileD = new HonorTile(Suit.Wind, HonorType.East);
             var tileE = new HonorTile(Suit.Wind, HonorType.East);
 
-            Assert.IsFalse(SuitedTile.IsQuad(new HonorTile[]
-                { tileA, tileB, tileC, tileD, tileE }));
+            Assert.IsFalse(HonorTile.IsQuad(tileA, tileB, tileC, tileD, tileE));
         }
 
         [TestMethod]
@@ -200,20 +197,94 @@ namespace MahjongLogicUnitTest
             var tileC = new HonorTile(Suit.Dragon, HonorType.Red);
             var tileD = new HonorTile(Suit.Dragon, HonorType.Red);
 
-            Assert.IsFalse(SuitedTile.IsQuad(new HonorTile[]
-                { tileA, tileB, tileC, tileD }));
+            Assert.IsFalse(HonorTile.IsQuad(tileA, tileB, tileC, tileD));
         }
 
         [TestMethod]
-        public void HonorTileIsQuadTest_WrongRanks_IsFalse()
+        public void HonorTileIsQuadTest_WrongHonorTypes_IsFalse()
         {
             var tileA = new HonorTile(Suit.Wind, HonorType.East);
             var tileB = new HonorTile(Suit.Wind, HonorType.East);
             var tileC = new HonorTile(Suit.Wind, HonorType.South);
             var tileD = new HonorTile(Suit.Wind, HonorType.East);
 
-            Assert.IsFalse(SuitedTile.IsQuad(new HonorTile[]
-                { tileA, tileB, tileC, tileD }));
+            Assert.IsFalse(HonorTile.IsQuad(tileA, tileB, tileC, tileD));
+        }
+
+
+
+
+
+
+
+        [TestMethod]
+        public void HonorTileCanBelongToSameGroup_SameData_IsTrue()
+        {
+            var tileA = new HonorTile(Suit.Wind, HonorType.East);
+            var tileB = new HonorTile(Suit.Wind, HonorType.East);
+
+            Assert.IsTrue(tileA.CanBelongToSameGroup(tileB));
+        }
+
+        [TestMethod]
+        public void HonorTileCanBelongToSameGroup_DifferentHonorType_IsTrue()
+        {
+            var tileA = new HonorTile(Suit.Wind, HonorType.East);
+            var tileB = new HonorTile(Suit.Wind, HonorType.West);
+
+            Assert.IsTrue(tileA.CanBelongToSameGroup(tileB));
+        }
+
+        [TestMethod]
+        public void HonorTileCanBelongToSameGroup_DifferentSuit_IsFalse()
+        {
+            var tileA = new HonorTile(Suit.Wind, HonorType.East);
+            var tileB = new HonorTile(Suit.Dragon, HonorType.Red);
+
+            Assert.IsFalse(tileA.CanBelongToSameGroup(tileB));
+        }
+        [TestMethod]
+        public void HonorTileCanBelongToSameGroup_ThreeTilesOfSameData_IsTrue()
+        {
+            var tileA = new HonorTile(Suit.Wind, HonorType.East);
+            var tileB = new HonorTile(Suit.Wind, HonorType.East);
+            var tileC = new HonorTile(Suit.Wind, HonorType.East);
+
+            Assert.IsTrue(tileA.CanBelongToSameGroup(tileB, tileC));
+        }
+
+        [TestMethod]
+        public void HonorTileCanBelongToSameGroup_FourTilesOfSameData_IsTrue()
+        {
+            var tileA = new HonorTile(Suit.Wind, HonorType.East);
+            var tileB = new HonorTile(Suit.Wind, HonorType.East);
+            var tileC = new HonorTile(Suit.Wind, HonorType.East);
+            var tileD = new HonorTile(Suit.Wind, HonorType.East);
+
+            Assert.IsTrue(tileA.CanBelongToSameGroup(tileB, tileC, tileD));
+        }
+
+        [TestMethod]
+        public void HonorTileCanBelongToSameGroup_ThreeTilesOfSameDataPlusSuitedTile_IsTrue()
+        {
+            var tileA = new HonorTile(Suit.Wind, HonorType.East);
+            var tileB = new HonorTile(Suit.Wind, HonorType.East);
+            var tileC = new HonorTile(Suit.Wind, HonorType.East);
+            var tileD = new SuitedTile(Suit.Bamboo, 9);
+
+            Assert.IsFalse(tileA.CanBelongToSameGroup(tileB, tileC, tileD));
+        }
+
+        [TestMethod]
+        public void HonorTileCanBelongToSameGroup_FiveTilesOfSameData_IsFalse()
+        {
+            var tileA = new HonorTile(Suit.Wind, HonorType.East);
+            var tileB = new HonorTile(Suit.Wind, HonorType.East);
+            var tileC = new HonorTile(Suit.Wind, HonorType.East);
+            var tileD = new HonorTile(Suit.Wind, HonorType.East);
+            var tileE = new HonorTile(Suit.Wind, HonorType.East);
+
+            Assert.IsTrue(tileA.CanBelongToSameGroup(tileB, tileC, tileD, tileE));
         }
     }
 }
