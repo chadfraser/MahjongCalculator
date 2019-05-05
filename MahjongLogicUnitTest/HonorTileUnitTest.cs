@@ -70,7 +70,7 @@ namespace MahjongLogicUnitTest
         }
 
         [TestMethod]
-        public void HonorTileEqualityTest_HonorTile_AreNotEqual()
+        public void HonorTileEqualityTest_SuitedTile_AreNotEqual()
         {
             var tileA = new HonorTile(Suit.Dragon, HonorType.Red);
             var tileB = new SuitedTile(Suit.Dots, 9);
@@ -79,7 +79,7 @@ namespace MahjongLogicUnitTest
         }
 
         [TestMethod]
-        public void HonorTileEqualityTest_HonorTileTileCast_AreNotEqual()
+        public void HonorTileEqualityTest_SuitedTileTileCast_AreNotEqual()
         {
             var tileA = new HonorTile(Suit.Dragon, HonorType.Red);
             var tileB = new SuitedTile(Suit.Dots, 9);
@@ -210,12 +210,6 @@ namespace MahjongLogicUnitTest
 
             Assert.IsFalse(HonorTile.IsQuad(tileA, tileB, tileC, tileD));
         }
-
-
-
-
-
-
 
         [TestMethod]
         public void HonorTileCanBelongToSameGroup_SameData_IsTrue()
