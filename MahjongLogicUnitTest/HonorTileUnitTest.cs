@@ -221,12 +221,12 @@ namespace MahjongLogicUnitTest
         }
 
         [TestMethod]
-        public void HonorTileCanBelongToSameGroup_DifferentHonorType_IsTrue()
+        public void HonorTileCanBelongToSameGroup_DifferentHonorType_IsFalse()
         {
             var tileA = new HonorTile(Suit.Wind, HonorType.East);
             var tileB = new HonorTile(Suit.Wind, HonorType.West);
 
-            Assert.IsTrue(tileA.CanBelongToSameGroup(tileB));
+            Assert.IsFalse(tileA.CanBelongToSameGroup(tileB));
         }
 
         [TestMethod]
