@@ -39,6 +39,21 @@ namespace Mahjong
             return false;
         }
 
+        public static new bool IsTriplet(params Tile[] tiles)
+        {
+            return false;
+        }
+
+        public static new bool IsQuad(params Tile[] tiles)
+        {
+            return false;
+        }
+
+        public static new bool IsPair(params Tile[] tiles)
+        {
+            return false;
+        }
+
         public override string ToString()
         {
             return Title;
