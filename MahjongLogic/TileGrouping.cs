@@ -7,37 +7,56 @@ namespace Mahjong
 {
     public class TileGrouping : ICollection<Tile>
     {
-        private List<Tile> tiles;
+        private readonly List<Tile> tiles;
 
         public TileGrouping(params Tile[] tileParams)
         {
             tiles = tileParams.ToList();
+            IsOpenGroup = false;
         }
 
         public TileGrouping()
         {
             tiles = new List<Tile>();
+            IsOpenGroup = false;
         }
+
+        public bool IsOpenGroup { get; set; }
 
         public bool IsGroup()
         {
             var firstTile = tiles.FirstOrDefault();
-            if (firstTile is null)
-            {
-                return false;
-            }
-            return (bool)firstTile.GetType().GetMethod("IsGroup").Invoke(null, new object[] { tiles.ToArray() });
+            return !(firstTile is null) && firstTile.IsGroup(tiles.ToArray());
+        }
+
+        public bool IsPair()
+        {
+            var firstTile = tiles.FirstOrDefault();
+            return !(firstTile is null) && firstTile.IsPair(tiles.ToArray());
         }
 
         public bool IsSequence()
         {
             var firstTile = tiles.FirstOrDefault();
-            if (firstTile is null)
-            {
-                return false;
-            }
-            return tiles.All(t => t.CanMakeSequence() && t.GetType() == firstTile.GetType()) &&
-                (bool)firstTile.GetType().GetMethod("IsSequence").Invoke(null, new object[] { tiles.ToArray() });
+            return !(firstTile is null) && firstTile.IsSequence(tiles.ToArray());
+        }
+
+        public bool IsTriplet()
+        {
+            var firstTile = tiles.FirstOrDefault();
+            return !(firstTile is null) && firstTile.IsTriplet(tiles.ToArray());
+        }
+
+        public bool IsQuad()
+        {
+            var firstTile = tiles.FirstOrDefault();
+            return !(firstTile is null) && firstTile.IsQuad(tiles.ToArray());
+        }
+
+        public bool IsBonus()
+        {
+            var firstTile = tiles.FirstOrDefault();
+            return !(firstTile is null) && tiles.First().GetType() == typeof(BonusTile) && tiles.Count == 1;
         }
 
         public int Count { get => tiles.Count; }
@@ -81,14 +100,14 @@ namespace Mahjong
 
         public override bool Equals(Object obj)
         {
-            if ((obj is null) || !this.GetType().Equals(obj.GetType()))
+            if (obj is null || !GetType().Equals(obj.GetType()))
             {
                 return false;
             }
             else
             {
                 TileGrouping t = (TileGrouping)obj;
-                return tiles.OrderBy(tile => tile.Suit).SequenceEqual(t.tiles.OrderBy(tile => tile.Suit));
+                return tiles.OrderBy(tile => tile).SequenceEqual(t.tiles.OrderBy(tile => tile));
             }
         }
 
