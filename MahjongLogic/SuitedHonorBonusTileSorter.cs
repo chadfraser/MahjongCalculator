@@ -16,7 +16,7 @@ namespace Mahjong
             var orderedHonorTiles = honorTiles.OrderBy(t => t.Suit).ThenBy(t => t.HonorType).Cast<Tile>();
             var orderedBonusTiles = bonusTiles.OrderBy(t => t.Suit).ThenBy(t => t.Rank).Cast<Tile>();
 
-            return orderedSuitedTiles.Concat(orderedHonorTiles).Concat(orderedBonusTiles).ToList();
+            return orderedSuitedTiles.Concat(orderedHonorTiles).Concat(orderedBonusTiles);
         }
     }
 }
