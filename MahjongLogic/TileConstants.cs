@@ -204,6 +204,5 @@ namespace Mahjong
         public static readonly ReadOnlyCollection<Tile> AllBonusTileInstances = new ReadOnlyCollection<Tile>(
             AllSeasonTileInstances.Concat(AllFlowerTileInstances).ToArray()
         );
-
     }
 }
