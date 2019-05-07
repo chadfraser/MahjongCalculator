@@ -70,6 +70,15 @@ namespace MahjongLogicUnitTest
         }
 
         [TestMethod]
+        public void HonorTileEqualityTest_DifferentSuitSameHonorType_AreNotEqual()
+        {
+            var tileA = new HonorTile(Suit.Wind, HonorType.East);
+            var tileB = new HonorTile(Suit.Dragon, HonorType.East);
+
+            Assert.AreNotEqual(tileA, tileB);
+        }
+
+        [TestMethod]
         public void HonorTileEqualityTest_SuitedTile_AreNotEqual()
         {
             var tileA = new HonorTile(Suit.Dragon, HonorType.Red);

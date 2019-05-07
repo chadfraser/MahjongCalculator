@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Mahjong
@@ -38,7 +37,7 @@ namespace Mahjong
             return otherTiles.Length <= 4 && otherTiles.All(t => Equals(t));
         }
 
-        public static new bool IsGroup(params Tile[] tiles)
+        public override bool IsGroup(params Tile[] tiles)
         {
             HonorTile[] honorTiles = tiles.OfType<HonorTile>().ToArray();
             if (honorTiles.Length != tiles.Length)
@@ -48,6 +47,11 @@ namespace Mahjong
             return IsTriplet(honorTiles) || IsQuad(honorTiles);
         }
 
+        public override bool IsSequence(params Tile[] tiles)
+        {
+            return false;
+        }
+
         public override string ToString()
         {
             return $"{HonorType.Name} {Suit.Name}";
@@ -55,14 +59,14 @@ namespace Mahjong
 
         public override bool Equals(Object obj)
         {
-            if ((obj is null) || !this.GetType().Equals(obj.GetType()))
+            if (obj is null || !GetType().Equals(obj.GetType()))
             {
                 return false;
             }
             else
             {
                 HonorTile t = (HonorTile)obj;
-                return (HonorType == t.HonorType) && (Suit == t.Suit);
+                return HonorType == t.HonorType && Suit == t.Suit;
             }
         }
 

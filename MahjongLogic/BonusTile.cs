@@ -12,6 +12,7 @@ namespace Mahjong
         }
 
         public int Rank { get; set; }
+
         public string Title { get; set; }
 
         public override bool CanMakeSequence()
@@ -34,22 +35,27 @@ namespace Mahjong
             return false;
         }
 
-        public static new bool IsGroup(params Tile[] tiles)
+        public override bool IsGroup(params Tile[] tiles)
         {
             return false;
         }
 
-        public static new bool IsTriplet(params Tile[] tiles)
+        public override bool IsSequence(params Tile[] tiles)
         {
             return false;
         }
 
-        public static new bool IsQuad(params Tile[] tiles)
+        public override bool IsTriplet(params Tile[] tiles)
         {
             return false;
         }
 
-        public static new bool IsPair(params Tile[] tiles)
+        public override bool IsQuad(params Tile[] tiles)
+        {
+            return false;
+        }
+
+        public override bool IsPair(params Tile[] tiles)
         {
             return false;
         }
@@ -61,7 +67,7 @@ namespace Mahjong
 
         public override bool Equals(Object obj)
         {
-            if ((obj is null) || !this.GetType().Equals(obj.GetType()))
+            if (obj is null || !GetType().Equals(obj.GetType()))
             {
                 return false;
             }
@@ -91,7 +97,7 @@ namespace Mahjong
 
         public int CompareTo(object obj)
         {
-            if ((obj is null) || !GetType().Equals(obj.GetType()))
+            if (obj is null || !GetType().Equals(obj.GetType()))
             {
                 return 1;
             }

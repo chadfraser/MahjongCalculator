@@ -14,37 +14,6 @@ namespace Mahjong
 
         public int Rank { get; set; }
 
-        public bool IsNextInSequence(SuitedTile other)
-        {
-            return Suit == other.Suit && Rank + 1 == other.Rank;
-        }
-
-        public bool IsWithinBoundsOfSameSequence(SuitedTile other)
-        {
-            var lowerRank = (Rank < other.Rank) ? Rank : other.Rank;
-            var higherRank = (Rank > other.Rank) ? Rank : other.Rank;
-
-            return Suit == other.Suit && !(higherRank > lowerRank + 2);
-        }
-
-        public static bool IsSequence(params SuitedTile[] tiles)
-        {
-            if (tiles.Length != 3 || new HashSet<Suit>(from t in tiles select t.Suit).Count != 1)
-            {
-                return false;
-            }
-
-            Array.Sort(tiles);
-            for (int i = 0; i < tiles.Length - 1; i++)
-            {
-                if (tiles[i].Rank + 1 != tiles[i + 1].Rank)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
         public override bool CanMakeSequence()
         {
             return true;
@@ -66,18 +35,68 @@ namespace Mahjong
             {
                 return false;
             }
-            return otherTiles.Length <= 4 && 
-                otherTiles.All(t => Equals(t) || IsWithinBoundsOfSameSequence((SuitedTile)t));
+            if (otherTiles.Length < 4 && otherTiles.All(t => Equals(t)))
+            {
+                return true;
+            }
+            var tempList = new List<Tile>(otherTiles)
+            {
+                this
+            };
+
+            foreach (var t in tempList)
+            {
+                foreach (var t2 in tempList)
+                {
+                    if (!((SuitedTile)t2).IsWithinBoundsOfSameSequence((SuitedTile)t))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return otherTiles.Length < 3;
         }
 
-        public static new bool IsGroup(params Tile[] tiles)
+        public bool IsNextInSequence(SuitedTile other)
         {
-            SuitedTile[] suitedTiles = tiles.OfType<SuitedTile>().ToArray();
-            if (suitedTiles.Length != tiles.Length)
+            return Suit == other.Suit && Rank + 1 == other.Rank;
+        }
+
+        public bool IsWithinBoundsOfSameSequence(SuitedTile other)
+        {
+            var lowerRank = (Rank < other.Rank) ? Rank : other.Rank;
+            var higherRank = (Rank > other.Rank) ? Rank : other.Rank;
+
+            return Suit == other.Suit && !(higherRank > lowerRank + 2);
+        }
+
+        public override bool IsGroup(params Tile[] tiles)
+        {
+            return IsSequence(tiles) || IsTriplet(tiles) || IsQuad(tiles);
+        }
+
+        public override bool IsSequence(params Tile[] tiles)
+        {
+            var suitedTiles = tiles.OfType<SuitedTile>().ToArray();
+            return suitedTiles.Length == tiles.Length && IsSequence(suitedTiles);
+        }
+
+        public static bool IsSequence(params SuitedTile[] tiles)
+        {
+            if (tiles.Length != 3 || new HashSet<Suit>(from t in tiles select t.Suit).Count != 1)
             {
-                return Tile.IsGroup(tiles);
+                return false;
             }
-            return IsSequence(suitedTiles) || IsTriplet(suitedTiles) || IsQuad(suitedTiles);
+
+            Array.Sort(tiles);
+            for (int i = 0; i < tiles.Length - 1; i++)
+            {
+                if (tiles[i].Rank + 1 != tiles[i + 1].Rank)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public override string ToString()
@@ -87,14 +106,14 @@ namespace Mahjong
 
         public override bool Equals(Object obj)
         {
-            if ((obj is null) || !GetType().Equals(obj.GetType()))
+            if (obj is null || !GetType().Equals(obj.GetType()))
             {
                 return false;
             }
             else
             {
                 SuitedTile t = (SuitedTile)obj;
-                return (Rank == t.Rank) && (Suit == t.Suit);
+                return Rank == t.Rank && Suit == t.Suit;
             }
         }
 
@@ -127,7 +146,7 @@ namespace Mahjong
 
         public int CompareTo(object obj)
         {
-            if ((obj is null) || !GetType().Equals(obj.GetType()))
+            if (obj is null || !GetType().Equals(obj.GetType()))
             {
                 return -1;
             }
