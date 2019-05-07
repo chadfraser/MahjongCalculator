@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 
 namespace Mahjong
 {
@@ -128,7 +126,7 @@ namespace Mahjong
             }
         );
 
-        public static readonly ReadOnlyCollection<Tile> AllBamboosTileInstances = new ReadOnlyCollection<Tile>(
+        public static readonly ReadOnlyCollection<Tile> AllBambooTileInstances = new ReadOnlyCollection<Tile>(
             new Tile[] {
                 OneOfBamboo,
                 TwoOfBamboo,
@@ -157,7 +155,7 @@ namespace Mahjong
         );
 
         public static readonly ReadOnlyCollection<Tile> AllSuitedTileInstances = new ReadOnlyCollection<Tile>(
-            AllDotsTileInstances.Concat(AllBamboosTileInstances).Concat(AllCharactersTileInstances).ToArray()
+            AllDotsTileInstances.Concat(AllBambooTileInstances).Concat(AllCharactersTileInstances).ToArray()
         );
 
         public static readonly ReadOnlyCollection<Tile> AllWindTileInstances = new ReadOnlyCollection<Tile>(
