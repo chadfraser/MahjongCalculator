@@ -11,12 +11,10 @@ namespace Mahjong
         {
             var suitedTiles = tiles.OfType<SuitedTile>();
             var honorTiles = tiles.OfType<HonorTile>();
-            var orderedSuitedTiles = suitedTiles.OrderBy(t => t.Suit).ThenBy(t => t.Rank);
-            var orderedHonorTiles = honorTiles.OrderBy(t => t.Suit).ThenBy(t => t.HonorType);
-            List<Tile> orderedCastedSuitedTiles = new List<Tile>(orderedSuitedTiles);
-            List<Tile> orderedCastedHonorTiles = new List<Tile>(orderedHonorTiles);
+            var orderedSuitedTiles = suitedTiles.OrderBy(t => t.Suit).ThenBy(t => t.Rank).Cast<Tile>();
+            var orderedHonorTiles = honorTiles.OrderBy(t => t.Suit).ThenBy(t => t.HonorType).Cast<Tile>();
 
-            return orderedCastedSuitedTiles.Concat(orderedCastedHonorTiles).ToList();
+            return orderedSuitedTiles.Concat(orderedHonorTiles).ToList();
         }
     }
 }

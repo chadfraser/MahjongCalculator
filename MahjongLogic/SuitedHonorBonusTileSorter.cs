@@ -12,14 +12,11 @@ namespace Mahjong
             var suitedTiles = tiles.OfType<SuitedTile>();
             var honorTiles = tiles.OfType<HonorTile>();
             var bonusTiles = tiles.OfType<BonusTile>();
-            var orderedSuitedTiles = suitedTiles.OrderBy(t => t.Suit).ThenBy(t => t.Rank);
-            var orderedHonorTiles = honorTiles.OrderBy(t => t.Suit).ThenBy(t => t.HonorType);
-            var orderedBonusTiles = bonusTiles.OrderBy(t => t.Suit).ThenBy(t => t.Rank);
-            List<Tile> orderedCastedSuitedTiles = new List<Tile>(orderedSuitedTiles);
-            List<Tile> orderedCastedHonorTiles = new List<Tile>(orderedHonorTiles);
-            List<Tile> orderedCastedBonusTiles = new List<Tile>(orderedBonusTiles);
+            var orderedSuitedTiles = suitedTiles.OrderBy(t => t.Suit).ThenBy(t => t.Rank).Cast<Tile>();
+            var orderedHonorTiles = honorTiles.OrderBy(t => t.Suit).ThenBy(t => t.HonorType).Cast<Tile>();
+            var orderedBonusTiles = bonusTiles.OrderBy(t => t.Suit).ThenBy(t => t.Rank).Cast<Tile>();
 
-            return orderedCastedSuitedTiles.Concat(orderedCastedHonorTiles).Concat(orderedCastedBonusTiles).ToList();
+            return orderedSuitedTiles.Concat(orderedHonorTiles).Concat(orderedBonusTiles).ToList();
         }
     }
 }
