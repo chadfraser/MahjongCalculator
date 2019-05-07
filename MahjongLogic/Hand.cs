@@ -7,18 +7,22 @@ namespace Mahjong
 {
     public class Hand
     {
-        static readonly int WinningHandBaseTileCount = 14;
+        protected static readonly int WinningHandBaseTileCount = 14;
 
         public Hand()
         {
             UncalledTiles = new List<Tile>();
             CalledSets = new List<TileGrouping>();
+            IsOpen = false;
         }
 
         public List<Tile> UncalledTiles { get; set; }
         public List<TileGrouping> CalledSets { get; set; }
+        public bool IsOpen { get; set; }
+        public HonorType RoundWind { get; set; }
+        public HonorType SeatWind { get; set; }
 
-        public bool IsWinningHand()
+        public virtual bool IsWinningHand()
         {
             if (GetAdjustedCountOfHandTiles() != WinningHandBaseTileCount)
             {
@@ -29,12 +33,12 @@ namespace Mahjong
                 CanRemovePairAndSplitRemainingTilesIntoGroups(UncalledTiles);
         }
 
-        public void SortHand()
+        public virtual void SortHand()
         {
             UncalledTiles = SortTiles(UncalledTiles);
         }
 
-        public static List<Tile> SortTiles(List<Tile> tiles)
+        public virtual List<Tile> SortTiles(List<Tile> tiles)
         {
             var suitedTiles = tiles.OfType<SuitedTile>().ToList();
             var honorTiles = tiles.OfType<HonorTile>().ToList();
@@ -46,6 +50,11 @@ namespace Mahjong
             tiles = orderedCastedSuitedTiles.Concat(orderedCastedHonorTiles).ToList();
             return tiles;
         }
+
+        //public static List<Tile> SortTiles<T>(T hand, List<Tile> tiles) where T: Hand
+        //{
+        //    return hand.SortTiles(tiles);
+        //}
 
         public List<List<TileGrouping>> FindAllPossibleWaysToSplitTiles(List<Tile> tiles)
         {
@@ -90,7 +99,7 @@ namespace Mahjong
             return allWaysToSplitTiles;
         }
 
-        private List<List<TileGrouping>> FindAllWaysToSplitTilesIntoGroups(List<Tile> tiles)
+        protected List<List<TileGrouping>> FindAllWaysToSplitTilesIntoGroups(List<Tile> tiles)
         {
             List<List<TileGrouping>> waysToSplitTiles;
 
@@ -100,7 +109,7 @@ namespace Mahjong
             return GetSortedListOfTileGroupings(waysToSplitTiles);
         }
 
-        private bool CanRemovePairAndSplitRemainingTilesIntoGroups(List<Tile> tiles)
+        protected bool CanRemovePairAndSplitRemainingTilesIntoGroups(List<Tile> tiles)
         {
             List<Tile> uncheckedTiles;
             tiles = SortTiles(tiles);
@@ -127,7 +136,7 @@ namespace Mahjong
             return false;
         }
 
-        private List<List<TileGrouping>> FindAllWaysToSplitNestedTileList(List<List<Tile>> nestedTileLists)
+        protected List<List<TileGrouping>> FindAllWaysToSplitNestedTileList(List<List<Tile>> nestedTileLists)
         {
             List<List<TileGrouping>> currentWaysToSplitTiles;
             var waysToSplitNestedTilesList = new List<List<List<TileGrouping>>>();
@@ -140,7 +149,7 @@ namespace Mahjong
             return currentWaysToSplitTiles;
         }
 
-        private List<List<TileGrouping>> GetSortedListOfTileGroupings(List<List<TileGrouping>> listOfTileGroupings)
+        protected List<List<TileGrouping>> GetSortedListOfTileGroupings(List<List<TileGrouping>> listOfTileGroupings)
         {
             var sortedList = new List<List<TileGrouping>>();
             // Order the groups with pairs first, then by the first tile in the group with sequences before triplets/quads
@@ -155,7 +164,7 @@ namespace Mahjong
             return sortedList;
         }
 
-        private List<Tile> GetListWithConsecutiveNTilesRemoved(List<Tile> tiles, int indexOfFirstTileToRemove, int n)
+        protected List<Tile> GetListWithConsecutiveNTilesRemoved(List<Tile> tiles, int indexOfFirstTileToRemove, int n)
         {
             List<Tile> leftSubList = new List<Tile>();
             List<Tile> rightSubList = new List<Tile>();
@@ -172,7 +181,7 @@ namespace Mahjong
             return leftSubList.Concat(rightSubList).ToList();
         }
 
-        private void OutputTileListsGroupedBySuit(List<Tile> tiles, out List<List<Tile>> castedTilesGroupedBySuit)
+        protected void OutputTileListsGroupedBySuit(List<Tile> tiles, out List<List<Tile>> castedTilesGroupedBySuit)
         {
             castedTilesGroupedBySuit = new List<List<Tile>>();
             var remainingTiles = new List<Tile>(tiles);
@@ -187,7 +196,7 @@ namespace Mahjong
         }
 
         // Find some way to make this work for groups of larger sizes, to potentially include quads
-        private Dictionary<TileGrouping, List<int>> FindAllDistinctGroupsAndTheirLocationsInTiles(List<Tile> tiles)
+        protected Dictionary<TileGrouping, List<int>> FindAllDistinctGroupsAndTheirLocationsInTiles(List<Tile> tiles)
         {
             var uniqueGroupsInTiles = new Dictionary<TileGrouping, List<int>>();
 
@@ -228,12 +237,12 @@ namespace Mahjong
             return uniqueGroupsInTiles;
         }
 
-        private List<List<TileGrouping>> FindAllGroupsToSplitFromTiles(List<Tile> tiles)
+        protected List<List<TileGrouping>> FindAllGroupsToSplitFromTiles(List<Tile> tiles)
         {
             return FindAllGroupsToSplitFromTiles(tiles, new List<List<TileGrouping>>());
         }
 
-        private List<List<TileGrouping>> FindAllGroupsToSplitFromTiles(List<Tile> tiles,
+        protected List<List<TileGrouping>> FindAllGroupsToSplitFromTiles(List<Tile> tiles,
             List<List<TileGrouping>> currentWaysToSplitTiles)
         {
             if (tiles.Count < 3)
@@ -262,7 +271,7 @@ namespace Mahjong
             return listOfAllPossibleTileGroupings;
         }
 
-        private void AddCurrentGroupsToNestedListIfNotAlreadyIn(List<TileGrouping> currentTileGroups,
+        protected void AddCurrentGroupsToNestedListIfNotAlreadyIn(List<TileGrouping> currentTileGroups,
             List<List<TileGrouping>> nestedListOfTileGroups)
         {
             foreach (var possibleTileGrouping in nestedListOfTileGroups)
@@ -276,7 +285,7 @@ namespace Mahjong
             nestedListOfTileGroups.Add(currentTileGroups);
         }
 
-        private List<Tile> GetTilesWithFirstSequenceFromIndexNRemoved(List<Tile> tiles, int n)
+        protected List<Tile> GetTilesWithFirstSequenceFromIndexNRemoved(List<Tile> tiles, int n)
         {
             List<SuitedTile> suitedTiles = tiles.OfType<SuitedTile>().ToList();
 
@@ -310,7 +319,7 @@ namespace Mahjong
             return tiles;
         }
 
-        private List<Tile> GetTilesWithFirstTripletFromIndexNRemoved(List<Tile> tiles, int n)
+        protected List<Tile> GetTilesWithFirstTripletFromIndexNRemoved(List<Tile> tiles, int n)
         {
             for (int i = n; i < tiles.Count - 2; i++)
             {
@@ -322,7 +331,7 @@ namespace Mahjong
             return tiles;
         }
 
-        private List<Tile> GetListOfTilesWithPassedIndexesRemoved<T>(List<T> tiles, params int[] indexesToRemove)
+        protected List<Tile> GetListOfTilesWithPassedIndexesRemoved<T>(List<T> tiles, params int[] indexesToRemove)
             where T : Tile
         {
             Array.Sort(indexesToRemove);
@@ -335,7 +344,7 @@ namespace Mahjong
             return listWithIndexesRemoved;
         }
 
-        private bool CanSplitIntoTripletsAndSequences(List<Tile> uncheckedTiles)
+        protected bool CanSplitIntoTripletsAndSequences(List<Tile> uncheckedTiles)
         {
             if (uncheckedTiles.Count == 0)
             {
@@ -354,7 +363,7 @@ namespace Mahjong
             return false;
         }
 
-        private bool CanSplitByRemovingSequenceAtIndex0(List<Tile> uncheckedTiles)
+        protected bool CanSplitByRemovingSequenceAtIndex0(List<Tile> uncheckedTiles)
         {
             if (uncheckedTiles.Count == 0)
             {
@@ -390,7 +399,7 @@ namespace Mahjong
             return false;
         }
 
-        private bool CanSplitByRemovingTripletAtIndex0(List<Tile> uncheckedTiles)
+        protected bool CanSplitByRemovingTripletAtIndex0(List<Tile> uncheckedTiles)
         {
             if (uncheckedTiles.Count == 0)
             {
@@ -410,12 +419,12 @@ namespace Mahjong
             return false;
         }
 
-        private int GetAdjustedCountOfHandTiles()
+        protected int GetAdjustedCountOfHandTiles()
         {
             return UncalledTiles.Count + (3 * CalledSets.Count);
         }
 
-        private static bool IsThirteenOrphans(List<Tile> uncalledTiles, List<TileGrouping> calledSets)
+        protected bool IsThirteenOrphans(List<Tile> uncalledTiles, List<TileGrouping> calledSets)
         {
             if (uncalledTiles.Count != WinningHandBaseTileCount || calledSets.Any())
             {
@@ -425,7 +434,7 @@ namespace Mahjong
             return uncalledTiles.ToHashSet().SetEquals(GetThirteenOrphansSet());
         }
 
-        private static bool IsSevenPairs(List<Tile> uncalledTiles, List<TileGrouping> calledSets)
+        protected bool IsSevenPairs(List<Tile> uncalledTiles, List<TileGrouping> calledSets)
         {
             if (uncalledTiles.Count != WinningHandBaseTileCount || calledSets.Any() || 
                 uncalledTiles.ToHashSet().Count != WinningHandBaseTileCount / 2)
@@ -444,25 +453,27 @@ namespace Mahjong
             return true;
         }
 
-        private static HashSet<Tile> GetThirteenOrphansSet()
+        protected static HashSet<Tile> GetThirteenOrphansSet()
         {
-            return new HashSet<Tile> {
-                new SuitedTile(Suit.Dots, 1),
-                new SuitedTile(Suit.Dots, 9),
-                new SuitedTile(Suit.Bamboo, 1),
-                new SuitedTile(Suit.Bamboo, 9),
-                new SuitedTile(Suit.Characters, 1),
-                new SuitedTile(Suit.Characters, 9),
-                new HonorTile(Suit.Wind, HonorType.East),
-                new HonorTile(Suit.Wind, HonorType.South),
-                new HonorTile(Suit.Wind, HonorType.West),
-                new HonorTile(Suit.Wind, HonorType.North),
-                new HonorTile(Suit.Dragon, HonorType.White),
-                new HonorTile(Suit.Dragon, HonorType.Green),
-                new HonorTile(Suit.Dragon, HonorType.Red)};
+            return new HashSet<Tile>
+            {
+                TileInstance.OneOfDots,
+                TileInstance.NineOfDots,
+                TileInstance.OneOfBamboo,
+                TileInstance.NineOfBamboo,
+                TileInstance.OneOfCharacters,
+                TileInstance.NineOfCharacters,
+                TileInstance.EastWind,
+                TileInstance.SouthWind,
+                TileInstance.WestWind,
+                TileInstance.NorthWind,
+                TileInstance.WhiteDragon,
+                TileInstance.GreenDragon,
+                TileInstance.RedDragon
+            };
         }
 
-        private static List<List<T>> GetAllCombinationsOfNestedLists<T>(List<List<List<T>>> nestedList)
+        protected static List<List<T>> GetAllCombinationsOfNestedLists<T>(List<List<List<T>>> nestedList)
         {
             var flattenedCombinationsList = new List<List<T>>(nestedList[0]);
             for (int i = 1; i < nestedList.Count; i++)
@@ -491,7 +502,7 @@ namespace Mahjong
             return flattenedCombinationsList;
         }
 
-        private static bool IsValueAlreadyContainedInNestedList<T>(T value, List<List<T>> nestedList)
+        protected static bool IsValueAlreadyContainedInNestedList<T>(T value, List<List<T>> nestedList)
         {
             foreach (var sublist in nestedList)
             {
@@ -503,7 +514,7 @@ namespace Mahjong
             return false;
         }
 
-        private static bool AreNestedEnumerablesSequenceEqualUnordered<T>(
+        protected static bool AreNestedEnumerablesSequenceEqualUnordered<T>(
             IEnumerable<IEnumerable<T>> currentNestedEnumerable, IEnumerable<IEnumerable<T>> otherNestedEnumerable)
         {
             return currentNestedEnumerable.All(
