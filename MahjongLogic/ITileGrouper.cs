@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Mahjong
 {
-    interface ITileGrouper
+    public interface ITileGrouper
     {
         bool CanGroupTilesIntoLegalHand(IList<Tile> tiles);
 
