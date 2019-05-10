@@ -80,7 +80,6 @@ namespace Mahjong
             return listOfAllPossibleWaysToGroupTiles;
         }
 
-        // TODO
         public IList<IList<TileGrouping>> FindAllWaysToGroupTilesAfterRemovingAPair(IList<Tile> tiles)
         {
             var allWaysToGroupTiles = new List<IList<TileGrouping>>();
@@ -112,6 +111,16 @@ namespace Mahjong
                 }
             }
             return allWaysToGroupTiles;
+        }
+
+        public IList<IList<TileGrouping>> FindAllWaysToFullyGroupTilesAfterRemovingAPair(IList<Tile> tiles)
+        {
+            var tileCount = tiles.Count;
+            var allWaysToGroupTiles = FindAllWaysToGroupTilesAfterRemovingAPair(tiles);
+            var allWaysToFullyGroupTiles = allWaysToGroupTiles.Where(
+                sublist => sublist.Sum(group => group.Count) == tileCount).ToList();
+
+            return allWaysToFullyGroupTiles;
         }
 
         public IList<TileGrouping> FindAllGroupsInTiles(IList<Tile> tiles)

@@ -12,6 +12,8 @@ namespace Mahjong
 
         IList<IList<TileGrouping>> FindAllWaysToGroupTilesAfterRemovingAPair(IList<Tile> tiles);
 
+        IList<IList<TileGrouping>> FindAllWaysToFullyGroupTilesAfterRemovingAPair(IList<Tile> tiles);
+
         IList<TileGrouping> FindAllGroupsInTiles(IList<Tile> tiles);
     }
 }
