@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Mahjong
 {
-    class SequenceTripletTileGrouper : ITileGrouper
+    public class SequenceTripletTileGrouper : ITileGrouper
     {
         protected readonly ITileSorter tileSorter;
         public static readonly int minimumGroupSize = 3;
@@ -119,9 +119,9 @@ namespace Mahjong
             tiles = tileSorter.SortTiles(tiles);
             IList<TileGrouping> allGroupsInTiles = new List<TileGrouping>();
 
-            for (int firstTileIndex = 0; firstTileIndex < tiles.Count - maximumGroupSize; firstTileIndex++)
+            for (int firstTileIndex = 0; firstTileIndex < tiles.Count - (maximumGroupSize - 1); firstTileIndex++)
             {
-                RecursivelyFindAllGroupsInTiles(tiles, firstTileIndex + 1, maximumGroupSize - 1, allGroupsInTiles,
+                RecursivelyFindAllGroupsInTiles(tiles, firstTileIndex + 1, maximumGroupSize - 2, allGroupsInTiles,
                     tiles[firstTileIndex]);
             }
             return allGroupsInTiles;
@@ -139,16 +139,19 @@ namespace Mahjong
             {
                 tiles[currentIndex]
             }.ToArray();
+            var groupingOfTiles = new TileGrouping(potentialGroup);
 
-
-            if (Tile.IsGroup(potentialGroup) || Tile.IsPair(potentialGroup))
+            if (Tile.IsGroup(potentialGroup) && !allGroups.Contains(groupingOfTiles)) // || Tile.IsPair(potentialGroup))
             {
-                allGroups.Add(new TileGrouping(potentialGroup));
+                allGroups.Add(groupingOfTiles);
             }
 
             if (maxDepth > 0)
             {
-                RecursivelyFindAllGroupsInTiles(tiles, currentIndex + 1, maxDepth - 1, allGroups, potentialGroup);
+                for (int nextTileIndex = currentIndex; nextTileIndex < tiles.Count - maxDepth; nextTileIndex++)
+                {
+                    RecursivelyFindAllGroupsInTiles(tiles, nextTileIndex + 1, maxDepth - 1, allGroups, potentialGroup);
+                }
             }
         }
 
@@ -164,7 +167,7 @@ namespace Mahjong
             }
             if (indexOfFirstTileToRemove != tiles.Count() - n)
             {
-                rightSubEnumerable = tiles.Skip(indexOfFirstTileToRemove).Take(
+                rightSubEnumerable = tiles.Skip(indexOfFirstTileToRemove + n).Take(
                     tiles.Count() - (indexOfFirstTileToRemove + n));
             }
 
