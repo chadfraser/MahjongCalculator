@@ -7,7 +7,7 @@ namespace Mahjong
 {
     public class SuitedHonorTileSorter : ITileSorter
     {
-        public IEnumerable<Tile> SortTiles(IEnumerable<Tile> tiles)
+        public IList<Tile> SortTiles(IEnumerable<Tile> tiles)
         {
             var suitedTiles = tiles.OfType<SuitedTile>();
             var honorTiles = tiles.OfType<HonorTile>();

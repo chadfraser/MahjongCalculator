@@ -6,6 +6,6 @@ namespace Mahjong
 {
     public interface ITileSorter
     {
-        IEnumerable<Tile> SortTiles(IEnumerable<Tile> tiles);
+        IList<Tile> SortTiles(IEnumerable<Tile> tiles);
     }
 }
