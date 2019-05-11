@@ -138,6 +138,16 @@ namespace Mahjong
             return a.Rank > b.Rank;
         }
 
+        public int CompareTo(Tile other)
+        {
+            if (other.GetType() == typeof(SuitedTile))
+            {
+                SuitedTile t = (SuitedTile)other;
+                return CompareTo(t);
+            }
+            return -1;
+        }
+
         public int CompareTo(SuitedTile other)
         {
             var comparator = Suit.Equals(other.Suit) ? Rank.CompareTo(other.Rank) : Suit.CompareTo(other.Suit);
@@ -146,13 +156,14 @@ namespace Mahjong
 
         public int CompareTo(object obj)
         {
-            if (obj is null || !GetType().Equals(obj.GetType()))
+            if (obj is null || 
+                !(obj.GetType().Equals(typeof(Tile)) || obj.GetType().IsAssignableFrom(typeof(Tile))))
             {
-                return -1;
+                throw new Exception($"Cannot compare objects of type {obj.GetType()} and type {GetType()}.");
             }
             else
             {
-                SuitedTile t = (SuitedTile)obj;
+                Tile t = (Tile)obj;
                 return CompareTo(t);
             }
         }
