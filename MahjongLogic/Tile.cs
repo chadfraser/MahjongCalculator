@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Mahjong
 {
@@ -27,10 +26,6 @@ namespace Mahjong
 
         public virtual bool IsTriplet(params Tile[] tiles)
         {
-            foreach (var t in tiles)
-            {
-                Console.WriteLine(t);
-            }
             return tiles.Length == 3 && IsArrayOfEqualTiles(tiles);
         }
 
