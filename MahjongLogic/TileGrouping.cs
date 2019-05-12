@@ -12,6 +12,7 @@ namespace Mahjong
         public TileGrouping(params Tile[] tileParams)
         {
             tiles = tileParams.ToList();
+            tiles.Sort();
             IsOpenGroup = false;
         }
 
