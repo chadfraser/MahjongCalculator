@@ -157,7 +157,7 @@ namespace Mahjong
         public int CompareTo(object obj)
         {
             if (obj is null || 
-                !(obj.GetType().Equals(typeof(Tile)) || obj.GetType().IsAssignableFrom(typeof(Tile))))
+                !(obj.GetType().Equals(typeof(Tile)) || typeof(Tile).IsAssignableFrom(obj.GetType())))
             {
                 throw new Exception($"Cannot compare objects of type {obj.GetType()} and type {GetType()}.");
             }
