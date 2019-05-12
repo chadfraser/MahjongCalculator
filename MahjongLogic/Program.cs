@@ -1,12 +1,14 @@
 ﻿using System;
 
-namespace MahjongLogic
+namespace Mahjong
 {
     class Program
     {
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+            var a = new HandParser();
+            a.GetHandString();
         }
     }
 }
