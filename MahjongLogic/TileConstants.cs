@@ -109,7 +109,7 @@ namespace Mahjong
 
         public static readonly BonusTile PlumBlossom = new BonusTile(Suit.Flower, 1, "Plum Blossom");
         public static readonly BonusTile Orchid = new BonusTile(Suit.Flower, 2, "Orchid");
-        public static readonly BonusTile Chrysanthmum = new BonusTile(Suit.Flower, 3, "Chrysanthemum");
+        public static readonly BonusTile Chrysanthemum = new BonusTile(Suit.Flower, 3, "Chrysanthemum");
         public static readonly BonusTile BambooPlant = new BonusTile(Suit.Flower, 4, "Bamboo Plant");
 
         public static readonly ReadOnlyCollection<Tile> AllDotsTileInstances = new ReadOnlyCollection<Tile>(
@@ -183,6 +183,11 @@ namespace Mahjong
             AllSuitedTileInstances.Concat(AllHonorTileInstances).ToArray()
         );
 
+        public static readonly ReadOnlyCollection<Tile> AllMainTileInstancesFourOfEachTile = new ReadOnlyCollection<Tile>(
+            AllMainTileInstances.Concat(AllMainTileInstances).Concat(AllMainTileInstances)
+                .Concat(AllMainTileInstances).ToArray()
+        );
+
         public static readonly ReadOnlyCollection<Tile> AllSeasonTileInstances = new ReadOnlyCollection<Tile>(
             new Tile[] {
                 Spring,
@@ -196,7 +201,7 @@ namespace Mahjong
             new Tile[] {
                 PlumBlossom,
                 Orchid,
-                Chrysanthmum,
+                Chrysanthemum,
                 BambooPlant
             }
         );
@@ -204,5 +209,12 @@ namespace Mahjong
         public static readonly ReadOnlyCollection<Tile> AllBonusTileInstances = new ReadOnlyCollection<Tile>(
             AllSeasonTileInstances.Concat(AllFlowerTileInstances).ToArray()
         );
+
+        public static ReadOnlyCollection<Tile> GetAllMainTilesSorted()
+        {
+            var allMainTiles = AllMainTileInstancesFourOfEachTile.ToList();
+            allMainTiles.Sort();
+            return new ReadOnlyCollection<Tile>(allMainTiles);
+        }
     }
 }
