@@ -31,7 +31,6 @@ namespace Mahjong
         public void GetHandString()
         {
             FillDict();
-            var handString = Console.ReadLine();
             var tiles = new List<Tile>();
             var digitsGroupBeforeLetterRegex = new Regex(@"(\d+)([a-zA-z])");
 
@@ -55,22 +54,42 @@ namespace Mahjong
 
             var shanten = 10000;
             var handCount = 14;
+            //while (true)
+            //{
+
+            //}
+
+            var shantenFinder = new RegularHandSevenPairsThirteenOrphansWaitingDistanceFinder();
+            var ukeireFinder = new EfficientDrawsFinder();
+
             while (true)
             {
-
-            }
-
-            foreach (Match match in digitsGroupBeforeLetterRegex.Matches(handString))
-            {
-                var digitString = match.Groups[1].Captures[0].ToString();
-                char letterChar = match.Groups[2].Captures[0].ToString().ToCharArray()[0];
-                //Console.WriteLine(match.Groups[1].Captures[0]);
-                //Console.WriteLine(match.Groups[2].Captures[0]);
-                foreach (var digit in digitString)
+                var handString = Console.ReadLine();
+                tiles.Clear();
+                foreach (Match match in digitsGroupBeforeLetterRegex.Matches(handString))
                 {
-                    int index = (int)char.GetNumericValue(digit);
-                    tiles.Add(mappingDict[letterChar].ElementAt(index - 1));
+                    var digitString = match.Groups[1].Captures[0].ToString();
+                    char letterChar = match.Groups[2].Captures[0].ToString().ToCharArray()[0];
+                    //Console.WriteLine(match.Groups[1].Captures[0]);
+                    //Console.WriteLine(match.Groups[2].Captures[0]);
+                    foreach (var digit in digitString)
+                    {
+                        int index = (int)char.GetNumericValue(digit);
+                        try
+                        {
+                            tiles.Add(mappingDict[letterChar].ElementAt(index - 1));
+                        }
+                        catch (KeyNotFoundException)
+                        {
+                            continue;
+                        }
+                    }
                 }
+                var a = shantenFinder.GetWaitingDistance(tiles);
+                var b = ukeireFinder.GetEfficientDrawCount(tiles);
+                Console.WriteLine(a);
+                Console.WriteLine(b);
+                Console.WriteLine();
             }
         }
 

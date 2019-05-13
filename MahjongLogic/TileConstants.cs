@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Mahjong
+namespace Fraser.Mahjong
 {
     public class Suit : IComparable<Suit>
     {

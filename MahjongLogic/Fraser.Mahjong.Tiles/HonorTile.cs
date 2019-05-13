@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Mahjong
+namespace Fraser.Mahjong
 {
     public class HonorTile : Tile, IComparable, IComparable<HonorTile>
     {

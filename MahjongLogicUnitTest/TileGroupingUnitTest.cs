@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Mahjong;
+using Fraser.Mahjong;
 
 namespace MahjongLogicUnitTest
 {

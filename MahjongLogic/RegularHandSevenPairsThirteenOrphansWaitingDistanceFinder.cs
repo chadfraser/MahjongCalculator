@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Mahjong
+namespace Fraser.Mahjong
 {
     public class RegularHandSevenPairsThirteenOrphansWaitingDistanceFinder : IWaitingDistanceFinder
     {
@@ -16,7 +16,8 @@ namespace Mahjong
         public int GetWaitingDistance(IList<Tile> tiles)
         {
             tiles = TileSorter.SortTiles(tiles);
-            return GetWaitingDistance(tiles, 0);
+            var alreadySeparatedGroupCount = (14 - tiles.Count) / 3;
+            return GetWaitingDistance(tiles, alreadySeparatedGroupCount);
         }
 
         private int GetWaitingDistance(IList<Tile> tiles, int foundGroupCount)
@@ -173,6 +174,11 @@ namespace Mahjong
                 {
                     pairCount++;
                     firstTileIndex++;
+                }
+                else if (firstTileIndex < tiles.Count - 2 && Tile.IsPair(secondTile, tiles[firstTileIndex + 2]))
+                {
+                    pairCount++;
+                    firstTileIndex += 2;
                 }
                 else if (firstTile.CanBelongToSameGroup(secondTile))
                 {

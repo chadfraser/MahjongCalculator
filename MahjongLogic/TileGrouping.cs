@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Mahjong
+namespace Fraser.Mahjong
 {
     public class TileGrouping : ICollection<Tile>
     {

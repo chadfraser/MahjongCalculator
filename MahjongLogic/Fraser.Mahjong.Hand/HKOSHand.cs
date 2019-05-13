@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Mahjong
+namespace Fraser.Mahjong
 {
     public class HKOSHand : Hand
     {
@@ -44,7 +44,7 @@ namespace Mahjong
 
         public int GetAdjustedCountOfPassedTiles(IList<Tile> uncalledTiles, IList<TileGrouping> calledSets)
         {
-            return uncalledTiles.Count + (3 * CalledSets.Count);
+            return uncalledTiles.Count + (3 * calledSets.Count);
         }
 
         public IList<IList<TileGrouping>> FindAllWaysToParseWinningHand()

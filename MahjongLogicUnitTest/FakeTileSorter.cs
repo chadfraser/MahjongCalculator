@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Mahjong;
+using Fraser.Mahjong;
 
 namespace MahjongLogicUnitTest
 {
