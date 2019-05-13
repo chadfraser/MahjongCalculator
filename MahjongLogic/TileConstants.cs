@@ -6,24 +6,29 @@ namespace Fraser.Mahjong
 {
     public class Suit : IComparable<Suit>
     {
-        private Suit(string name, string japaneseName, int sortOrder)
+        private Suit(string name, string japaneseName, string shortName, ConsoleColor color, int sortOrder)
         {
             Name = name;
             JapaneseName = japaneseName;
+            ShortName = shortName;
+            Color = color;
             SortOrder = sortOrder;
         }
 
         public string Name { get; }
         public string JapaneseName { get; }
+        public string ShortName { get; }
+        public ConsoleColor Color { get; }
         public int SortOrder { get; }
 
-        public static readonly Suit Dots = new Suit("Dots", "Pin", 0);
-        public static readonly Suit Bamboo = new Suit("Bamboo", "Sou", 1);
-        public static readonly Suit Characters = new Suit("Characters", "Man", 2);
-        public static readonly Suit Wind = new Suit("Wind", "", 3);
-        public static readonly Suit Dragon = new Suit("Dragon", "", 4);
-        public static readonly Suit Flower = new Suit("Flower", "", 5);
-        public static readonly Suit Season = new Suit("Season", "", 6);
+        public static readonly Suit Dots = new Suit("Dots", "Pin", "D", ConsoleColor.Blue, 0);
+        public static readonly Suit Bamboo = new Suit("Bamboo", "Sou", "B", ConsoleColor.Green, 1);
+        public static readonly Suit Characters = new Suit("Characters", "Man", "C", ConsoleColor.Red, 2);
+        public static readonly Suit Wind = new Suit("Wind", "", "W", ConsoleColor.White, 3);
+        public static readonly Suit Dragon = new Suit("Dragon", "", "", ConsoleColor.Gray, 4);
+        public static readonly Suit Flower = new Suit("Flower", "", "F", ConsoleColor.Magenta, 5);
+        public static readonly Suit Season = new Suit("Season", "", "S", ConsoleColor.Yellow, 6);
+
         public static readonly Suit[] allSuits = new Suit[] { Dots, Bamboo, Characters, Wind, Dragon };
         public static readonly Suit[] allSuitsWithBonus = new Suit[] { Dots, Bamboo, Characters, Wind, Dragon,
             Flower, Season };
@@ -36,24 +41,33 @@ namespace Fraser.Mahjong
 
     public class HonorType: IComparable<HonorType>
     {
-        private HonorType(string name, string japaneseName, int sortOrder)
+        private HonorType(string name, string japaneseName, string shortName, ConsoleColor color, int sortOrder)
         {
             Name = name;
             JapaneseName = japaneseName;
+            ShortName = shortName;
+            Color = color;
             SortOrder = sortOrder;
         }
 
         public string Name { get; }
         public string JapaneseName { get; }
+        public string ShortName { get; }
+        public ConsoleColor Color { get; }
         public int SortOrder { get; }
 
-        public static readonly HonorType East = new HonorType("East", "Ton", 0);
-        public static readonly HonorType South = new HonorType("South", "Nan", 1);
-        public static readonly HonorType West = new HonorType("West", "Xia", 2);
-        public static readonly HonorType North = new HonorType("North", "Pei", 3);
-        public static readonly HonorType White = new HonorType("White", "Haku", 4);
-        public static readonly HonorType Green = new HonorType("Green", "Hatsu", 5);
-        public static readonly HonorType Red = new HonorType("Red", "Chun", 6);
+        public static readonly HonorType East = new HonorType("East", "Ton", "E", ConsoleColor.Black, 0);
+        public static readonly HonorType South = new HonorType("South", "Nan", "S", ConsoleColor.Black, 1);
+        public static readonly HonorType West = new HonorType("West", "Xia", "W", ConsoleColor.Black, 2);
+        public static readonly HonorType North = new HonorType("North", "Pei", "N", ConsoleColor.Black, 3);
+        public static readonly HonorType White = new HonorType("White", "Haku", "Wh", ConsoleColor.DarkBlue, 4);
+        public static readonly HonorType Green = new HonorType("Green", "Hatsu", "Gr", ConsoleColor.DarkGreen, 5);
+        public static readonly HonorType Red = new HonorType("Red", "Chun", "Rd", ConsoleColor.DarkRed, 6);
+
+        public override string ToString()
+        {
+            return Name;
+        }
 
         public int CompareTo(HonorType other)
         {
@@ -61,7 +75,7 @@ namespace Fraser.Mahjong
         }
     }
 
-    public class TileInstance
+    public static class TileInstance
     {
         public static readonly SuitedTile OneOfDots = new SuitedTile(Suit.Dots, 1);
         public static readonly SuitedTile TwoOfDots = new SuitedTile(Suit.Dots, 2);
@@ -154,10 +168,6 @@ namespace Fraser.Mahjong
             }
         );
 
-        public static readonly ReadOnlyCollection<Tile> AllSuitedTileInstances = new ReadOnlyCollection<Tile>(
-            AllDotsTileInstances.Concat(AllBambooTileInstances).Concat(AllCharactersTileInstances).ToArray()
-        );
-
         public static readonly ReadOnlyCollection<Tile> AllWindTileInstances = new ReadOnlyCollection<Tile>(
             new Tile[] {
                 EastWind,
@@ -173,19 +183,6 @@ namespace Fraser.Mahjong
                 GreenDragon,
                 RedDragon
             }
-        );
-
-        public static readonly ReadOnlyCollection<Tile> AllHonorTileInstances = new ReadOnlyCollection<Tile>(
-            AllWindTileInstances.Concat(AllDragonTileInstances).ToArray()
-        );
-
-        public static readonly ReadOnlyCollection<Tile> AllMainTileInstances = new ReadOnlyCollection<Tile>(
-            AllSuitedTileInstances.Concat(AllHonorTileInstances).ToArray()
-        );
-
-        public static readonly ReadOnlyCollection<Tile> AllMainTileInstancesFourOfEachTile = new ReadOnlyCollection<Tile>(
-            AllMainTileInstances.Concat(AllMainTileInstances).Concat(AllMainTileInstances)
-                .Concat(AllMainTileInstances).ToArray()
         );
 
         public static readonly ReadOnlyCollection<Tile> AllSeasonTileInstances = new ReadOnlyCollection<Tile>(
@@ -206,8 +203,34 @@ namespace Fraser.Mahjong
             }
         );
 
+        public static void InitializeAllTileArrays()
+        {
+
+        }
+
         public static readonly ReadOnlyCollection<Tile> AllBonusTileInstances = new ReadOnlyCollection<Tile>(
             AllSeasonTileInstances.Concat(AllFlowerTileInstances).ToArray()
+        );
+
+        public static readonly ReadOnlyCollection<Tile> AllSuitedTileInstances = new ReadOnlyCollection<Tile>(
+            AllDotsTileInstances.Concat(AllBambooTileInstances).Concat(AllCharactersTileInstances).ToArray()
+        );
+
+        public static readonly ReadOnlyCollection<Tile> AllHonorTileInstances = new ReadOnlyCollection<Tile>(
+            AllWindTileInstances.Concat(AllDragonTileInstances).ToArray()
+        );
+
+        public static readonly ReadOnlyCollection<Tile> AllMainTileInstances = new ReadOnlyCollection<Tile>(
+            AllSuitedTileInstances.Concat(AllHonorTileInstances).ToArray()
+        );
+
+        public static readonly ReadOnlyCollection<Tile> AllMainTileInstancesFourOfEachTile = new ReadOnlyCollection<Tile>(
+            AllMainTileInstances.Concat(AllMainTileInstances).Concat(AllMainTileInstances)
+                .Concat(AllMainTileInstances).ToArray()
+        );
+
+        public static readonly ReadOnlyCollection<Tile> AllMainTileInstancesFourOfEachTilePlusBonusTiles = new
+            ReadOnlyCollection<Tile>(AllMainTileInstancesFourOfEachTile.Concat(AllBonusTileInstances).ToArray()
         );
 
         public static ReadOnlyCollection<Tile> GetAllMainTilesSorted()
