@@ -104,9 +104,9 @@ namespace Fraser.Mahjong
             var text = "";
             for (int i = 0; i < tiles.Count - 1; i++)
             {
-                text = $"{text} {tiles[i].GetShortName()},";
+                text = $"{text}{tiles[i].GetShortName()}, ";
             }
-            text = $"{text} {tiles[tiles.Count - 1].GetShortName()}";
+            text = $"{text}{tiles[tiles.Count - 1].GetShortName()}";
             return text;
         }
 
