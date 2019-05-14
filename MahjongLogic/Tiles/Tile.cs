@@ -21,6 +21,8 @@ namespace Fraser.Mahjong
 
         public abstract void WriteShortColoredString();
 
+        public abstract string GetShortName();
+
         public virtual bool IsPair(params Tile[] tiles)
         {
             return tiles.Length == 2 && IsArrayOfEqualTiles(tiles);

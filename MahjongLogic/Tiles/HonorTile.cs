@@ -60,6 +60,11 @@ namespace Fraser.Mahjong
             Console.ResetColor();
         }
 
+        public override string GetShortName()
+        {
+            return $"{HonorType.ShortName}{Suit.ShortName}";
+        }
+
         public override string ToString()
         {
             return $"{HonorType.Name} {Suit.Name}";
