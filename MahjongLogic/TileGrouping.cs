@@ -99,6 +99,17 @@ namespace Fraser.Mahjong
             return tiles.GetEnumerator();
         }
 
+        public override string ToString()
+        {
+            var text = "";
+            for (int i = 0; i < tiles.Count - 1; i++)
+            {
+                text = $"{text} {tiles[i].GetShortName()},";
+            }
+            text = $"{text} {tiles[tiles.Count - 1].GetShortName()}";
+            return text;
+        }
+
         public override bool Equals(Object obj)
         {
             if (obj is null || !GetType().Equals(obj.GetType()))
