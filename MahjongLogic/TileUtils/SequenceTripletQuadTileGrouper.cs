@@ -4,10 +4,15 @@ namespace Fraser.Mahjong
 {
     class SequenceTripletQuadTileGrouper : SequenceTripletTileGrouper, ITileGrouper
     {
-        public new static readonly int maximumGroupSize = 4;
+        public readonly int maximumGroupSize = 4;
 
         public SequenceTripletQuadTileGrouper(ITileSorter tileSorter) : base(tileSorter)
         {
+        }
+
+        protected override int GetMaximumGroupSize()
+        {
+            return 4;
         }
 
         protected override bool CanGroupAllTilesAtOnce(IList<Tile> remainingTiles)

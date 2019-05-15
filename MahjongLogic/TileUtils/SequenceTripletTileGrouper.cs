@@ -7,12 +7,16 @@ namespace Fraser.Mahjong
     public class SequenceTripletTileGrouper : ITileGrouper
     {
         protected readonly ITileSorter tileSorter;
-        public static readonly int minimumGroupSize = 3;
-        public static readonly int maximumGroupSize = 3;
+        public readonly int minimumGroupSize = 3;
 
         public SequenceTripletTileGrouper(ITileSorter tileSorter)
         {
             this.tileSorter = tileSorter;
+        }
+
+        protected virtual int GetMaximumGroupSize()
+        {
+            return 3;
         }
 
         public bool CanGroupTilesIntoLegalHand(IList<Tile> tiles)
@@ -128,9 +132,9 @@ namespace Fraser.Mahjong
             tiles = tileSorter.SortTiles(tiles);
             IList<TileGrouping> allGroupsInTiles = new List<TileGrouping>();
 
-            for (int firstTileIndex = 0; firstTileIndex < tiles.Count - (maximumGroupSize - 1); firstTileIndex++)
+            for (int firstTileIndex = 0; firstTileIndex < tiles.Count - (GetMaximumGroupSize() - 1); firstTileIndex++)
             {
-                RecursivelyFindAllGroupsInTiles(tiles, firstTileIndex + 1, maximumGroupSize - 2, allGroupsInTiles,
+                RecursivelyFindAllGroupsInTiles(tiles, firstTileIndex + 1, GetMaximumGroupSize() - 2, allGroupsInTiles,
                     tiles[firstTileIndex]);
             }
             return allGroupsInTiles;
