@@ -6,11 +6,19 @@ namespace Fraser.Mahjong
 {
     public class EfficientAI : Player
     {
-        public EfficientAI(Game game) : base(game, "COM")
+        public EfficientAI(Game game, string name, HonorType seatWind) : base(game, name, seatWind)
         {
             EfficientDrawsFinder = new AppliedHKOSEfficientDrawsFinder();
             WaitingDistanceFinder = new RegularHandSevenPairsThirteenOrphansWaitingDistanceFinder();
             SeenTiles = new List<Tile>();
+        }
+
+        public EfficientAI(Game game, HonorType seatWind) : this(game, "COM", seatWind)
+        {
+        }
+
+        public EfficientAI(Game game) : this(game, "COM", HonorType.East)
+        {
         }
 
         public IEfficientDrawsFinder EfficientDrawsFinder { get; set; }
@@ -124,6 +132,7 @@ namespace Fraser.Mahjong
 
         public override bool IsClaimingDiscardedTileToCompleteWinningHand(Tile discardedTile)
         {
+            return false;
             var uncalledTilesWithClaimedDiscard = new List<Tile>(Hand.UncalledTiles)
             {
                 discardedTile
@@ -178,6 +187,7 @@ namespace Fraser.Mahjong
 
         public override bool IsDeclaringWin()
         {
+            return false;
             return Hand.IsWinningHand();
         }
 

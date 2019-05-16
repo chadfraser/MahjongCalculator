@@ -7,7 +7,11 @@ namespace Fraser.Mahjong
 {
     class HumanPlayer : Player
     {
-        public HumanPlayer(Game game) : base(game, "Player")
+        public HumanPlayer(Game game, string name, HonorType seatWind) : base(game, name, seatWind)
+        {
+
+        }
+        public HumanPlayer(Game game) : base(game, "Player", HonorType.East)
         {
 
         }

@@ -7,12 +7,17 @@ namespace Fraser.Mahjong
 {
     public abstract class Player
     {
-        public Player(Game game, string name)
+        public Player(Game game, string name) : this(game, name, HonorType.East)
+        {
+        }
+
+        public Player(Game game, string name, HonorType seatWind)
         {
             Name = name;
             Game = game;
             Hand = new HKOSHand();
-            SeatWind = HonorType.East;
+            SeatWind = seatWind;
+            Points = 0;
             TileGrouper = new SequenceTripletQuadTileGrouper(new SuitedHonorBonusTileSorter());
             WaitingDistanceFinder = new RegularHandSevenPairsThirteenOrphansWaitingDistanceFinder();
         }
@@ -26,6 +31,8 @@ namespace Fraser.Mahjong
         public HKOSHand Hand { get; set; }
 
         public HonorType SeatWind { get; set; }
+
+        public int Points { get; set; }
 
         public ITileGrouper TileGrouper { get; set; }
 
