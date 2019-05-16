@@ -10,7 +10,7 @@ namespace Fraser.Mahjong
             BonusSets = new List<TileGrouping>();
             HandScorer = new HKOSHandScorer(this);
             TileSorter = new SuitedHonorBonusTileSorter();
-            TileGrouper = new SequenceTripletTileGrouper(TileSorter);
+            TileGrouper = new SequenceTripletQuadTileGrouper(TileSorter);
         }
 
         public IList<TileGrouping> BonusSets { get; set; }
