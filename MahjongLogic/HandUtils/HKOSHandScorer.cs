@@ -41,7 +41,7 @@ namespace Fraser.Mahjong
             [HonorType.East] = 1,
             [HonorType.South] = 2,
             [HonorType.West] = 3,
-            [HonorType.East] = 4,
+            [HonorType.North] = 4,
         };
 
         private void InitializeDictsOfScoringMethodsWithPoints()
