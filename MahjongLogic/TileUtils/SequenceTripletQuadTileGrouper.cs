@@ -15,26 +15,6 @@ namespace Fraser.Mahjong
             return 4;
         }
 
-        protected override bool CanGroupAllTilesAtOnce(IList<Tile> remainingTiles)
-        {
-            if (remainingTiles.Count == 0)
-            {
-                return true;
-            }
-            if (remainingTiles.Count < 3)
-            {
-                return false;
-            }
-
-            if (CanGroupAllTilesUsingSequenceStartingAtIndexN(remainingTiles, 0) ||
-                CanGroupAllTilesUsingTripletStartingAtIndexN(remainingTiles, 0) ||
-                CanGroupAllTilesUsingQuadStartingAtIndexN(remainingTiles, 0))
-            {
-                return true;
-            }
-            return false;
-        }
-
         protected bool CanGroupAllTilesUsingQuadStartingAtIndexN(IList<Tile> remainingTiles, int n)
         {
             if (remainingTiles.Count == 0)
