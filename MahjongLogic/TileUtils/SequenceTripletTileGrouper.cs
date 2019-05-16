@@ -8,6 +8,7 @@ namespace Fraser.Mahjong
     {
         protected readonly ITileSorter tileSorter;
         public readonly int minimumGroupSize = 3;
+        public readonly int numberOfGroupsInWinningHand = 4;
 
         public SequenceTripletTileGrouper(ITileSorter tileSorter)
         {
@@ -31,6 +32,7 @@ namespace Fraser.Mahjong
 
                 var remainingTiles = GetTilesWithConsecutiveNTilesRemoved(tiles, i, 2);
                 var nestedTilesGroupedBySuit = GetNestedTileListsGroupedBySuit(remainingTiles);
+                // TODO: Check
                 if (nestedTilesGroupedBySuit.All(tilesOfSuitX => CanGroupAllTilesAtOnce(tilesOfSuitX)))
                 {
                     return true;
@@ -113,6 +115,10 @@ namespace Fraser.Mahjong
                     listOfGroups.Add(pair);
                     allWaysToGroupTiles.Add(listOfGroups);
                 }
+                if (currentWaysToSplitTiles.Count == 0)
+                {
+                    allWaysToGroupTiles.Add(new List<TileGrouping> { pair });
+                }
             }
             return allWaysToGroupTiles;
         }
@@ -132,9 +138,9 @@ namespace Fraser.Mahjong
             tiles = tileSorter.SortTiles(tiles);
             IList<TileGrouping> allGroupsInTiles = new List<TileGrouping>();
 
-            for (int firstTileIndex = 0; firstTileIndex < tiles.Count - (GetMaximumGroupSize() - 1); firstTileIndex++)
+            for (int firstTileIndex = 0; firstTileIndex < tiles.Count - (minimumGroupSize - 1); firstTileIndex++)
             {
-                RecursivelyFindAllGroupsInTiles(tiles, firstTileIndex + 1, GetMaximumGroupSize() - 2, allGroupsInTiles,
+                RecursivelyFindAllGroupsInTiles(tiles, firstTileIndex + 1, GetMaximumGroupSize() - 1, allGroupsInTiles,
                     tiles[firstTileIndex]);
             }
             return allGroupsInTiles;
@@ -143,7 +149,13 @@ namespace Fraser.Mahjong
         protected void RecursivelyFindAllGroupsInTiles(IList<Tile> tiles, int currentIndex, int maxDepth,
             IList<TileGrouping> allGroups, params Tile[] currentTiles)
         {
-            if (!currentTiles[0].CanBelongToSameGroup(tiles[currentIndex]))
+            try {
+                if (!currentTiles[0].CanBelongToSameGroup(tiles[currentIndex]))
+                {
+                    return;
+                }
+            }
+            catch (ArgumentOutOfRangeException)
             {
                 return;
             }
@@ -161,7 +173,7 @@ namespace Fraser.Mahjong
 
             if (maxDepth > 0)
             {
-                for (int nextTileIndex = currentIndex; nextTileIndex < tiles.Count - maxDepth; nextTileIndex++)
+                for (int nextTileIndex = currentIndex; nextTileIndex < tiles.Count - minimumGroupSize + 2; nextTileIndex++)
                 {
                     RecursivelyFindAllGroupsInTiles(tiles, nextTileIndex + 1, maxDepth - 1, allGroups, potentialGroup);
                 }
