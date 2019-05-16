@@ -132,7 +132,6 @@ namespace Fraser.Mahjong
 
         public override bool IsClaimingDiscardedTileToCompleteWinningHand(Tile discardedTile)
         {
-            return false;
             var uncalledTilesWithClaimedDiscard = new List<Tile>(Hand.UncalledTiles)
             {
                 discardedTile
@@ -187,7 +186,6 @@ namespace Fraser.Mahjong
 
         public override bool IsDeclaringWin()
         {
-            return false;
             return Hand.IsWinningHand();
         }
 
