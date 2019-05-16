@@ -121,10 +121,8 @@ namespace Fraser.Mahjong
             {
                 if (patternFunction.Key(tileGroups))
                 {
-                    Console.Write(">>>");
                     score += patternFunction.Value;
                 }
-                Console.WriteLine(patternFunction);
             }
             if (score > 0)
             {
@@ -135,10 +133,8 @@ namespace Fraser.Mahjong
             {
                 if (patternFunction.Key(tileGroups))
                 {
-                    Console.Write(">>>");
                     score += patternFunction.Value;
                 }
-                Console.WriteLine(patternFunction);
             }
             return score;
         }
@@ -146,6 +142,41 @@ namespace Fraser.Mahjong
         public int ScoreHand()
         {
             return Hand.FindScoreOfMostValuableHand();
+        }
+
+        public int GetPointsFromHand()
+        {
+            return ConvertScoreToPoints(ScoreHand());
+        }
+
+        private int ConvertScoreToPoints(int score)
+        {
+            switch (score)
+            {
+                case 0:
+                    return 0;
+                case 1:
+                case 2:
+                    return 8;
+                case 3:
+                    return 16;
+                case 4:
+                case 5:
+                    return 24;
+                case 6:
+                case 7:
+                    return 32;
+                case 8:
+                case 9:
+                    return 48;
+                case 11:
+                case 10:
+                    return 64;
+                case 12:
+                    return 96;
+                default:
+                    return 128 * (score / 13);
+            }
         }
 
         public bool ScoresWhiteDragonTriplet(IList<TileGrouping> tileGroups)
@@ -416,13 +447,6 @@ namespace Fraser.Mahjong
             else
             {
                 return false;
-            }
-
-            if (dictOfTileCounts.Keys.ToHashSet().SetEquals(setOfAllTilesOfGivenSuit) &&
-                (dictOfTileCounts[firstTileInSuit] == 3 || dictOfTileCounts[firstTileInSuit] == 4) &&
-                (dictOfTileCounts[lastTileInSuit] == 3 || dictOfTileCounts[lastTileInSuit] == 4))
-            {
-                Console.WriteLine("NINE GATES\n\n\n");
             }
 
             return dictOfTileCounts.Keys.ToHashSet().SetEquals(setOfAllTilesOfGivenSuit) &&
