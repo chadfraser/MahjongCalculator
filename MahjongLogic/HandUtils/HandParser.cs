@@ -64,12 +64,12 @@ namespace Fraser.Mahjong
             Console.WriteLine();
 
             var shantenFinder = new RegularHandSevenPairsThirteenOrphansWaitingDistanceFinder();
-            var ukeireFinder = new EfficientDrawsFinder();
+            var ukeireFinder = new HKOSEfficientDrawsFinder();
 
             while (true)
             {
                 var g = new Game();
-                g.CurrentDeal.DealInitialHands();
+                g.CurrentDeal.PlayDeal();
                 foreach (var p in g.Players)
                 {
                     p.Hand.SortHand();

@@ -1,17 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Fraser.Mahjong
 {
     public abstract class Player
     {
-        public Player(Game game)
+        public Player(Game game, string name)
         {
-            Game = Game;
+            Name = name;
+            Game = game;
             Hand = new HKOSHand();
             SeatWind = HonorType.East;
+            TileGrouper = new SequenceTripletQuadTileGrouper(new SuitedHonorBonusTileSorter());
+            WaitingDistanceFinder = new RegularHandSevenPairsThirteenOrphansWaitingDistanceFinder();
         }
+
+        public IWaitingDistanceFinder WaitingDistanceFinder { get; set; }
+
+        public string Name { get; set; }
 
         public Game Game { get; set; }
 
@@ -19,27 +27,71 @@ namespace Fraser.Mahjong
 
         public HonorType SeatWind { get; set; }
 
-        public abstract void ClaimDiscardedTile(Tile discardedTile);
+        public ITileGrouper TileGrouper { get; set; }
 
-        public abstract void ChooseTileToDiscard();
+        public abstract Tile ChooseTileToDiscard();
 
-        public abstract void DeclareWin(Tile winningTile);
+        public abstract bool IsClaimingDiscardedTileToCompleteGroup(Tile discardedTile, bool canBeSequence);
 
-        public void DrawTile(IList<Tile> deck)
-        {
-            if (deck.Count == 0)
-            {
-                //Game.Stalemate()
-            }
-            Hand.UncalledTiles.Add(deck[deck.Count - 1]);
-            deck.RemoveAt(deck.Count - 1);
-        }
+        public abstract bool IsClaimingDiscardedTileToCompleteWinningHand(Tile discardedTile);
+
+        public abstract TileGrouping GetGroupMadeWithDiscardedTileOrEmptyGroupForWin(Tile discardedTile,
+            Player discardingPlayer);
+
+        public abstract bool IsDeclaringWin();
+
+        public abstract TileGrouping GetOpenOrPromotedQuadMade();
 
         public Tile DiscardTile(int discardIndex)
         {
             var discardedTile = Hand.UncalledTiles[discardIndex];
             Hand.UncalledTiles.RemoveAt(discardIndex);
             return discardedTile;
+        }
+
+        public bool CanClaimDiscardedTileToCompleteGroup(Tile discardedTile, bool canBeSequence)
+        {
+            var potentialHandTiles = new List<Tile>(Hand.UncalledTiles) { discardedTile };
+            var groupsInvolvingDiscardedTile = TileGrouper.FindAllGroupsInTiles(potentialHandTiles)
+                .Where(group => group.Contains(discardedTile)).ToList();
+            if (!canBeSequence)
+            {
+                groupsInvolvingDiscardedTile = groupsInvolvingDiscardedTile.Where(group => !group.IsSequence()).ToList();
+            }
+
+            return groupsInvolvingDiscardedTile.Count > 0;
+        }
+
+        public bool CanClaimDiscardedTileToCompleteWinningHand(Tile discardedTile)
+        {
+            var potentialHandTiles = new List<Tile>(Hand.UncalledTiles) { discardedTile };
+
+            return WaitingDistanceFinder.GetWaitingDistance(potentialHandTiles) == -1;
+        }
+
+        public void MakeGroupWithDiscardedTile(Tile discardedTile, TileGrouping group)
+        {
+            group.IsOpenGroup = true;
+            Hand.CalledSets.Add(group);
+            Hand.UncalledTiles.Add(discardedTile);
+            Hand.IsOpen = true;
+            foreach (var tile in group)
+            {
+                Hand.UncalledTiles.Remove(tile);
+            }
+        }
+
+        public IList<TileGrouping> GetAllGroupsThatCanBeMadeWithDiscardedTile(Tile discardedTile, bool canBeSequence)
+        {
+            var potentialHandTiles = new List<Tile>(Hand.UncalledTiles) { discardedTile };
+            var groupsInvolvingDiscardedTile = TileGrouper.FindAllGroupsInTiles(potentialHandTiles)
+                .Where(group => group.Contains(discardedTile)).ToList();
+            if (!canBeSequence)
+            {
+                groupsInvolvingDiscardedTile = groupsInvolvingDiscardedTile.Where(group => !group.IsSequence()).ToList();
+            }
+
+            return groupsInvolvingDiscardedTile;
         }
     }
 }

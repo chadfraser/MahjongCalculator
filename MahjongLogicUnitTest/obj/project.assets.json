@@ -1620,14 +1620,14 @@
           "lib/netstandard1.3/System.Xml.XPath.XmlDocument.dll": {}
         }
       },
-      "MahjongLogic/1.0.0": {
+      "Fraser.Mahjong/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v2.2",
         "compile": {
-          "bin/placeholder/MahjongLogic.dll": {}
+          "bin/placeholder/Fraser.Mahjong.dll": {}
         },
         "runtime": {
-          "bin/placeholder/MahjongLogic.dll": {}
+          "bin/placeholder/Fraser.Mahjong.dll": {}
         }
       }
     }
@@ -5829,17 +5829,17 @@
         "system.xml.xpath.xmldocument.nuspec"
       ]
     },
-    "MahjongLogic/1.0.0": {
+    "Fraser.Mahjong/1.0.0": {
       "type": "project",
-      "path": "../MahjongLogic/MahjongLogic.csproj",
-      "msbuildProject": "../MahjongLogic/MahjongLogic.csproj"
+      "path": "../MahjongLogic/Fraser.Mahjong.csproj",
+      "msbuildProject": "../MahjongLogic/Fraser.Mahjong.csproj"
     }
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.2": [
+      "Fraser.Mahjong >= 1.0.0",
       "MSTest.TestAdapter >= 1.4.0",
       "MSTest.TestFramework >= 1.4.0",
-      "MahjongLogic >= 1.0.0",
       "Microsoft.NET.Test.Sdk >= 16.0.1",
       "Microsoft.NETCore.App >= 2.2.0"
     ]
@@ -5874,8 +5874,8 @@
       "frameworks": {
         "netcoreapp2.2": {
           "projectReferences": {
-            "C:\\Users\\Chad\\Desktop\\C#\\MahjongCalculator\\MahjongLogic\\MahjongLogic.csproj": {
-              "projectPath": "C:\\Users\\Chad\\Desktop\\C#\\MahjongCalculator\\MahjongLogic\\MahjongLogic.csproj"
+            "C:\\Users\\Chad\\Desktop\\C#\\MahjongCalculator\\MahjongLogic\\Fraser.Mahjong.csproj": {
+              "projectPath": "C:\\Users\\Chad\\Desktop\\C#\\MahjongCalculator\\MahjongLogic\\Fraser.Mahjong.csproj"
             }
           }
         }

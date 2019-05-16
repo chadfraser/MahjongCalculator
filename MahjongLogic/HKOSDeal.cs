@@ -21,7 +21,7 @@ namespace Fraser.Mahjong
                 {
                     for (int amountOfInitialTilesToDraw = 0; amountOfInitialTilesToDraw < 4; amountOfInitialTilesToDraw++)
                     {
-                        player.DrawTile(RemainingTiles);
+                        //player.DrawTile(RemainingTiles);
                     }
                 }
             }
@@ -37,7 +37,7 @@ namespace Fraser.Mahjong
         public void TakeTurn()
         {
             var turnPlayer = Game.Players.ElementAt(IndexOfCurrentPlayer);
-            turnPlayer.DrawTile(RemainingTiles);
+            //turnPlayer.DrawTile(RemainingTiles);
 
             CheckForAndReplaceBonusTiles(turnPlayer);
 
@@ -60,7 +60,7 @@ namespace Fraser.Mahjong
                 {
                     player.Hand.UncalledTiles.Remove(tile);
                     // player.Hand.BonusTiles.Add(tile);
-                    player.DrawTile(RemainingTiles);
+                    //player.DrawTile(RemainingTiles);
                 }
             }
 

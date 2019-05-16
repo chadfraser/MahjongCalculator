@@ -13,7 +13,7 @@ namespace Fraser.Mahjong
             DealerKeepCount = 0;
             AllTiles = new List<Tile>(TileInstance.AllMainTileInstancesFourOfEachTilePlusBonusTiles);
             CurrentDeal = new Deal(this, AllTiles);
-            Players = new Player[] { new HumanPlayer(this), new EfficientAI(this), new EfficientAI(this), new EfficientAI(this) };
+            Players = new Player[] { new HumanPlayer(this), new HumanPlayer(this), new HumanPlayer(this), new HumanPlayer(this) };
         }
 
         public Player[] Players { get; set; }
@@ -27,11 +27,18 @@ namespace Fraser.Mahjong
 
         public int DealerKeepCount { get; set; }
 
-        public IList<Tile> AllTiles { get; set; }
+        private IList<Tile> AllTiles { get; set; }
 
         public void WriteGameState()
         {
             Console.WriteLine($"{RoundWind} {DealCount}, {DealerKeepCount} dealer keeps.");
+        }
+
+        public void Stalemate()
+        {
+            DealerKeepCount++;
+            CurrentDeal = new Deal(this, AllTiles);
+            CurrentDeal.PlayDeal();
         }
     }
 }
