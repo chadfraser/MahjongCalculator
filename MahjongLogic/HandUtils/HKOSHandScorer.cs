@@ -6,6 +6,11 @@ namespace Fraser.Mahjong
 {
     public class HKOSHandScorer : IHandScorer
     {
+        private static Deal currentDeal;
+        private static Player winningPlayer;
+        private static Player sourceOfWinningTile;
+        private static int replacementDrawsBeforeWinning;
+
         public HKOSHandScorer(HKOSHand hand)
         {
             Hand = hand;
@@ -19,13 +24,13 @@ namespace Fraser.Mahjong
 
         public HKOSHand Hand { get; set; }
 
-        private int ReplacementTilesDrawnBeforeWinning { get; set; }
+        //private int ReplacementTilesDrawnBeforeWinning { get; set; }
 
-        private Deal CurrentDeal { get; set; }
+        //private Deal CurrentDeal { get; set; }
 
-        private Player WinningPlayer { get; set; }
+        //private Player WinningPlayer { get; set; }
 
-        private Player PlayerSourceOfWinningTile { get; set; }
+        //private Player PlayerSourceOfWinningTile { get; set; }
 
         private IDictionary<Func<IList<TileGrouping>, bool>, int> PatternPoints { get; set; }
 
@@ -95,26 +100,31 @@ namespace Fraser.Mahjong
         public void SetCircumstantialValues(Player winningPlayer, Player sourceOfWinningTile, Deal deal,
             int replacementTilesDrawn)
         {
-            WinningPlayer = winningPlayer;
-            PlayerSourceOfWinningTile = sourceOfWinningTile;
-            CurrentDeal = deal;
-            ReplacementTilesDrawnBeforeWinning = replacementTilesDrawn;
+            HKOSHandScorer.winningPlayer = winningPlayer;
+            HKOSHandScorer.sourceOfWinningTile = sourceOfWinningTile;
+            HKOSHandScorer.currentDeal = deal;
+            HKOSHandScorer.replacementDrawsBeforeWinning = replacementTilesDrawn;
         }
 
         public void ClearCircumstantialValues()
         {
-            WinningPlayer = null;
-            PlayerSourceOfWinningTile = null;
-            CurrentDeal = null;
-            ReplacementTilesDrawnBeforeWinning = 0;
+            HKOSHandScorer.winningPlayer = null;
+            HKOSHandScorer.sourceOfWinningTile = null;
+            HKOSHandScorer.currentDeal = null;
+            HKOSHandScorer.replacementDrawsBeforeWinning = 0;
         }
 
-        public int ScoreHand()
+        public int ScoreHand(IList<TileGrouping> tileGroups)
         {
             var score = 0;
             foreach (var patternFunction in LimitHandPatternPoints)
             {
-                score += patternFunction.Value;
+                if (patternFunction.Key(tileGroups))
+                {
+                    Console.Write(">>>");
+                    score += patternFunction.Value;
+                }
+                Console.WriteLine(patternFunction);
             }
             if (score > 0)
             {
@@ -123,14 +133,19 @@ namespace Fraser.Mahjong
 
             foreach (var patternFunction in PatternPoints)
             {
-                //if (patternFunction.Key(tileGroups))
-                //{
-                //    Console.WriteLine(">>>");
+                if (patternFunction.Key(tileGroups))
+                {
+                    Console.Write(">>>");
                     score += patternFunction.Value;
-                //}
-                //Console.WriteLine(patternFunction);
+                }
+                Console.WriteLine(patternFunction);
             }
             return score;
+        }
+
+        public int ScoreHand()
+        {
+            return Hand.FindScoreOfMostValuableHand();
         }
 
         public bool ScoresWhiteDragonTriplet(IList<TileGrouping> tileGroups)
@@ -150,21 +165,21 @@ namespace Fraser.Mahjong
 
         public bool ScoresSeatWindTriplet(IList<TileGrouping> tileGroups)
         {
-            if (WinningPlayer is null)
+            if (winningPlayer is null)
             {
                 return false;
             }
-            var targetTile = new HonorTile(Suit.Wind, WinningPlayer.SeatWind);
+            var targetTile = new HonorTile(Suit.Wind, winningPlayer.SeatWind);
             return ScoresSpecificTileTripet(tileGroups, targetTile);
         }
 
         public bool ScoresRoundWindTriplet(IList<TileGrouping> tileGroups)
         {
-            if (CurrentDeal is null)
+            if (currentDeal is null)
             {
                 return false;
             }
-            var targetTile = new HonorTile(Suit.Wind, CurrentDeal.Game.RoundWind);
+            var targetTile = new HonorTile(Suit.Wind, currentDeal.Game.RoundWind);
             return ScoresSpecificTileTripet(tileGroups, targetTile);
         }
 
@@ -212,7 +227,8 @@ namespace Fraser.Mahjong
         public bool ScoresSevenPairs(IList<TileGrouping> tileGroups)
         {
             OutputCountOfGroupsOfSuit(tileGroups, Suit.allSuits, out _, out _, out int _, out int pairs);
-            var uniqueTileSet = new HashSet<Tile>(tileGroups.SelectMany(group => group));
+            var uniqueTileSet = new HashSet<Tile>(tileGroups.SelectMany(
+                group => group.Where(t => t.GetType() != typeof(BonusTile))));
             return pairs == 7 && uniqueTileSet.Count == 7;
         }
 
@@ -223,22 +239,22 @@ namespace Fraser.Mahjong
 
         public bool ScoresOwnFlower(IList<TileGrouping> tileGroups)
         {
-            if (WinningPlayer is null)
+            if (winningPlayer is null)
             {
                 return false;
             }
-            var targetRank = SeatWindRanks[WinningPlayer.SeatWind];
+            var targetRank = SeatWindRanks[winningPlayer.SeatWind];
             return tileGroups.Any(group => group.IsBonus() &&
                 group.First().Suit == Suit.Flower && ((BonusTile)group.First()).Rank == targetRank);
         }
 
         public bool ScoresOwnSeason(IList<TileGrouping> tileGroups)
         {
-            if (WinningPlayer is null)
+            if (winningPlayer is null)
             {
                 return false;
             }
-            var targetRank = SeatWindRanks[WinningPlayer.SeatWind];
+            var targetRank = SeatWindRanks[winningPlayer.SeatWind];
             return tileGroups.Any(group => group.IsBonus() &&
                 group.First().Suit == Suit.Season && ((BonusTile)group.First()).Rank == targetRank);
         }
@@ -272,64 +288,65 @@ namespace Fraser.Mahjong
 
         public bool ScoresSelfDrawn()
         {
-            if (WinningPlayer is null || PlayerSourceOfWinningTile is null)
+            if (winningPlayer is null || sourceOfWinningTile is null)
             {
                 return false;
             }
-            return PlayerSourceOfWinningTile.Equals(WinningPlayer);
+            return sourceOfWinningTile.Equals(winningPlayer);
         }
 
         public bool ScoresLastTileDrawn()
         {
-            if (WinningPlayer is null || PlayerSourceOfWinningTile is null || CurrentDeal is null)
+            if (winningPlayer is null || sourceOfWinningTile is null || currentDeal is null)
             {
                 return false;
             }
-            return PlayerSourceOfWinningTile.Equals(WinningPlayer) && ReplacementTilesDrawnBeforeWinning == 0 &&
-                CurrentDeal.GetRemainingTilesCount() == 0;
+            return sourceOfWinningTile.Equals(winningPlayer) && replacementDrawsBeforeWinning == 0 &&
+                currentDeal.GetRemainingTilesCount() == 0;
         }
 
         public bool ScoresLastTileDiscarded()
         {
-            if (WinningPlayer is null || PlayerSourceOfWinningTile is null || CurrentDeal is null)
+            if (winningPlayer is null || sourceOfWinningTile is null || currentDeal is null)
             {
                 return false;
             }
-            return !PlayerSourceOfWinningTile.Equals(WinningPlayer) && ReplacementTilesDrawnBeforeWinning == 0 &&
-                CurrentDeal.GetRemainingTilesCount() == 0;
+            return !sourceOfWinningTile.Equals(winningPlayer) && replacementDrawsBeforeWinning == 0 &&
+                currentDeal.GetRemainingTilesCount() == 0;
         }
 
         public bool ScoresWinOffAReplacementTile()
         {
-            if (WinningPlayer is null || PlayerSourceOfWinningTile is null)
+            if (winningPlayer is null || sourceOfWinningTile is null)
             {
                 return false;
             }
-            return PlayerSourceOfWinningTile.Equals(WinningPlayer) && ReplacementTilesDrawnBeforeWinning == 1;
+            return sourceOfWinningTile.Equals(winningPlayer) && replacementDrawsBeforeWinning == 1;
         }
 
         public bool ScoresQuadOnQuad()
         {
-            if (WinningPlayer is null || PlayerSourceOfWinningTile is null)
+            if (winningPlayer is null || sourceOfWinningTile is null)
             {
                 return false;
             }
-            return PlayerSourceOfWinningTile.Equals(WinningPlayer) && ReplacementTilesDrawnBeforeWinning > 1;
+            return sourceOfWinningTile.Equals(winningPlayer) && replacementDrawsBeforeWinning > 1;
         }
 
         public bool ScoresRobAQuad()
         {
-            if (WinningPlayer is null || PlayerSourceOfWinningTile is null)
+            if (winningPlayer is null || sourceOfWinningTile is null)
             {
                 return false;
             }
-            return !PlayerSourceOfWinningTile.Equals(WinningPlayer) && ReplacementTilesDrawnBeforeWinning > 0;
+            return !sourceOfWinningTile.Equals(winningPlayer) && replacementDrawsBeforeWinning > 0;
         }
 
         public bool ScoresFourConcealedTriplets(IList<TileGrouping> tileGroups)
         {
-            OutputCountOfGroupsOfSuit(tileGroups, Suit.allSuits, out _, out int triplets, out int _, out _);
-            return triplets == 4 && !AnyGroupsFitCriteria(tileGroups, group => group.IsOpenGroup && group.IsTriplet());
+            OutputCountOfGroupsOfSuit(tileGroups, Suit.allSuits, out _, out int triplets, out int quads, out _);
+            return triplets + quads == 4 &&
+                !AnyGroupsFitCriteria(tileGroups, group => group.IsOpenGroup && (group.IsTriplet() || group.IsQuad()));
         }
 
         public bool ScoresBigThreeDragons(IList<TileGrouping> tileGroups)
@@ -352,23 +369,27 @@ namespace Fraser.Mahjong
 
         public bool ScoresAllHonors(IList<TileGrouping> tileGroups)
         {
-            return !AnyTilesFitCriteria(tileGroups, t => t.GetType() != typeof(HonorTile));
+            return !AnyTilesFitCriteria(tileGroups,
+                t => t.GetType() != typeof(HonorTile) && t.GetType() != typeof(BonusTile));
         }
 
         public bool ScoresAllTerminals(IList<TileGrouping> tileGroups)
         {
-            return !AnyTilesFitCriteria(tileGroups, t => !t.IsTerminal());
+            return !AnyTilesFitCriteria(tileGroups, t => !t.IsTerminal() && t.GetType() != typeof(BonusTile));
         }
 
         public bool ScoresNineGates(IList<TileGrouping> tileGroups)
         {
             var givenSuit = tileGroups.First().First().Suit;
-            if (Hand.IsOpen || AnyTilesFitCriteria(tileGroups, t => t.Suit != givenSuit))
+            if (Hand.IsOpen || Hand.CalledSets.Count > 0 ||
+                AnyTilesFitCriteria(tileGroups, t => t.Suit != givenSuit && t.GetType() != typeof(BonusTile)))
             {
+
                 return false;
             }
 
-            IList<Tile> listOfAllTiles = tileGroups.SelectMany(group => group).ToList();
+            IList<Tile> listOfAllTiles = tileGroups.SelectMany(
+                group => group.Where(t => t.GetType() != typeof(BonusTile))).ToList();
             var dictOfTileCounts = listOfAllTiles.GroupBy(t => t).ToDictionary(g => g.Key, g => g.Count());
             HashSet<Tile> setOfAllTilesOfGivenSuit;
             Tile firstTileInSuit;
@@ -397,6 +418,13 @@ namespace Fraser.Mahjong
                 return false;
             }
 
+            if (dictOfTileCounts.Keys.ToHashSet().SetEquals(setOfAllTilesOfGivenSuit) &&
+                (dictOfTileCounts[firstTileInSuit] == 3 || dictOfTileCounts[firstTileInSuit] == 4) &&
+                (dictOfTileCounts[lastTileInSuit] == 3 || dictOfTileCounts[lastTileInSuit] == 4))
+            {
+                Console.WriteLine("NINE GATES\n\n\n");
+            }
+
             return dictOfTileCounts.Keys.ToHashSet().SetEquals(setOfAllTilesOfGivenSuit) &&
                 (dictOfTileCounts[firstTileInSuit] == 3 || dictOfTileCounts[firstTileInSuit] == 4) &&
                 (dictOfTileCounts[lastTileInSuit] == 3 || dictOfTileCounts[lastTileInSuit] == 4);
@@ -409,7 +437,9 @@ namespace Fraser.Mahjong
 
         public bool ScoresThirteenOrphans(IList<TileGrouping> tileGroups)
         {
-            var uniqueTileSet = new HashSet<Tile>(tileGroups.SelectMany(group => group));
+            var uniqueTileSet = new HashSet<Tile>(tileGroups.SelectMany(
+                group => group.Where(t => t.GetType() != typeof(BonusTile))));
+
             return !AnyTilesFitCriteria(tileGroups, t => !t.IsTerminalOrHonor()) &&
                 tileGroups.Any(t => t.IsPair()) && uniqueTileSet.Count == 13;
         }
@@ -431,7 +461,8 @@ namespace Fraser.Mahjong
         public bool ScoresTheChariot(IList<TileGrouping> tileGroups)
         {
             OutputCountOfGroupsOfSuit(tileGroups, Suit.Dots, out _, out _, out _, out int pairs);
-            var uniqueTileSet = new HashSet<Tile>(tileGroups.SelectMany(group => group));
+            var uniqueTileSet = new HashSet<Tile>(tileGroups.SelectMany(
+                group => group.Where(t => t.GetType() != typeof(BonusTile))));
             return pairs == 7 && uniqueTileSet.Count == 7 &&
                 !AnyTilesFitCriteria(tileGroups, t => t.IsTerminalOrHonor());
         }
@@ -450,45 +481,45 @@ namespace Fraser.Mahjong
 
         public bool ScoresGiftOfHeaven()
         {
-            if (WinningPlayer is null || PlayerSourceOfWinningTile is null || CurrentDeal is null)
+            if (winningPlayer is null || sourceOfWinningTile is null || currentDeal is null)
             {
                 return false;
             }
-            return PlayerSourceOfWinningTile.Equals(WinningPlayer) &&
-                CurrentDeal.DiscardedTiles.Count() == 0 &&
-                CurrentDeal.Game.Players.All(x => x.Hand.CalledSets.SequenceEqual(new List<TileGrouping>()));
+            return sourceOfWinningTile.Equals(winningPlayer) &&
+                currentDeal.DiscardedTiles.Count() == 0 &&
+                currentDeal.Game.Players.All(x => x.Hand.CalledSets.SequenceEqual(new List<TileGrouping>()));
         }
 
         public bool ScoresGiftOfEarth()
         {
-            if (WinningPlayer is null || PlayerSourceOfWinningTile is null || CurrentDeal is null)
+            if (winningPlayer is null || sourceOfWinningTile is null || currentDeal is null)
             {
                 return false;
             }
-            return PlayerSourceOfWinningTile.Equals(WinningPlayer) &&
-                CurrentDeal.DiscardedTiles.Count() != 0 &&
-                CurrentDeal.DiscardedTilesPerPlayer[WinningPlayer].Count() == 0 &&
-                CurrentDeal.Game.Players.All(x => x.Hand.CalledSets.SequenceEqual(new List<TileGrouping>()));
+            return sourceOfWinningTile.Equals(winningPlayer) &&
+                currentDeal.DiscardedTiles.Count() != 0 &&
+                currentDeal.DiscardedTilesPerPlayer[winningPlayer].Count() == 0 &&
+                currentDeal.Game.Players.All(x => x.Hand.CalledSets.SequenceEqual(new List<TileGrouping>()));
         }
 
         public bool ScoresGiftOfMan()
         {
-            if (WinningPlayer is null || PlayerSourceOfWinningTile is null || CurrentDeal is null)
+            if (winningPlayer is null || sourceOfWinningTile is null || currentDeal is null)
             {
                 return false;
             }
-            return !PlayerSourceOfWinningTile.Equals(WinningPlayer) &&
-                CurrentDeal.DiscardedTilesPerPlayer[WinningPlayer].Count() == 0 &&
-                CurrentDeal.Game.Players.All(x => x.Hand.CalledSets.SequenceEqual(new List<TileGrouping>()));
+            return !sourceOfWinningTile.Equals(winningPlayer) &&
+                currentDeal.DiscardedTilesPerPlayer[winningPlayer].Count() == 0 &&
+                currentDeal.Game.Players.All(x => x.Hand.CalledSets.SequenceEqual(new List<TileGrouping>()));
         }
 
         public bool ScoresEightDealerKeeps()
         {
-            if (CurrentDeal is null)
+            if (currentDeal is null)
             {
                 return false;
             }
-            return CurrentDeal.Game.DealerKeepCount >= 8;
+            return currentDeal.Game.DealerKeepCount >= 8;
         }
 
         public bool AnyTilesFitCriteria(IList<TileGrouping> tileGroups, Func<Tile, bool> criteria)
