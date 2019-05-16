@@ -57,26 +57,27 @@ namespace Fraser.Mahjong
             {
                 GiveNextTileToPlayer(player);
             }
-            Game.Players[0].Hand.UncalledTiles = new List<Tile>{
-                TileInstance.EastWind,
-                TileInstance.EastWind,
-                TileInstance.EastWind,
-                TileInstance.SouthWind,
-                TileInstance.SouthWind,
-                TileInstance.SouthWind,
-                TileInstance.WestWind,
-                TileInstance.WestWind,
-                TileInstance.WestWind,
-                TileInstance.NorthWind,
-                TileInstance.NorthWind,
-                TileInstance.NorthWind,
-                TileInstance.RedDragon
-            };
+            //Game.Players[0].Hand.UncalledTiles = new List<Tile>{
+            //    TileInstance.EastWind,
+            //    TileInstance.EastWind,
+            //    TileInstance.EastWind,
+            //    TileInstance.SouthWind,
+            //    TileInstance.SouthWind,
+            //    TileInstance.SouthWind,
+            //    TileInstance.WestWind,
+            //    TileInstance.WestWind,
+            //    TileInstance.WestWind,
+            //    TileInstance.NorthWind,
+            //    TileInstance.NorthWind,
+            //    TileInstance.NorthWind,
+            //    TileInstance.RedDragon
+            //};
             foreach (var player in Game.Players)
             {
                 CheckForAndReplaceBonusTiles(player);
                 player.Hand.SortHand();
             }
+            //RemainingTiles[0] = TileInstance.EastWind;
         }
 
         private void ShuffleTiles()
@@ -107,7 +108,8 @@ namespace Fraser.Mahjong
                 return;
             }
             player.Hand.UncalledTiles.Add(tileAtIndex);
-            WriteGameState();
+            // CheckForAndReplaceBonusTiles(player);
+            // WriteGameState();
         }
 
         private void GiveNextTileToPlayer(Player player)
@@ -230,6 +232,12 @@ namespace Fraser.Mahjong
             if (group.IsQuad())
             {
                 GiveTileAtParticularIndexToPlayer(stealingPlayer, 0);
+                CheckForAndReplaceBonusTiles(stealingPlayer);
+                HandleQuads(stealingPlayer);
+                if (DealIsOver)
+                {
+                    return;
+                }
             }
             IndexOfCurrentPlayer = indexOfStealingPlayer;
             // Console.ReadLine();
@@ -265,8 +273,10 @@ namespace Fraser.Mahjong
                         return;
                     }
                     GiveTileAtParticularIndexToPlayer(player, 0);
+                    CheckForAndReplaceBonusTiles(player);
                 }
             }
+            WriteGameState();
         }
 
         private void HandleQuads(Player player)
@@ -290,6 +300,7 @@ namespace Fraser.Mahjong
                         group.Add(tileInQuad);
                         player.Hand.UncalledTiles.Remove(tileInQuad);
                         quadIsMade = true;
+                        break;
                     }
                 }
                 if (!quadIsMade)
@@ -312,7 +323,7 @@ namespace Fraser.Mahjong
 
         public void WriteGameState()
         {
-            Console.Clear();
+            // Console.Clear();
             Game.WriteGameState();
             WriteDiscardedTiles();
 
@@ -329,7 +340,6 @@ namespace Fraser.Mahjong
             var discardedTilesText = "Discarded tiles: ";
             var maximumTilesPerDiscardedLine = (Console.WindowWidth - discardedTilesText.Length) / 4;
             var tilesWritten = 0;
-            Console.WriteLine(maximumTilesWrittenPerLine);
 
             // DiscardedTiles = new SuitedHonorTileSorter().SortTiles(DiscardedTiles);
             Console.Write(discardedTilesText);
@@ -359,8 +369,9 @@ namespace Fraser.Mahjong
         {
             foreach (var tile in player.Hand.UncalledTiles)
             {
-                if (player is HumanPlayer)
-                {
+                if (player is Player)
+                    //if (player is HumanPlayer)
+                    {
                     tile.WriteShortColoredString();
                 }
                 else
