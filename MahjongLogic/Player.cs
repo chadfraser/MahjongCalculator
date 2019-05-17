@@ -18,11 +18,10 @@ namespace Fraser.Mahjong
             Hand = new HKOSHand();
             SeatWind = seatWind;
             Points = 0;
+            TilesSeenSinceLastDraw = new HashSet<Tile>();
             TileGrouper = new SequenceTripletQuadTileGrouper(new SuitedHonorBonusTileSorter());
             WaitingDistanceFinder = new RegularHandSevenPairsThirteenOrphansWaitingDistanceFinder();
         }
-
-        public IWaitingDistanceFinder WaitingDistanceFinder { get; set; }
 
         public string Name { get; set; }
 
@@ -32,9 +31,13 @@ namespace Fraser.Mahjong
 
         public HonorType SeatWind { get; set; }
 
+        public ISet<Tile> TilesSeenSinceLastDraw { get; set; }
+
         public int Points { get; set; }
 
         public ITileGrouper TileGrouper { get; set; }
+
+        public IWaitingDistanceFinder WaitingDistanceFinder { get; set; }
 
         public abstract Tile ChooseTileToDiscard();
 
@@ -71,6 +74,10 @@ namespace Fraser.Mahjong
 
         public bool CanClaimDiscardedTileToCompleteWinningHand(Tile discardedTile)
         {
+            if (TilesSeenSinceLastDraw.Contains(discardedTile))
+            {
+                return false;
+            }
             var potentialHandTiles = new List<Tile>(Hand.UncalledTiles) { discardedTile };
 
             return WaitingDistanceFinder.GetWaitingDistance(potentialHandTiles) == -1;

@@ -29,7 +29,7 @@ namespace Fraser.Mahjong
         {
             SeenTiles.Clear();
             SeenTiles.AddRange(Hand.UncalledTiles);
-            SeenTiles.AddRange(Game.CurrentDeal.DiscardedTiles);
+            SeenTiles.AddRange(Game.CurrentRound.CurrentDeal.DiscardedTiles);
             foreach (var player in Game.Players)
             {
                 foreach (var group in player.Hand.CalledSets)
@@ -132,6 +132,7 @@ namespace Fraser.Mahjong
 
         public override bool IsClaimingDiscardedTileToCompleteWinningHand(Tile discardedTile)
         {
+            //return false;
             var uncalledTilesWithClaimedDiscard = new List<Tile>(Hand.UncalledTiles)
             {
                 discardedTile
@@ -186,6 +187,7 @@ namespace Fraser.Mahjong
 
         public override bool IsDeclaringWin()
         {
+            //return false;
             return Hand.IsWinningHand();
         }
 

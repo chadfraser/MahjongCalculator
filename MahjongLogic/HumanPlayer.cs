@@ -39,6 +39,7 @@ namespace Fraser.Mahjong
                     Console.WriteLine($"\t{i + 2}. Claim the discarded {discardedTile} to make: " +
                         $"[{groupsInvolvingDiscardedTile[i]}].");
                 }
+                Console.Write(">>>");
                 var input = Console.ReadLine();
                 if (int.TryParse(input, out int numericChoice) && numericChoice > 0 &&
                     numericChoice <= groupsInvolvingDiscardedTile.Count + 1)
@@ -60,16 +61,18 @@ namespace Fraser.Mahjong
                 return false;
             }
 
-            Console.WriteLine($"Type 'yes' to claim the discarded {discardedTile} for the win.");
-            var input = Console.ReadLine().ToLower();
-            return input.Equals("yes");
+            Console.WriteLine($"Type 0 to claim the discarded {discardedTile} for the win.");
+            Console.Write(">>>");
+            var input = Console.ReadLine();
+            return input.Equals("0");
         }
 
         public override Tile ChooseTileToDiscard()
         {
             while (true)
             {
-                Console.WriteLine($"Choose a tile to discard by typing a number from 1 to {Hand.UncalledTiles.Count}.");
+                Console.WriteLine($"Choose a tile to discard by typing a number from 1 to {Hand.UncalledTiles.Count}");
+                Console.Write(">>>");
                 var input = Console.ReadLine();
                 if (int.TryParse(input, out int numericChoice) && numericChoice > 0 &&
                     numericChoice <= Hand.UncalledTiles.Count)
@@ -84,9 +87,10 @@ namespace Fraser.Mahjong
 
         public override bool IsDeclaringWin()
         {
-            Console.WriteLine($"Type 'yes' to declare a win.");
-            var input = Console.ReadLine().ToLower();
-            return input.Equals("yes");
+            Console.WriteLine($"Type 0 to declare a win.");
+            Console.Write(">>>");
+            var input = Console.ReadLine();
+            return input.Equals("0");
         }
 
         public override TileGrouping GetOpenOrPromotedQuadMade()
@@ -109,6 +113,11 @@ namespace Fraser.Mahjong
                     Console.WriteLine($"\t{i + closedQuads.Count() + 2}. Create a promoted quad with the " +
                         $"{promotedQuads[i].First()} in your hand.");
                 }
+                if (Hand.IsWinningHand())
+                {
+                    Console.WriteLine($"\t{promotedQuads.Count + closedQuads.Count + 2}. Declare a winning hand.");
+                }
+                Console.Write(">>>");
                 var input = Console.ReadLine();
                 var inputIsInt = int.TryParse(input, out int numericChoice);
                 if (!inputIsInt)
@@ -120,6 +129,11 @@ namespace Fraser.Mahjong
                 if (numericChoice == 1)
                 {
                     return null;
+                }
+
+                if (numericChoice == closedQuads.Count + promotedQuads.Count + 2 && Hand.IsWinningHand())
+                {
+                    return new TileGrouping();
                 }
                 if (numericChoice > 0 && numericChoice < closedQuads.Count + 2)
                 {
@@ -173,6 +187,7 @@ namespace Fraser.Mahjong
                     Console.WriteLine($"\t{groupsInvolvingDiscardedTile.Count + 2}. Claim the discarded {discardedTile} " +
                         $"to make a winning hand.");
                 }
+                Console.Write(">>>");
                 var input = Console.ReadLine();
                 var inputIsInt = int.TryParse(input, out int numericChoice);
                 if (!inputIsInt)

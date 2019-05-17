@@ -10,7 +10,7 @@ namespace Fraser.Mahjong
 
         // The short colored string of a tile is 4 characters long, but we pad the line we write to with enough spaces
         // to match the maximumNameLength
-        private static readonly int maximumTilesWrittenPerLine = (Console.WindowWidth - (maximumNameLength + 2)) / 4;
+        private static readonly int maximumTilesWrittenPerLine = (Console.WindowWidth - (maximumNameLength + 6)) / 4;
 
         public Deal(Round round, IList<Tile> tiles)
         {
@@ -110,8 +110,6 @@ namespace Fraser.Mahjong
                 CheckForAndReplaceBonusTiles(player);
                 player.Hand.SortHand();
             }
-            //RemainingTiles[RemainingTiles.Count - 1] = TileInstance.Chrysanthemum;
-            //RemainingTiles[0] = TileInstance.RedDragon;
         }
 
         private void ShuffleTiles()
@@ -181,12 +179,18 @@ namespace Fraser.Mahjong
         private void DiscardTile(Player turnPlayer)
         {
             var discardedTile = turnPlayer.ChooseTileToDiscard();
+            turnPlayer.TilesSeenSinceLastDraw.Clear();
+
             turnPlayer.Hand.SortHand();
-            Console.WriteLine($"{turnPlayer.Name} discards {discardedTile}.");
+            Console.WriteLine($"\n{turnPlayer.Name} discards {discardedTile}.\n");
             DiscardedTilesPerPlayer[turnPlayer].Add(discardedTile);
 
             var playerCount = Round.GetPlayers().Length;
             var groupsToBeMadeWithDiscardedTile = PollPlayersForClaimingDiscardedTile(discardedTile, turnPlayer);
+            foreach (var player in Round.GetPlayers())
+            {
+                player.TilesSeenSinceLastDraw.Add(discardedTile);
+            }
 
             for (int i = 1; i < playerCount; i++)
             {
@@ -196,7 +200,6 @@ namespace Fraser.Mahjong
                 if (currentGroup != null && currentGroup.Equals(new TileGrouping()))
                 {
                     // score hand, adjust points, end game, open set that scores
-                    Console.WriteLine($"{Round.GetPlayers()[otherPlayerIndex].Name} says \"MAHJONG.\"");
                     Round.GetPlayers()[otherPlayerIndex].Hand.UncalledTiles.Add(discardedTile);
                     HandleWinningHand(Round.GetPlayers()[otherPlayerIndex], turnPlayer, 0);
                     return;
@@ -262,6 +265,8 @@ namespace Fraser.Mahjong
         private void HandleClaimedDiscard(int indexOfStealingPlayer, Tile discardedTile, TileGrouping group)
         {
             var stealingPlayer = Round.GetPlayers()[indexOfStealingPlayer];
+
+            WriteOpenGroupMessage(stealingPlayer, group);
             stealingPlayer.MakeGroupWithDiscardedTile(discardedTile, group);
             stealingPlayer.Hand.SortHand();
             if (group.IsQuad())
@@ -286,8 +291,10 @@ namespace Fraser.Mahjong
 
         private void CheckForAndReplaceBonusTiles(Player player)
         {
+            var hadBonusTiles = false;
             while (player.Hand.UncalledTiles.Where(x => x is BonusTile).Any())
             {
+                hadBonusTiles = true;
                 var bonusTiles = new List<Tile>(player.Hand.UncalledTiles.OfType<BonusTile>());
                 foreach (var tile in bonusTiles)
                 {
@@ -297,6 +304,7 @@ namespace Fraser.Mahjong
                     if (player.Hand.BonusSets.Count == 7)
                     {
                         Console.WriteLine($"{player.Name} has seven bonus tiles.");
+                        WriteGameState();
                         if (player.Hand.IsWinningHand() && player.IsDeclaringWin())
                         {
                             HandleWinningHand(player, player, 1);
@@ -305,6 +313,7 @@ namespace Fraser.Mahjong
                     else if (player.Hand.BonusSets.Count == 8)
                     {
                         Console.WriteLine($"{player.Name} has all eight bonus tiles.");
+                        WriteGameState();
                         if (player.Hand.IsWinningHand() && player.IsDeclaringWin())
                         {
                             HandleWinningHand(player, player, 1);
@@ -312,12 +321,16 @@ namespace Fraser.Mahjong
                     }
                     GiveTileAtParticularIndexToPlayer(player, 0);
                 }
+                WriteGameState();
                 if (player.Hand.IsWinningHand() && player.IsDeclaringWin())
                 {
                     HandleWinningHand(player, player, 1);
                 }
             }
-            WriteGameState();
+            if (!hadBonusTiles)
+            {
+                WriteGameState();
+            }
         }
 
         private void HandleQuads(Player player)
@@ -330,14 +343,36 @@ namespace Fraser.Mahjong
                 {
                     return;
                 }
+                if (selectedQuad.Equals(new TileGrouping()))
+                {
+                    HandleWinningHand(player, player, quadsThisTurn);
+                    return;
+                }
 
+                player.Hand.SortHand();
                 var tileInQuad = selectedQuad.First();
                 var quadIsMade = false;
                 foreach (var group in player.Hand.CalledSets)
                 {
                     if (group.IsTriplet() && group.First().Equals(tileInQuad))
                     {
-                        // check for chankan
+                        var playerCount = Round.GetPlayers().Length;
+                        var groupsToBeMadeWithDiscardedTile = PollPlayersForClaimingDiscardedTile(tileInQuad, player);
+
+                        for (int i = 1; i < playerCount; i++)
+                        {
+                            var otherPlayerIndex = (i + IndexOfCurrentPlayer) % playerCount;
+                            if (Round.GetPlayers()[otherPlayerIndex].
+                                IsClaimingDiscardedTileToCompleteWinningHand(tileInQuad))
+                            {
+                                Round.GetPlayers()[otherPlayerIndex].Hand.UncalledTiles.Add(tileInQuad);
+                                HandleWinningHand(Round.GetPlayers()[otherPlayerIndex], player, 1);
+                                return;
+                            }
+                            Round.GetPlayers()[otherPlayerIndex].TilesSeenSinceLastDraw.Add(tileInQuad);
+                        }
+                        player.TilesSeenSinceLastDraw.Add(tileInQuad);
+
                         group.Add(tileInQuad);
                         player.Hand.UncalledTiles.Remove(tileInQuad);
                         quadIsMade = true;
@@ -352,6 +387,7 @@ namespace Fraser.Mahjong
                         player.Hand.UncalledTiles.Remove(tileInQuad);
                     }
                 }
+                WriteOpenGroupMessage(player, selectedQuad);
                 quadsThisTurn++;
                 GiveTileAtParticularIndexToPlayer(player, 0);
                 CheckForAndReplaceBonusTiles(player);
@@ -365,6 +401,7 @@ namespace Fraser.Mahjong
         private void HandleWinningHand(Player winningPlayer, Player sourceOfWinningTile,
             int replacementTilesThisTurn)
         {
+            Console.WriteLine($"{winningPlayer.Name} says \"MAHJONG.\"");
             winningPlayer.Hand.SortHand();
             Round.GetHandScorer().Hand = winningPlayer.Hand;
             Round.GetHandScorer().SetCircumstantialValues(winningPlayer, sourceOfWinningTile, this,
@@ -470,6 +507,7 @@ namespace Fraser.Mahjong
 
         private void WritePlayerData(Player player, bool revealTiles)
         {
+            Console.Write($"({player.SeatWind.ToString().Substring(0, 1)}) ");
             Console.Write($"{player.Name.PadRight(maximumNameLength).Substring(0, maximumNameLength)}: ");
             WriteTilesInPlayersHand(player, revealTiles);
             WriteTilesInPlayersCalledSets(player, revealTiles);
@@ -556,9 +594,25 @@ namespace Fraser.Mahjong
             Console.WriteLine();
         }
 
+        private void WriteOpenGroupMessage(Player player, TileGrouping groupFormed)
+        {
+            if (groupFormed.IsQuad())
+            {
+                Console.WriteLine($"{player.Name} says \"GONG.\"");
+            }
+            else if (groupFormed.IsTriplet())
+            {
+                Console.WriteLine($"{player.Name} says \"PUNG.\"");
+            }
+            else if (groupFormed.IsSequence())
+            {
+                Console.WriteLine($"{player.Name} says \"CHOW.\"");
+            }
+        }
+
         private void PadLineWithWhiteSpacesToAlignWithMaximumNameLength()
         {
-            PadLineWithWhiteSpaces(maximumNameLength + 2);
+            PadLineWithWhiteSpaces(maximumNameLength + 6);
         }
 
         private void WriteSpaceBetweenTiles()
