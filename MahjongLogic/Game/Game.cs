@@ -52,7 +52,7 @@ namespace Fraser.Mahjong
         {
             foreach (var player in Players)
             {
-                Console.Write($"{player.Name.PadRight(Deal.maximumNameLength).Substring(0, Deal.maximumNameLength)} ";
+                Console.Write($"{player.Name.PadRight(Deal.maximumNameLength).Substring(0, Deal.maximumNameLength)} ");
                 for (int i = 0; i < Deal.maximumNameLength + 2 - player.Name.Length; i++)
                 {
                     Console.Write($"-");
@@ -65,7 +65,7 @@ namespace Fraser.Mahjong
         public void IncreaseDealerIndexAndCycleWinds()
         {
             DealerIndex = (DealerIndex + 1) % Players.Length;
-            for (int i = 0; i < Players.Length - 1; i++)
+            for (int i = 0; i < Players.Length; i++)
             {
                 Players[(DealerIndex + i) % Players.Length].SeatWind = orderedWinds[i];
             }
