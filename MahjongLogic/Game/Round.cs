@@ -31,14 +31,18 @@ namespace Fraser.Mahjong
 
         public void PlayRound()
         {
-            foreach (var player in Game.Players)
+            while (true)
             {
-                player.Hand.UncalledTiles.Clear();
-                player.Hand.CalledSets.Clear();
-                player.Hand.BonusSets.Clear();
+                foreach (var player in Game.Players)
+                {
+                    player.Hand.UncalledTiles.Clear();
+                    player.Hand.CalledSets.Clear();
+                    player.Hand.BonusSets.Clear();
+                }
+                CurrentDeal = new Deal(this, AllTiles);
+                CurrentDeal.PlayDeal();
+                Console.WriteLine(Game.DealerIndex);
             }
-            CurrentDeal = new Deal(this, AllTiles);
-            CurrentDeal.PlayDeal();
         }
 
         public void Stalemate()
@@ -50,7 +54,8 @@ namespace Fraser.Mahjong
 
         public void WriteRoundData()
         {
-            Console.WriteLine($"{RoundWind} {DealCount}, {DealerKeepCount} dealer keeps.");
+            var suffix = DealerKeepCount == 1 ? "." : "s.";
+            Console.WriteLine($"{RoundWind} {DealCount}, {DealerKeepCount} dealer keep{suffix}");
         }
 
         public Player[] GetPlayers()
