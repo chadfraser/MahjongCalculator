@@ -281,7 +281,7 @@ namespace Fraser.Mahjong
             IndexOfCurrentPlayer = indexOfStealingPlayer;
             // Console.ReadLine();
             WriteGameState();
-            DiscardTile(Round.GetPlayers()[IndexOfCurrentPlayer]);
+            DiscardTile(stealingPlayer);
         }
 
         private void CheckForAndReplaceBonusTiles(Player player)
@@ -372,6 +372,7 @@ namespace Fraser.Mahjong
             Console.WriteLine($"{winningPlayer.Name} scores {Round.GetHandScorer().ScoreHand()} doubles.");
             var handPoints = Round.GetHandScorer().GetPointsFromHand();
             Round.GetHandScorer().WriteHandScoringPatterns();
+            WriteRevealedWinningHand(winningPlayer);
 
             if (sourceOfWinningTile.Equals(winningPlayer))
             {
@@ -400,7 +401,7 @@ namespace Fraser.Mahjong
                 Round.DealCount++;
                 Round.Game.IncreaseDealerIndexAndCycleWinds();
             }
-
+            Console.ReadKey();
             DealIsOver = true;
         }
 
@@ -414,8 +415,35 @@ namespace Fraser.Mahjong
             Console.WriteLine($"Player {IndexOfCurrentPlayer + 1}'s turn.\n");
             foreach (var player in Round.GetPlayers())
             {
-                WritePlayerData(player);
+                if (player.Equals(Round.GetPlayers()[IndexOfCurrentPlayer]))
+                {
+                    WriteDiscardIndices(player);
+                }
+                WritePlayerData(player, player is HumanPlayer);
             }
+        }
+
+        public void WriteRevealedWinningHand(Player winningPlayer)
+        {
+            Console.WriteLine($"{winningPlayer.Name} wins the deal.");
+            foreach (var player in Round.GetPlayers())
+            {
+                WritePlayerData(player, player is HumanPlayer || player.Equals(winningPlayer));
+            }
+        }
+
+        public void WriteDiscardIndices(Player player)
+        {
+            PadLineWithWhiteSpacesToAlignWithMaximumNameLength();
+            for (int i = 0; i < player.Hand.UncalledTiles.Count; i++)
+            {
+                Console.Write($" {i + 1} ");
+                if (i < 9)
+                {
+                    Console.Write(" ");
+                }
+            }
+            Console.WriteLine();
         }
 
         private void WriteDiscardedTiles()
@@ -440,20 +468,20 @@ namespace Fraser.Mahjong
             Console.WriteLine();
         }
 
-        private void WritePlayerData(Player player)
+        private void WritePlayerData(Player player, bool revealTiles)
         {
             Console.Write($"{player.Name.PadRight(maximumNameLength).Substring(0, maximumNameLength)}: ");
-            WriteTilesInPlayersHand(player);
-            WriteTilesInPlayersCalledSets(player);
+            WriteTilesInPlayersHand(player, revealTiles);
+            WriteTilesInPlayersCalledSets(player, revealTiles);
             WriteTilesInPlayersBonusSets(player);
         }
 
-        private void WriteTilesInPlayersHand(Player player)
+        private void WriteTilesInPlayersHand(Player player, bool revealTiles)
         {
             foreach (var tile in player.Hand.UncalledTiles)
             {
                 //if (player is Player)
-                if (player is HumanPlayer)
+                if (revealTiles)
                 {
                     tile.WriteShortColoredString();
                 }
@@ -465,7 +493,7 @@ namespace Fraser.Mahjong
             Console.WriteLine();
         }
 
-        private void WriteTilesInPlayersCalledSets(Player player)
+        private void WriteTilesInPlayersCalledSets(Player player, bool revealTiles)
         {
             var tilesWritten = 0;
 
@@ -480,7 +508,7 @@ namespace Fraser.Mahjong
                 }
                 if (player.Hand.CalledSets[i].IsQuad() && !player.Hand.CalledSets[i].IsOpenGroup)
                 {
-                    if (player is HumanPlayer)
+                    if (revealTiles)
                     {
                         Console.Write("[??]");
                         player.Hand.CalledSets[i].First().WriteShortColoredString();
