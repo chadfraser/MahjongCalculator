@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -77,6 +78,9 @@ namespace Fraser.Mahjong
 
     public static class TileInstance
     {
+        private static IDictionary<string, Tile> _tileInstanceShorthandDict = new Dictionary<string, Tile>();
+        public static ReadOnlyDictionary<string, Tile> tileInstanceShorthandDict;
+
         public static readonly SuitedTile OneOfDots = new SuitedTile(Suit.Dots, 1);
         public static readonly SuitedTile TwoOfDots = new SuitedTile(Suit.Dots, 2);
         public static readonly SuitedTile ThreeOfDots = new SuitedTile(Suit.Dots, 3);
@@ -203,11 +207,6 @@ namespace Fraser.Mahjong
             }
         );
 
-        public static void InitializeAllTileArrays()
-        {
-
-        }
-
         public static readonly ReadOnlyCollection<Tile> AllBonusTileInstances = new ReadOnlyCollection<Tile>(
             AllSeasonTileInstances.Concat(AllFlowerTileInstances).ToArray()
         );
@@ -239,5 +238,30 @@ namespace Fraser.Mahjong
             allMainTiles.Sort();
             return new ReadOnlyCollection<Tile>(allMainTiles);
         }
+
+        public static void InitializeTileShorthandDict()
+        {
+            for (int i = 0; i < AllSuitedTileInstances.Count; i++)
+            {
+                var currentTile = AllSuitedTileInstances[i];
+                var lastWordOfTileInstance = currentTile.ToString().Split(' ').Last();
+                _tileInstanceShorthandDict[$"{i % 9 + 1}{lastWordOfTileInstance[0]}"] = currentTile;
+            }
+            for (int i = 0; i < AllBonusTileInstances.Count; i++)
+            {
+                var currentTile = AllBonusTileInstances[i];
+                var lastWordOfTileInstance = currentTile.ToString().Split(' ').Last();
+                _tileInstanceShorthandDict[$"{i % 9 + 1}{lastWordOfTileInstance[0]}"] = currentTile;
+            }
+            _tileInstanceShorthandDict[$"EW"] = TileInstance.EastWind;
+            _tileInstanceShorthandDict[$"SW"] = TileInstance.SouthWind;
+            _tileInstanceShorthandDict[$"WW"] = TileInstance.WestWind;
+            _tileInstanceShorthandDict[$"NW"] = TileInstance.NorthWind;
+            _tileInstanceShorthandDict[$"WH"] = TileInstance.WhiteDragon;
+            _tileInstanceShorthandDict[$"GR"] = TileInstance.GreenDragon;
+            _tileInstanceShorthandDict[$"RD"] = TileInstance.RedDragon;
+            tileInstanceShorthandDict = new ReadOnlyDictionary<string, Tile>(_tileInstanceShorthandDict);
+        }
+
     }
 }
