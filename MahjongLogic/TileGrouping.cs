@@ -57,7 +57,7 @@ namespace Fraser.Mahjong
         public bool IsBonus()
         {
             var firstTile = tiles.FirstOrDefault();
-            return !(firstTile is null) && tiles.First().GetType() == typeof(BonusTile) && tiles.Count == 1;
+            return !(firstTile is null) && tiles.All(t => t.GetType() == typeof(BonusTile));
         }
 
         public int Count { get => tiles.Count; }

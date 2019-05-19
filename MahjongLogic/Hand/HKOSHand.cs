@@ -60,7 +60,8 @@ namespace Fraser.Mahjong
             }
 
             var waysToSplitTilesThatUseAllTiles = allWaysToSplitTiles.Where(
-                group => group.Sum(t => t.Count()) == UncalledTiles.Count()).ToList();
+                allGroups => allGroups.Sum(t => t.Count()) == UncalledTiles.Count() ||
+                allGroups.All(group => group.IsBonus())).ToList();
             return waysToSplitTilesThatUseAllTiles;
         }
 
@@ -70,6 +71,15 @@ namespace Fraser.Mahjong
             IList<TileGrouping> bestWayToParseHand = null;
 
             var waysToParseWinningHand = FindAllWaysToParseWinningHand();
+            if (waysToParseWinningHand.Count == 0)
+            {
+                if (BonusSets.Count > 6)
+                {
+                    return CalledSets.Concat(BonusSets).ToList();
+                }
+                return null;
+            }
+
             foreach (var wayToParse in waysToParseWinningHand)
             {
                 var tilesPlusCombinedSetsAndBonus = wayToParse.Concat(CalledSets).Concat(BonusSets).ToList();
