@@ -19,6 +19,9 @@ namespace Fraser.Mahjong
             Players = new Player[]
             {
                 new HumanPlayer(this, "Player", HonorType.East),
+                //new HumanPlayer(this, "Player", HonorType.East),
+                //new HumanPlayer(this, "Player", HonorType.East),
+                //new HumanPlayer(this, "Player", HonorType.East),
                 new EfficientAI(this, "COM 1", HonorType.South),
                 new EfficientAI(this, "COM 2", HonorType.West),
                 new EfficientAI(this, "COM 3", HonorType.North)
@@ -52,12 +55,12 @@ namespace Fraser.Mahjong
         {
             foreach (var player in Players)
             {
-                Console.Write($"{player.Name.PadRight(Deal.maximumNameLength).Substring(0, Deal.maximumNameLength)} ");
+                Console.Write($"{player.Name.Substring(0, Math.Min(player.Name.Length, Deal.maximumNameLength))} ");
                 for (int i = 0; i < Deal.maximumNameLength + 2 - player.Name.Length; i++)
                 {
                     Console.Write($"-");
                 }
-                Console.Write($" {player.Points}");
+                Console.WriteLine($" {player.Points}");
             }
             Console.ReadKey();
         }
