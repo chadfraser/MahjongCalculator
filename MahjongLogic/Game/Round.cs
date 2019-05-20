@@ -38,10 +38,10 @@ namespace Fraser.Mahjong
                     player.Hand.UncalledTiles.Clear();
                     player.Hand.CalledSets.Clear();
                     player.Hand.BonusSets.Clear();
+                    player.TilesSeenSinceLastTurn.Clear();
                 }
                 CurrentDeal = new Deal(this, AllTiles);
                 CurrentDeal.PlayDeal();
-                Console.WriteLine(Game.DealerIndex);
             }
         }
 

@@ -11,6 +11,7 @@ namespace Fraser.Mahjong
         // The short colored string of a tile is 4 characters long, but we pad the line we write to with enough spaces
         // to match the maximumNameLength
         private static readonly int maximumTilesWrittenPerLine = (Console.WindowWidth - (maximumNameLength + 6)) / 4;
+        private string mostRecentActionText = "";
 
         public Deal(Round round, IList<Tile> tiles)
         {
@@ -61,6 +62,13 @@ namespace Fraser.Mahjong
         private void DealInitialHands()
         {
             ShuffleTiles();
+            //RemainingTiles[RemainingTiles.Count - 1] = TileInstance.PlumBlossom;
+            //RemainingTiles[RemainingTiles.Count - 2] = TileInstance.Chrysanthemum;
+            //RemainingTiles[RemainingTiles.Count - 3] = TileInstance.BambooPlant;
+            //RemainingTiles[RemainingTiles.Count - 4] = TileInstance.Orchid;
+            //RemainingTiles[RemainingTiles.Count - 19] = TileInstance.Winter;
+            //RemainingTiles[RemainingTiles.Count - 18] = TileInstance.Summer;
+            //RemainingTiles[0] = TileInstance.Autumn;
             for (int timesToDrawInitialSetOfTiles = 0; timesToDrawInitialSetOfTiles < 3; timesToDrawInitialSetOfTiles++)
             {
                 foreach (var player in Round.GetPlayers())
@@ -75,7 +83,7 @@ namespace Fraser.Mahjong
             {
                 GiveNextTileToPlayer(player);
             }
-            //Game.Players[0].Hand.UncalledTiles = new List<Tile>{
+            //Round.GetPlayers()[0].Hand.UncalledTiles = new List<Tile>{
             //    TileInstance.EastWind,
             //    TileInstance.EastWind,
             //    TileInstance.EastWind,
@@ -141,8 +149,6 @@ namespace Fraser.Mahjong
                 return;
             }
             player.Hand.UncalledTiles.Add(tileAtIndex);
-            // CheckForAndReplaceBonusTiles(player);
-            // WriteGameState();
         }
 
         private void GiveNextTileToPlayer(Player player)
@@ -154,112 +160,107 @@ namespace Fraser.Mahjong
         {
             var turnPlayer = Round.GetPlayers()[IndexOfCurrentPlayer];
             GiveNextTileToPlayer(turnPlayer);
-            CheckForAndReplaceBonusTiles(turnPlayer);
+            WriteGameStateWithoutPlayerData();
+            WriteLastDrawnTileData(turnPlayer);
+
+            var hadBonusTiles = CheckForAndReplaceBonusTiles(turnPlayer);
             if (DealIsOver)
             {
                 return;
             }
+            if (hadBonusTiles)
+            {
+                WriteLastDrawnTileData(turnPlayer);
+            }
+            Console.WriteLine();
+            WriteAllPlayerData();
 
-            HandleQuads(turnPlayer);
-            if (DealIsOver)
+            bool finishedTurn;
+            var quadsMadeThisTurn = 0;
+            do
             {
-                return;
+                finishedTurn = HandleTurnAction(turnPlayer, true, ref quadsMadeThisTurn);
             }
-
-            if (turnPlayer.Hand.IsWinningHand() && turnPlayer.IsDeclaringWin())
-            {
-                HandleWinningHand(turnPlayer, turnPlayer, 0);
-            }
-            else
-            {
-                DiscardTile(turnPlayer);
-            }
+            while (!finishedTurn);
         }
 
-        private void DiscardTile(Player turnPlayer)
+        private bool DiscardTile(Player turnPlayer)
         {
-            var discardedTile = turnPlayer.ChooseTileToDiscard();
-            turnPlayer.TilesSeenSinceLastDraw.Clear();
+            var tileIndex = turnPlayer.ChooseIndexOfTileToDiscard();
+            if (tileIndex == -1)
+            {
+                return false;
+            }
 
+            var discardedTile = turnPlayer.Hand.UncalledTiles[tileIndex];
+            turnPlayer.Hand.UncalledTiles.RemoveAt(tileIndex);
+            turnPlayer.TilesSeenSinceLastTurn.Clear();
             turnPlayer.Hand.SortHand();
             Console.WriteLine($"\n{turnPlayer.Name} discards {discardedTile}.\n");
             DiscardedTilesPerPlayer[turnPlayer].Add(discardedTile);
 
             var playerCount = Round.GetPlayers().Length;
-            var groupsToBeMadeWithDiscardedTile = PollPlayersForClaimingDiscardedTile(discardedTile, turnPlayer);
+            var actionsToClaimDiscardedTile = PollPlayersForClaimingDiscardedTile(discardedTile, turnPlayer);
             foreach (var player in Round.GetPlayers())
             {
-                player.TilesSeenSinceLastDraw.Add(discardedTile);
+                player.TilesSeenSinceLastTurn.Add(discardedTile);
             }
 
-            for (int i = 1; i < playerCount; i++)
-            {
-                var otherPlayerIndex = (i + IndexOfCurrentPlayer) % playerCount;
-                var currentGroup = groupsToBeMadeWithDiscardedTile[otherPlayerIndex];
+            var indexOfPlayerWithPriorityToClaimDiscard = FindIndexOfPlayerWithPriorityToClaimDiscardedTile(
+                actionsToClaimDiscardedTile);
 
-                if (currentGroup != null && currentGroup.Equals(new TileGrouping()))
+            if (indexOfPlayerWithPriorityToClaimDiscard == -1)
+            {
+                if (RemainingTiles.Count == 0)
                 {
-                    // score hand, adjust points, end game, open set that scores
-                    Round.GetPlayers()[otherPlayerIndex].Hand.UncalledTiles.Add(discardedTile);
-                    HandleWinningHand(Round.GetPlayers()[otherPlayerIndex], turnPlayer, 0);
-                    return;
+                    Round.Stalemate();
+                    DealIsOver = true;
+                    return true;
                 }
+                DiscardedTiles.Add(discardedTile);
+                IndexOfCurrentPlayer = (IndexOfCurrentPlayer + 1) % playerCount;
+                return true;
             }
-            if (RemainingTiles.Count == 0)
-            {
-                Round.Stalemate();
-                DealIsOver = true;
-                return;
-            }
-            for (int i = 1; i < playerCount ; i++)
-            {
-                var otherPlayerIndex = (i + IndexOfCurrentPlayer) % playerCount;
-                var currentGroup = groupsToBeMadeWithDiscardedTile[otherPlayerIndex];
+            var currentAction = actionsToClaimDiscardedTile[indexOfPlayerWithPriorityToClaimDiscard];
+            var otherPlayer = Round.GetPlayers()[indexOfPlayerWithPriorityToClaimDiscard];
 
-                if (currentGroup != null && (currentGroup.IsTriplet() || currentGroup.IsQuad()))
-                {
-                    HandleClaimedDiscard(otherPlayerIndex, discardedTile, currentGroup);
-                    return;
-                }
-            }
-            for (int i = 1; i < playerCount; i++)
+            if (currentAction == TurnAction.DeclareWin)
             {
-                var otherPlayerIndex = (i + IndexOfCurrentPlayer) % playerCount;
-                var currentGroup = groupsToBeMadeWithDiscardedTile[otherPlayerIndex];
-
-                if (currentGroup != null)
-                {
-                    HandleClaimedDiscard(otherPlayerIndex, discardedTile, currentGroup);
-                    return;
-                }
+                // score hand, adjust points, end game, open set that scores
+                otherPlayer.Hand.UncalledTiles.Add(discardedTile);
+                HandleWinningHand(otherPlayer, turnPlayer, 0);
+                return true;
             }
-
-            DiscardedTiles.Add(discardedTile);
-            IndexOfCurrentPlayer = (IndexOfCurrentPlayer + 1) % playerCount;
+            else
+            {
+                var groupMadeWithDiscardedTile = otherPlayer.GetGroupMadeWithDiscardedTile(discardedTile, currentAction);
+                HandleClaimedDiscard(indexOfPlayerWithPriorityToClaimDiscard, discardedTile, groupMadeWithDiscardedTile);
+                return true;
+            }
             // Console.ReadLine();
         }
 
-        private TileGrouping[] PollPlayersForClaimingDiscardedTile(Tile discardedTile, Player turnPlayer)
+        private TurnAction[] PollPlayersForClaimingDiscardedTile(Tile discardedTile, Player turnPlayer)
         {
             var playerCount = Round.GetPlayers().Length;
-            var groupsToBeMadeWithDiscardedTile = new TileGrouping[playerCount];
+            var actionsToClaimDiscardedTile = new TurnAction[playerCount];
 
             for (int i = 1; i < playerCount; i++)
             {
                 var otherPlayerIndex = (i + IndexOfCurrentPlayer) % playerCount;
-                if (!Round.GetPlayers()[otherPlayerIndex].CanClaimDiscardedTileToCompleteWinningHand(discardedTile) &&
-                    !Round.GetPlayers()[otherPlayerIndex].CanClaimDiscardedTileToCompleteGroup(discardedTile, i == 1))
+                var otherPlayer = Round.GetPlayers()[otherPlayerIndex];
+                if (!otherPlayer.CanClaimDiscardedTileToCompleteWinningHand(discardedTile) &&
+                    !otherPlayer.CanClaimDiscardedTileToCompleteGroup(discardedTile, i == 1))
                 {
-                    groupsToBeMadeWithDiscardedTile[otherPlayerIndex] = null;
+                    actionsToClaimDiscardedTile[otherPlayerIndex] = TurnAction.Pass;
                     continue;
                 }
 
-                var groupMade = Round.GetPlayers()[otherPlayerIndex].
-                    GetGroupMadeWithDiscardedTileOrEmptyGroupForWin(discardedTile, turnPlayer);
-                groupsToBeMadeWithDiscardedTile[otherPlayerIndex] = groupMade;
+                var action = otherPlayer.GetTurnActionAgainstDiscardedTile(discardedTile, turnPlayer);
+                actionsToClaimDiscardedTile[otherPlayerIndex] = action;
             }
 
-            return groupsToBeMadeWithDiscardedTile;
+            return actionsToClaimDiscardedTile;
         }
 
         private void HandleClaimedDiscard(int indexOfStealingPlayer, Tile discardedTile, TileGrouping group)
@@ -277,7 +278,8 @@ namespace Fraser.Mahjong
                 {
                     HandleWinningHand(stealingPlayer, stealingPlayer, 1);
                 }
-                HandleQuads(stealingPlayer);
+                int foo = 1;
+                HandleQuads(stealingPlayer, ref foo);
                 if (DealIsOver)
                 {
                     return;
@@ -289,7 +291,7 @@ namespace Fraser.Mahjong
             DiscardTile(stealingPlayer);
         }
 
-        private void CheckForAndReplaceBonusTiles(Player player)
+        private bool CheckForAndReplaceBonusTiles(Player player)
         {
             var hadBonusTiles = false;
             while (player.Hand.UncalledTiles.Where(x => x is BonusTile).Any())
@@ -301,51 +303,43 @@ namespace Fraser.Mahjong
                     player.Hand.UncalledTiles.Remove(tile);
                     player.Hand.BonusSets.Add(new TileGrouping { tile });
                     Console.WriteLine($"{player.Name} melds {tile}.");
-                    if (player.Hand.BonusSets.Count == 7)
+                    if (player.Hand.BonusSets.Count == 7 && !player.Hand.UncalledTiles.Any(t => t is BonusTile))
                     {
-                        Console.WriteLine($"{player.Name} has seven bonus tiles.");
-                        WriteGameState();
-                        if (player.Hand.IsWinningHand() && player.IsDeclaringWin())
+                        WriteGameState($"{player.Name} has seven bonus tiles.");
+                        if (player.IsDeclaringWin())
                         {
-                            HandleWinningHand(player, player, 1);
+                            HKOSHandScorer.isBonusWin = true;
+                            HandleWinningHand(player, player, 0);
+                            return true;
                         }
                     }
                     else if (player.Hand.BonusSets.Count == 8)
                     {
-                        Console.WriteLine($"{player.Name} has all eight bonus tiles.");
-                        WriteGameState();
-                        if (player.Hand.IsWinningHand() && player.IsDeclaringWin())
-                        {
-                            HandleWinningHand(player, player, 1);
-                        }
+                        WriteGameState($"{player.Name} has all eight bonus tiles.");
+                        Console.ReadKey();
+                        Console.WriteLine();
+                        HKOSHandScorer.isBonusWin = true;
+                        HandleWinningHand(player, player, 0);
+                        return true;
                     }
                     GiveTileAtParticularIndexToPlayer(player, 0);
                 }
-                WriteGameState();
                 if (player.Hand.IsWinningHand() && player.IsDeclaringWin())
                 {
                     HandleWinningHand(player, player, 1);
+                    return true;
                 }
             }
-            if (!hadBonusTiles)
-            {
-                WriteGameState();
-            }
+            return hadBonusTiles;
         }
 
-        private void HandleQuads(Player player)
+        private void HandleQuads(Player player, ref int quadsMadeThisTurn)
         {
-            var quadsThisTurn = 0;
             while (player.Hand.ContainsQuad() && RemainingTiles.Count > 0)
             {
                 var selectedQuad = player.GetOpenOrPromotedQuadMade();
                 if (selectedQuad == null)
                 {
-                    return;
-                }
-                if (selectedQuad.Equals(new TileGrouping()))
-                {
-                    HandleWinningHand(player, player, quadsThisTurn);
                     return;
                 }
 
@@ -369,9 +363,9 @@ namespace Fraser.Mahjong
                                 HandleWinningHand(Round.GetPlayers()[otherPlayerIndex], player, 1);
                                 return;
                             }
-                            Round.GetPlayers()[otherPlayerIndex].TilesSeenSinceLastDraw.Add(tileInQuad);
+                            Round.GetPlayers()[otherPlayerIndex].TilesSeenSinceLastTurn.Add(tileInQuad);
                         }
-                        player.TilesSeenSinceLastDraw.Add(tileInQuad);
+                        // player.TilesSeenSinceLastTurn.Add(tileInQuad);
 
                         group.Add(tileInQuad);
                         player.Hand.UncalledTiles.Remove(tileInQuad);
@@ -388,14 +382,48 @@ namespace Fraser.Mahjong
                     }
                 }
                 WriteOpenGroupMessage(player, selectedQuad);
-                quadsThisTurn++;
+                quadsMadeThisTurn++;
                 GiveTileAtParticularIndexToPlayer(player, 0);
                 CheckForAndReplaceBonusTiles(player);
-                if (player.Hand.IsWinningHand() && player.IsDeclaringWin())
-                {
-                    HandleWinningHand(player, player, quadsThisTurn);
-                }
             }
+        }
+
+        private bool HandleTurnAction(Player player, bool canDeclareWinOrFormQuads, ref int quadsMadeThisTurn)
+        {
+            var turnAction = player.GetTurnAction(canDeclareWinOrFormQuads);
+
+            switch (turnAction)
+            {
+                case TurnAction.FormQuad:
+                    HandleQuads(player, ref quadsMadeThisTurn);
+                    break;
+                case TurnAction.DeclareWin:
+                    HandleWinningHand(player, player, quadsMadeThisTurn);
+                    return true;
+                case TurnAction.CheckScores:
+                    Console.WriteLine();
+                    Round.Game.WriteScores();
+                    break;
+                case TurnAction.CheckPatterns:
+                    Console.WriteLine();
+                    HKOSScoringPatternConstants.WriteAllScoringData();
+                    break;
+                case TurnAction.Discard:
+                    return DiscardTile(player);
+                default:
+                    break;
+            }
+
+            WriteGameStateWithoutPlayerData();
+            // WriteLastDrawnTileData(player);
+            Console.WriteLine();
+            WriteAllPlayerData();
+                    
+            if (DealIsOver)
+            {
+                return true;
+            }
+            return false;
         }
 
         private void HandleWinningHand(Player winningPlayer, Player sourceOfWinningTile,
@@ -442,34 +470,88 @@ namespace Fraser.Mahjong
             DealIsOver = true;
         }
 
+        private int FindIndexOfPlayerWithPriorityToClaimDiscardedTile(TurnAction[] actionsToClaimDiscardedTile)
+        {
+            var currentPrioritizedClaim = TurnAction.Pass;
+            int currentPrioritizedClaimingPlayerIndex = -1;
+            var playerCount = Round.GetPlayers().Length;
+
+            for (int i = 1; i < playerCount; i++)
+            {
+                var otherPlayerIndex = (IndexOfCurrentPlayer - i + playerCount) % playerCount;
+                var currentAction = actionsToClaimDiscardedTile[otherPlayerIndex];
+
+                switch (currentAction)
+                {
+                    case TurnAction.DeclareWin:
+                        currentPrioritizedClaim = currentAction;
+                        currentPrioritizedClaimingPlayerIndex = otherPlayerIndex;
+                        break;
+                    case TurnAction.FormQuad:
+                    case TurnAction.FormTriplet:
+                        if (currentPrioritizedClaim != TurnAction.DeclareWin)
+                        {
+                            currentPrioritizedClaim = currentAction;
+                            currentPrioritizedClaimingPlayerIndex = otherPlayerIndex;
+                        }
+                        break;
+                    case TurnAction.FormSequence:
+                        if (currentPrioritizedClaim == TurnAction.Pass ||
+                            currentPrioritizedClaim == TurnAction.FormSequence)
+                        {
+                            currentPrioritizedClaim = currentAction;
+                            currentPrioritizedClaimingPlayerIndex = otherPlayerIndex;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return currentPrioritizedClaimingPlayerIndex;
+        }
+
         public void WriteGameState()
         {
             // Console.Clear();
-            Round.WriteRoundData();
-            WriteDiscardedTiles();
-
-            Console.WriteLine($"{RemainingTiles.Count} tiles remaining.");
-            Console.WriteLine($"Player {IndexOfCurrentPlayer + 1}'s turn.\n");
-            foreach (var player in Round.GetPlayers())
-            {
-                if (player.Equals(Round.GetPlayers()[IndexOfCurrentPlayer]))
-                {
-                    WriteDiscardIndices(player);
-                }
-                WritePlayerData(player, player is HumanPlayer);
-            }
+            WriteGameStateWithoutPlayerData();
+            WriteAllPlayerData();
         }
 
-        public void WriteRevealedWinningHand(Player winningPlayer)
+        public void WriteGameState(string currentActionData)
         {
-            Console.WriteLine($"{winningPlayer.Name} wins the deal.");
+            // Console.Clear();
+            Console.WriteLine("=====================================");
+            WriteGameStateWithoutPlayerData();
+            Console.WriteLine(currentActionData);
+            Console.WriteLine();
+            WriteAllPlayerData();
+        }
+
+        private void WriteGameStateWithoutPlayerData()
+        {
+            Console.WriteLine();
+            Round.WriteRoundData();
+            WriteDiscardedTiles();
+            WriteCurrentTurnData();
+        }
+
+        private void WriteRevealedWinningHand(Player winningPlayer)
+        {
+            Console.WriteLine($"{winningPlayer.Name} wins the deal.\n");
             foreach (var player in Round.GetPlayers())
             {
                 WritePlayerData(player, player is HumanPlayer || player.Equals(winningPlayer));
             }
         }
 
-        public void WriteDiscardIndices(Player player)
+        private void WriteCurrentTurnData()
+        {
+            Console.WriteLine($"{RemainingTiles.Count} tiles remaining.");
+            Console.WriteLine($"Player {IndexOfCurrentPlayer + 1}'s turn.\n");
+        }
+
+        private void WriteDiscardIndices(Player player)
         {
             PadLineWithWhiteSpacesToAlignWithMaximumNameLength();
             for (int i = 0; i < player.Hand.UncalledTiles.Count; i++)
@@ -505,6 +587,18 @@ namespace Fraser.Mahjong
             Console.WriteLine();
         }
 
+        private void WriteAllPlayerData()
+        {
+            foreach (var player in Round.GetPlayers())
+            {
+                if (player.Equals(Round.GetPlayers()[IndexOfCurrentPlayer]))
+                {
+                    WriteDiscardIndices(player);
+                }
+                WritePlayerData(player, player is HumanPlayer);
+            }
+        }
+
         private void WritePlayerData(Player player, bool revealTiles)
         {
             Console.Write($"({player.SeatWind.ToString().Substring(0, 1)}) ");
@@ -518,7 +612,6 @@ namespace Fraser.Mahjong
         {
             foreach (var tile in player.Hand.UncalledTiles)
             {
-                //if (player is Player)
                 if (revealTiles)
                 {
                     tile.WriteShortColoredString();
@@ -608,6 +701,13 @@ namespace Fraser.Mahjong
             {
                 Console.WriteLine($"{player.Name} says \"CHOW.\"");
             }
+        }
+
+        private void WriteLastDrawnTileData(Player player)
+        {
+            var drawnTileData = player is HumanPlayer ?
+                    player.Hand.UncalledTiles[player.Hand.UncalledTiles.Count - 1].ToString() : "a tile";
+            Console.WriteLine($"{player.Name} draws {drawnTileData}.");
         }
 
         private void PadLineWithWhiteSpacesToAlignWithMaximumNameLength()
