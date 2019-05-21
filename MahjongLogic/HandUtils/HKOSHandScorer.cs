@@ -638,7 +638,7 @@ namespace Fraser.Mahjong
             {
                 return false;
             }
-            return currentDeal.Round.DealerKeepCount >= 8;
+            return currentDeal.Round.DealerKeepCount >= 8 && winningPlayer.SeatWind == HonorType.East;
         }
 
         public bool AnyTilesFitCriteria(IList<TileGrouping> tileGroups, Func<Tile, bool> criteria)
