@@ -34,6 +34,10 @@ namespace Fraser.Mahjong
             {
                 foreach (var group in player.Hand.CalledSets)
                 {
+                    if (!group.IsOpenGroup && !player.Equals(this))
+                    {
+                        continue;
+                    }
                     SeenTiles.AddRange(group);
                 }
                 foreach (var group in player.Hand.BonusSets)
@@ -43,10 +47,22 @@ namespace Fraser.Mahjong
             }
         }
 
-        public override Tile ChooseTileToDiscard()
+        public override TurnAction GetTurnAction(bool canDeclareWin)
+        {
+            if (canDeclareWin && Hand.IsWinningHand())
+            {
+                return TurnAction.DeclareWin;
+            }
+            else
+            {
+                return TurnAction.Discard;
+            }
+        }
+
+        public override int ChooseIndexOfTileToDiscard()
         {
             UpdateSeenTiles();
-            var tileToDiscard = Hand.UncalledTiles[Hand.UncalledTiles.Count - 1];
+            var indexOfTileToDiscard = Hand.UncalledTiles.Count - 1;
             var currentWaitingDistance = WaitingDistanceFinder.GetWaitingDistance(Hand.UncalledTiles);
             var bestEfficientDrawCount = 0;
             for (int i = 0; i < Hand.UncalledTiles.Count; i++)
@@ -63,14 +79,13 @@ namespace Fraser.Mahjong
 
                 if (newEfficientDrawCount > bestEfficientDrawCount) {
                     bestEfficientDrawCount = newEfficientDrawCount;
-                    tileToDiscard = Hand.UncalledTiles[i];
+                    indexOfTileToDiscard = i;
                 }
             }
-            Hand.UncalledTiles.Remove(tileToDiscard);
-            return tileToDiscard;
+            return indexOfTileToDiscard;
         }
 
-        public TileGrouping ChooseGroupToMakeWithDiscardedTileOrNull(Tile discardedTile, bool canBeSequence)
+        public TileGrouping ChooseGroupToMakeWithDiscardedTile(Tile discardedTile, bool canBeSequence)
         {
             UpdateSeenTiles();
             var potentialHandTiles = new List<Tile>(Hand.UncalledTiles) { discardedTile };
@@ -80,6 +95,7 @@ namespace Fraser.Mahjong
             var maximumTileEfficiency = EfficientDrawsFinder.GetEfficientDrawCountWithSeenTiles(Hand.UncalledTiles,
                 SeenTiles);
             TileGrouping idealGroup = null;
+
             foreach (var group in groupsInvolvingDiscardedTile)
             {
                 var remainingTiles = new List<Tile>(potentialHandTiles);
@@ -140,50 +156,32 @@ namespace Fraser.Mahjong
             return WaitingDistanceFinder.GetWaitingDistance(uncalledTilesWithClaimedDiscard) == -1;
         }
 
-        public override TileGrouping GetGroupMadeWithDiscardedTileOrEmptyGroupForWin(Tile discardedTile,
-            Player discardingPlayer)
+        public override TileGrouping GetGroupMadeWithDiscardedTile(Tile discardedTile, TurnAction typeOfGroup)
         {
+            return RecentlySelectedTileGrouping;
+        }
+
+        public override TurnAction GetTurnActionAgainstDiscardedTile(Tile discardedTile, Player discardingPlayer)
+        {
+            RecentlySelectedTileGrouping = null;
             var indexInPlayerList = Array.IndexOf(Game.Players, this);
             var arrayLength = Game.Players.Count();
-            var moduloPreviousPlayerIndex = ((indexInPlayerList - 1) % arrayLength + arrayLength) % arrayLength;
+            var moduloPreviousPlayerIndex = (indexInPlayerList - 1 + arrayLength) % arrayLength;
             var isNextInTurnOrder = Game.Players[moduloPreviousPlayerIndex] == discardingPlayer;
             if (IsClaimingDiscardedTileToCompleteWinningHand(discardedTile))
             {
-                return new TileGrouping();
+                return TurnAction.DeclareWin;
             }
             if (IsClaimingDiscardedTileToCompleteGroup(discardedTile, isNextInTurnOrder))
             {
-                return ChooseGroupToMakeWithDiscardedTileOrNull(discardedTile, isNextInTurnOrder);
+                RecentlySelectedTileGrouping = ChooseGroupToMakeWithDiscardedTile(discardedTile, isNextInTurnOrder);
+                var action = RecentlySelectedTileGrouping.IsTriplet() ? TurnAction.FormTriplet :
+                    (RecentlySelectedTileGrouping.IsQuad() ? TurnAction.FormQuad :
+                    (RecentlySelectedTileGrouping.IsSequence() ? TurnAction.FormSequence : TurnAction.Pass));
+                return action;
             }
-            return null;
+            return TurnAction.Pass;
         }
-
-        //public override CallEnum GetCallForClaimingDiscardedTile(Tile discardedTile, Player discardingPlayer)
-        //{
-        //    var indexInPlayerList = Array.IndexOf(Game.Players, this);
-        //    var isNextPlayerInTurnOrder = Game.Players[(indexInPlayerList + 1) % Game.Players.Count()] == discardingPlayer;
-        //    if (IsClaimingDiscardedTileToCompleteWinningHand(discardedTile))
-        //    {
-        //        return CallEnum.Mahjong;
-        //    }
-        //    if (IsClaimingDiscardedTileToCompleteGroup(discardedTile, isNextPlayerInTurnOrder))
-        //    {
-        //        var group = ChooseGroupToMakeWithDiscardedTile(discardedTile, isNextPlayerInTurnOrder);
-        //        if (group.IsQuad())
-        //        {
-        //            return CallEnum.Quad;
-        //        }
-        //        if (group.IsTriplet())
-        //        {
-        //            return CallEnum.Triplet;
-        //        }
-        //        if (group.IsSequence())
-        //        {
-        //            return CallEnum.Sequence;
-        //        }
-        //    }
-        //    return CallEnum.None;
-        //}
 
         public override bool IsDeclaringWin()
         {
@@ -195,33 +193,5 @@ namespace Fraser.Mahjong
         {
             return null;
         }
-
-        //public void OnOpponentDiscard(Tile discardedTile)
-        //{
-        //    var uncalledTilesWithClaimedDiscard = new List<Tile>(Hand.UncalledTiles)
-        //    {
-        //        discardedTile
-        //    };
-        //    if (WaitingDistanceFinder.GetWaitingDistance(uncalledTilesWithClaimedDiscard) == -1)
-        //    {
-        //        IsClaimingDiscardedTileToCompleteWinningHand(discardedTile);
-        //    }
-        //    else
-        //    {
-        //        IsClaimingDiscardedTileToCompleteGroup(discardedTile, false);
-        //    }
-        //}
-
-        //public void OnTurn()
-        //{
-        //    if (WaitingDistanceFinder.GetWaitingDistance(Hand.UncalledTiles) == -1)
-        //    {
-        //        Console.WriteLine("\"Mahjong.\"");
-        //    }
-        //    else
-        //    {
-        //        ChooseTileToDiscard();
-        //    }
-        //}
     }
 }
