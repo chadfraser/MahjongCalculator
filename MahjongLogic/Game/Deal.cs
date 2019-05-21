@@ -69,6 +69,7 @@ namespace Fraser.Mahjong
             //RemainingTiles[RemainingTiles.Count - 19] = TileInstance.Winter;
             //RemainingTiles[RemainingTiles.Count - 18] = TileInstance.Summer;
             //RemainingTiles[0] = TileInstance.Autumn;
+            //RemainingTiles[RemainingTiles.Count - 16] = TileInstance.WhiteDragon;
             for (int timesToDrawInitialSetOfTiles = 0; timesToDrawInitialSetOfTiles < 3; timesToDrawInitialSetOfTiles++)
             {
                 foreach (var player in Round.GetPlayers())
@@ -83,35 +84,37 @@ namespace Fraser.Mahjong
             {
                 GiveNextTileToPlayer(player);
             }
+            Round.GetPlayers()[0].Hand.UncalledTiles = new List<Tile>{
+                TileInstance.EastWind,
+                TileInstance.EastWind,
+                TileInstance.EastWind,
+                TileInstance.SouthWind,
+                TileInstance.SouthWind,
+                TileInstance.SouthWind,
+                TileInstance.WestWind,
+                TileInstance.WestWind,
+                TileInstance.WestWind,
+                TileInstance.NorthWind,
+                TileInstance.NorthWind,
+                TileInstance.TwoOfDots,
+                TileInstance.ThreeOfDots
+            };
             //Round.GetPlayers()[0].Hand.UncalledTiles = new List<Tile>{
-            //    TileInstance.EastWind,
-            //    TileInstance.EastWind,
-            //    TileInstance.EastWind,
-            //    TileInstance.SouthWind,
-            //    TileInstance.SouthWind,
-            //    TileInstance.SouthWind,
-            //    TileInstance.WestWind,
-            //    TileInstance.WestWind,
-            //    TileInstance.WestWind,
-            //    TileInstance.NorthWind,
-            //    TileInstance.NorthWind,
-            //    TileInstance.NorthWind,
-            //    TileInstance.WhiteDragon
-            //};
-            //Game.Players[0].Hand.UncalledTiles = new List<Tile>{
-            //    TileInstance.OneOfBamboo,
-            //    TileInstance.NineOfBamboo,
-            //    TileInstance.OneOfDots,
-            //    TileInstance.NineOfDots,
-            //    TileInstance.OneOfCharacters,
-            //    TileInstance.NineOfCharacters,
-            //    TileInstance.EastWind,
-            //    TileInstance.SouthWind,
-            //    TileInstance.WestWind,
-            //    TileInstance.NorthWind,
-            //    TileInstance.WhiteDragon,
-            //    TileInstance.GreenDragon,
-            //    TileInstance.RedDragon
+
+            //        TileInstance.TwoOfDots,
+            //        TileInstance.TwoOfDots,
+            //        TileInstance.ThreeOfDots,
+            //        TileInstance.ThreeOfDots,
+            //        TileInstance.NineOfDots,
+            //        TileInstance.NineOfDots,
+            //        TileInstance.NineOfDots,
+            //        //TileInstance.ThreeOfBamboo,
+            //        TileInstance.FiveOfBamboo,
+            //        TileInstance.FiveOfBamboo,
+            //        TileInstance.SevenOfBamboo,
+            //        TileInstance.SevenOfBamboo,
+            //        TileInstance.TwoOfCharacters,
+            //        TileInstance.WhiteDragon
             //};
             foreach (var player in Round.GetPlayers())
             {
@@ -234,8 +237,8 @@ namespace Fraser.Mahjong
             else
             {
                 var groupMadeWithDiscardedTile = otherPlayer.GetGroupMadeWithDiscardedTile(discardedTile, currentAction);
-                HandleClaimedDiscard(indexOfPlayerWithPriorityToClaimDiscard, discardedTile, groupMadeWithDiscardedTile);
-                return true;
+                return HandleClaimedDiscard(indexOfPlayerWithPriorityToClaimDiscard, discardedTile,
+                    groupMadeWithDiscardedTile);
             }
             // Console.ReadLine();
         }
@@ -263,7 +266,7 @@ namespace Fraser.Mahjong
             return actionsToClaimDiscardedTile;
         }
 
-        private void HandleClaimedDiscard(int indexOfStealingPlayer, Tile discardedTile, TileGrouping group)
+        private bool HandleClaimedDiscard(int indexOfStealingPlayer, Tile discardedTile, TileGrouping group)
         {
             var stealingPlayer = Round.GetPlayers()[indexOfStealingPlayer];
 
@@ -282,13 +285,19 @@ namespace Fraser.Mahjong
                 HandleQuads(stealingPlayer, ref foo);
                 if (DealIsOver)
                 {
-                    return;
+                    return true;
                 }
             }
             IndexOfCurrentPlayer = indexOfStealingPlayer;
             // Console.ReadLine();
             WriteGameState();
-            DiscardTile(stealingPlayer);
+
+            bool hasDiscardedTile = false;
+            while (!hasDiscardedTile)
+            {
+                hasDiscardedTile = HandleTurnAction(stealingPlayer, false);
+            }
+            return true;
         }
 
         private bool CheckForAndReplaceBonusTiles(Player player)
@@ -386,6 +395,12 @@ namespace Fraser.Mahjong
                 GiveTileAtParticularIndexToPlayer(player, 0);
                 CheckForAndReplaceBonusTiles(player);
             }
+        }
+
+        private bool HandleTurnAction(Player player, bool canDeclareWinOrFormQuads)
+        {
+            int _ = 0;
+            return HandleTurnAction(player, canDeclareWinOrFormQuads, ref _);
         }
 
         private bool HandleTurnAction(Player player, bool canDeclareWinOrFormQuads, ref int quadsMadeThisTurn)
