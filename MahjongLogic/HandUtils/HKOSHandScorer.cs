@@ -10,7 +10,7 @@ namespace Fraser.Mahjong
         private static Player winningPlayer;
         private static Player sourceOfWinningTile;
         private static int replacementDrawsBeforeWinning;
-        private static bool isRobAQuad;
+        public static bool isRobAQuad;
         public static bool isBonusWin;
 
         public HKOSHandScorer(HKOSHand hand)
@@ -39,6 +39,8 @@ namespace Fraser.Mahjong
         private IDictionary<Func<IList<TileGrouping>, bool>, int> LimitHandPatternPoints { get; set; }
 
         private IDictionary<Func<IList<TileGrouping>, bool>, string> PatternText { get; set; }
+
+        private IDictionary<Func<IList<TileGrouping>, bool>, string> LimitHandPatternText { get; set; }
 
         protected static readonly IDictionary<HonorType, int> SeatWindRanks = new Dictionary<HonorType, int>
         {
@@ -129,7 +131,11 @@ namespace Fraser.Mahjong
                 [x => ScoresLastTileDiscarded()] = "Last Tile Discarded",
                 [x => ScoresWinOffAReplacementTile()] = "Win Off a Replacement Tile",
                 [x => ScoresQuadOnQuad()] = "Quad-On-Quad",
-                [x => ScoresRobAQuad()] = "Rob a Quad",
+                [x => ScoresRobAQuad()] = "Rob a Quad"
+            };
+
+            LimitHandPatternText = new Dictionary<Func<IList<TileGrouping>, bool>, string>
+            {
                 [x => ScoresFourConcealedTriplets(x)] = "Four Concealed Triplets",
                 [x => ScoresBigThreeDragons(x)] = "Big Three Dragons",
                 [x => ScoresLittleFourWinds(x)] = "Little Four Winds",
@@ -184,6 +190,21 @@ namespace Fraser.Mahjong
                 }
                 return;
             }
+
+            var scoresLimitHand = false;
+            foreach (var patternFunction in LimitHandPatternText)
+            {
+                if (patternFunction.Key(tileGroups))
+                {
+                    Console.WriteLine(patternFunction.Value);
+                    scoresLimitHand = true;
+                }
+            }
+            if (scoresLimitHand)
+            {
+                return;
+            }
+
             foreach (var patternFunction in PatternText)
             {
                 if (patternFunction.Key(tileGroups))

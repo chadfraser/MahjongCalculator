@@ -84,7 +84,7 @@ namespace Fraser.Mahjong
             {
                 var tilesPlusCombinedSetsAndBonus = wayToParse.Concat(CalledSets).Concat(BonusSets).ToList();
                 var newScore = HandScorer.ScoreHand(tilesPlusCombinedSetsAndBonus);
-                if (newScore > maxScore)
+                if (newScore >= maxScore)
                 {
                     maxScore = newScore;
                     bestWayToParseHand = tilesPlusCombinedSetsAndBonus;
