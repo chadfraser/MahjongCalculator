@@ -39,6 +39,7 @@ namespace Fraser.Mahjong
                     player.Hand.CalledSets.Clear();
                     player.Hand.BonusSets.Clear();
                     player.Hand.IsOpen = false;
+                    player.Hand.BestWayToParseHand = null;
                     player.TilesSeenSinceLastTurn.Clear();
                 }
                 CurrentDeal = new Deal(this, AllTiles);

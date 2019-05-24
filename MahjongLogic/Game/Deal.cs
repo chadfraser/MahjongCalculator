@@ -227,7 +227,7 @@ namespace Fraser.Mahjong
             {
                 // score hand, adjust points, end game, open set that scores
                 otherPlayer.Hand.UncalledTiles.Add(discardedTile);
-                HandleWinningHand(otherPlayer, 0);
+                HandleWinningHand(otherPlayer, 0, discardedTile);
             }
             else
             {
@@ -363,7 +363,7 @@ namespace Fraser.Mahjong
                     SourceOfWinningTile = player;
                     HKOSHandScorer.isRobAQuad = true;
                     otherPlayer.Hand.UncalledTiles.Add(tileInQuad);
-                    HandleWinningHand(otherPlayer, 0);
+                    HandleWinningHand(otherPlayer, 0, tileInQuad);
                     return;
                 }
                 otherPlayer.TilesSeenSinceLastTurn.Add(tileInQuad);
@@ -386,7 +386,7 @@ namespace Fraser.Mahjong
                     HandleQuads(player, ref quadsMadeThisTurn);
                     break;
                 case TurnAction.DeclareWin:
-                    HandleWinningHand(player, quadsMadeThisTurn);
+                    HandleWinningHand(player, quadsMadeThisTurn, null);
                     return true;
                 case TurnAction.CheckScores:
                     Console.WriteLine();
@@ -410,15 +410,23 @@ namespace Fraser.Mahjong
             return false;
         }
 
-        private void HandleWinningHand(Player winningPlayer, int replacementTilesThisTurn)
+        private void HandleWinningHand(Player winningPlayer, int replacementTilesThisTurn, Tile winningDiscardedTile)
         {
             Console.WriteLine($"{winningPlayer.Name} says \"MAHJONG.\"");
             Console.ReadKey();
             Console.WriteLine();
-            winningPlayer.Hand.SortHand();
+            //winningPlayer.Hand.SortHand();
             Round.GetHandScorer().Hand = winningPlayer.Hand;
             Round.GetHandScorer().SetCircumstantialValues(winningPlayer, this, replacementTilesThisTurn);
-            var doubleCount = Round.GetHandScorer().ScoreHand();
+            int doubleCount;
+            if (winningDiscardedTile != null)
+            {
+                doubleCount = Round.GetHandScorer().ScoreHand(winningDiscardedTile);
+            }
+            else
+            {
+                doubleCount = Round.GetHandScorer().ScoreHand();
+            }
 
             Console.WriteLine($"{winningPlayer.Name} scores {doubleCount} double{(doubleCount != 1 ? "s" : "")}.");
             Console.WriteLine();
@@ -522,7 +530,7 @@ namespace Fraser.Mahjong
                         if (player.IsDeclaringWin())
                         {
                             HKOSHandScorer.isBonusWin = true;
-                            HandleWinningHand(player, 0);
+                            HandleWinningHand(player, 0, null);
                             return true;
                         }
                         mostRecentActionText = tempString;
@@ -534,7 +542,7 @@ namespace Fraser.Mahjong
                         Console.ReadKey();
                         Console.WriteLine();
                         HKOSHandScorer.isBonusWin = true;
-                        HandleWinningHand(player, 0);
+                        HandleWinningHand(player, 0, null);
                         return true;
                     }
                     GiveTileAtParticularIndexToPlayer(player, 0);
@@ -544,7 +552,7 @@ namespace Fraser.Mahjong
                     WriteGameState();
                     if (player.IsDeclaringWin())
                     {
-                        HandleWinningHand(player, Math.Max(1, quadsMadeThisTurn));
+                        HandleWinningHand(player, Math.Max(1, quadsMadeThisTurn), null);
                         return true;
                     }
                 }

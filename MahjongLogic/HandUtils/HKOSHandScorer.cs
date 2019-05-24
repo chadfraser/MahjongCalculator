@@ -176,14 +176,14 @@ namespace Fraser.Mahjong
 
         public void WriteHandScoringPatterns()
         {
-            var tileGroups = Hand.FindMostValuableWayToParseWinningHand();
+            Hand.FindMostValuableWayToParseWinningHand();
             if (isBonusWin)
             {
-                if (ScoresSevenBonusTiles(tileGroups))
+                if (ScoresSevenBonusTiles(Hand.BestWayToParseHand))
                 {
                     Console.WriteLine("\t - Seven Bonus Tiles - Aborted Hand");
                 }
-                else if (ScoresEightBonusTiles(tileGroups))
+                else if (ScoresEightBonusTiles(Hand.BestWayToParseHand))
                 {
                     Console.WriteLine("\t - Eight Bonus Tiles");
                 }
@@ -193,7 +193,7 @@ namespace Fraser.Mahjong
             var scoresLimitHand = false;
             foreach (var patternFunction in LimitHandPatternText)
             {
-                if (patternFunction.Key(tileGroups))
+                if (patternFunction.Key(Hand.BestWayToParseHand))
                 {
                     Console.WriteLine($"\t - {patternFunction.Value}");
                     scoresLimitHand = true;
@@ -206,7 +206,7 @@ namespace Fraser.Mahjong
 
             foreach (var patternFunction in PatternText)
             {
-                if (patternFunction.Key(tileGroups))
+                if (patternFunction.Key(Hand.BestWayToParseHand))
                 {
                     Console.WriteLine($"\t - {patternFunction.Value}");
                 }
@@ -259,6 +259,11 @@ namespace Fraser.Mahjong
         public int ScoreHand()
         {
             return Hand.FindScoreOfMostValuableHand();
+        }
+
+        public int ScoreHand(Tile winningDiscardedTile)
+        {
+            return Hand.FindScoreOfMostValuableHand(winningDiscardedTile);
         }
 
         public int GetPointsFromHand()
