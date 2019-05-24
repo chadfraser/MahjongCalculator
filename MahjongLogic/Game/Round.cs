@@ -31,17 +31,21 @@ namespace Fraser.Mahjong
 
         public void PlayRound()
         {
-            while (true)
+            while (DealCount < 5)
             {
                 foreach (var player in Game.Players)
                 {
                     player.Hand.UncalledTiles.Clear();
                     player.Hand.CalledSets.Clear();
                     player.Hand.BonusSets.Clear();
+                    player.Hand.IsOpen = false;
                     player.TilesSeenSinceLastTurn.Clear();
                 }
                 CurrentDeal = new Deal(this, AllTiles);
                 CurrentDeal.PlayDeal();
+                Console.WriteLine();
+                Game.WriteScores();
+                Console.WriteLine("\n\n================================================\n");
             }
         }
 
