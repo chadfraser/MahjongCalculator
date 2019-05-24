@@ -189,7 +189,7 @@ namespace Fraser.Mahjong
             return Hand.IsWinningHand();
         }
 
-        public override TileGrouping GetOpenOrPromotedQuadMade()
+        public override TileGrouping GetClosedOrPromotedQuadMade()
         {
             return null;
         }

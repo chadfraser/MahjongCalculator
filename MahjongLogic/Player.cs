@@ -18,7 +18,7 @@ namespace Fraser.Mahjong
             Hand = new HKOSHand();
             SeatWind = seatWind;
             Points = 0;
-            TilesSeenSinceLastDraw = new HashSet<Tile>();
+            TilesSeenSinceLastTurn = new HashSet<Tile>();
             TileGrouper = new SequenceTripletQuadTileGrouper(new SuitedHonorBonusTileSorter());
             WaitingDistanceFinder = new RegularHandSevenPairsThirteenOrphansWaitingDistanceFinder();
         }
@@ -31,31 +31,38 @@ namespace Fraser.Mahjong
 
         public HonorType SeatWind { get; set; }
 
-        public ISet<Tile> TilesSeenSinceLastDraw { get; set; }
+        public ISet<Tile> TilesSeenSinceLastTurn { get; set; }
 
         public int Points { get; set; }
+
+        protected TileGrouping RecentlySelectedTileGrouping { get; set; }
 
         public ITileGrouper TileGrouper { get; set; }
 
         public IWaitingDistanceFinder WaitingDistanceFinder { get; set; }
 
-        public abstract Tile ChooseTileToDiscard();
+        public abstract TurnAction GetTurnAction(bool canDeclareWin);
+
+        public abstract int ChooseIndexOfTileToDiscard();
 
         public abstract bool IsClaimingDiscardedTileToCompleteGroup(Tile discardedTile, bool canBeSequence);
 
         public abstract bool IsClaimingDiscardedTileToCompleteWinningHand(Tile discardedTile);
 
-        public abstract TileGrouping GetGroupMadeWithDiscardedTileOrEmptyGroupForWin(Tile discardedTile,
-            Player discardingPlayer);
+        public abstract TileGrouping GetGroupMadeWithDiscardedTile(Tile discardedTile, TurnAction typeOfGroup);
+
+        public abstract TurnAction GetTurnActionAgainstDiscardedTile(Tile discardedTile, Player discardingPlayer);
 
         public abstract bool IsDeclaringWin();
 
-        public abstract TileGrouping GetOpenOrPromotedQuadMade();
+        public abstract TileGrouping GetClosedOrPromotedQuadMade();
 
         public Tile DiscardTile(int discardIndex)
         {
             var discardedTile = Hand.UncalledTiles[discardIndex];
             Hand.UncalledTiles.RemoveAt(discardIndex);
+            TilesSeenSinceLastTurn.Clear();
+            Hand.SortHand();
             return discardedTile;
         }
 
@@ -74,7 +81,7 @@ namespace Fraser.Mahjong
 
         public bool CanClaimDiscardedTileToCompleteWinningHand(Tile discardedTile)
         {
-            if (TilesSeenSinceLastDraw.Contains(discardedTile))
+            if (TilesSeenSinceLastTurn.Contains(discardedTile))
             {
                 return false;
             }
