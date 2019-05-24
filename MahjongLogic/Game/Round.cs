@@ -49,6 +49,20 @@ namespace Fraser.Mahjong
             }
         }
 
+        public void HandleWin(Player winningPlayer)
+        {
+            if (winningPlayer.SeatWind.Equals(HonorType.East))
+            {
+                DealerKeepCount++;
+            }
+            else
+            {
+                DealerKeepCount = 0;
+                DealCount++;
+                Game.IncreaseDealerIndexAndCycleWinds();
+            }
+        }
+
         public void Stalemate()
         {
             DealerKeepCount++;
