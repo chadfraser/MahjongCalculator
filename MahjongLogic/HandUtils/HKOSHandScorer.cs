@@ -156,13 +156,12 @@ namespace Fraser.Mahjong
             };
         }
 
-        public void SetCircumstantialValues(Player winningPlayer, Player sourceOfWinningTile, Deal deal,
-            int replacementTilesDrawn)
+        public void SetCircumstantialValues(Player player, Deal deal, int replacementTilesDrawn)
         {
-            HKOSHandScorer.winningPlayer = winningPlayer;
-            HKOSHandScorer.sourceOfWinningTile = sourceOfWinningTile;
-            HKOSHandScorer.currentDeal = deal;
-            HKOSHandScorer.replacementDrawsBeforeWinning = replacementTilesDrawn;
+            winningPlayer = player;
+            currentDeal = deal;
+            sourceOfWinningTile = currentDeal.SourceOfWinningTile;
+            replacementDrawsBeforeWinning = replacementTilesDrawn;
         }
 
         public void ClearCircumstantialValues()
@@ -182,11 +181,11 @@ namespace Fraser.Mahjong
             {
                 if (ScoresSevenBonusTiles(tileGroups))
                 {
-                    Console.WriteLine("Seven Bonus Tiles - Aborted Hand");
+                    Console.WriteLine("\t - Seven Bonus Tiles - Aborted Hand");
                 }
                 else if (ScoresEightBonusTiles(tileGroups))
                 {
-                    Console.WriteLine("Eight Bonus Tiles");
+                    Console.WriteLine("\t - Eight Bonus Tiles");
                 }
                 return;
             }
@@ -196,7 +195,7 @@ namespace Fraser.Mahjong
             {
                 if (patternFunction.Key(tileGroups))
                 {
-                    Console.WriteLine(patternFunction.Value);
+                    Console.WriteLine($"\t - {patternFunction.Value}");
                     scoresLimitHand = true;
                 }
             }
@@ -209,7 +208,7 @@ namespace Fraser.Mahjong
             {
                 if (patternFunction.Key(tileGroups))
                 {
-                    Console.WriteLine(patternFunction.Value);
+                    Console.WriteLine($"\t - {patternFunction.Value}");
                 }
             }
         }
