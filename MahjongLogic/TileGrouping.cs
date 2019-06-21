@@ -119,7 +119,8 @@ namespace Fraser.Mahjong
             else
             {
                 TileGrouping t = (TileGrouping)obj;
-                return tiles.OrderBy(tile => tile).SequenceEqual(t.tiles.OrderBy(tile => tile));
+                return IsOpenGroup == t.IsOpenGroup &&
+                    tiles.OrderBy(tile => tile).SequenceEqual(t.tiles.OrderBy(tile => tile));
             }
         }
 
@@ -129,6 +130,7 @@ namespace Fraser.Mahjong
             const int hashFactor = 91423;
 
             int hash = baseHash;
+            hash = (hash * hashFactor) ^ IsOpenGroup.GetHashCode();
             foreach (var tile in tiles)
             {
                 hash = (hash * hashFactor) ^ tile.GetHashCode();

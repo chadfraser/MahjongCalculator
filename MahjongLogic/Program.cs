@@ -6,8 +6,9 @@ namespace Fraser.Mahjong
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            TileInstance.InitializeTileShorthandDict();
             var a = new HandParser();
+
             a.GetHandString();
         }
     }

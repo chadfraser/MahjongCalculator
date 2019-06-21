@@ -51,11 +51,34 @@ namespace Fraser.Mahjong
             //    TileInstance.EightOfCharacters
             //};
 
-            foreach (var tile in TileInstance.AllMainTileInstances)
+            //foreach (var tile in TileInstance.AllMainTileInstances)
+            //{
+            //    tile.WriteShortColoredString();
+            //}
+            //Console.WriteLine("TEST");
+
+            var aaaaa = new HKOSHand()
             {
-                tile.WriteShortColoredString();
-            }
-            Console.WriteLine("TEST");
+                UncalledTiles = new List<Tile>
+                {
+                    TileInstance.FourOfDots,
+                    TileInstance.FiveOfDots,
+                    TileInstance.SixOfDots,
+                    TileInstance.ThreeOfBamboo,
+                    TileInstance.ThreeOfBamboo,
+                    TileInstance.ThreeOfBamboo,
+                    TileInstance.FiveOfBamboo,
+                    TileInstance.FiveOfBamboo,
+                    TileInstance.FiveOfBamboo,
+                    TileInstance.OneOfCharacters,
+                    TileInstance.TwoOfCharacters,
+                    TileInstance.ThreeOfCharacters,
+                    TileInstance.WhiteDragon,
+                    TileInstance.WhiteDragon
+                }
+            };
+            int b = aaaaa.FindScoreOfMostValuableHand();
+            Console.WriteLine(b);
 
             foreach (var tile in TileInstance.AllBonusTileInstances)
             {
@@ -66,17 +89,16 @@ namespace Fraser.Mahjong
             var shantenFinder = new RegularHandSevenPairsThirteenOrphansWaitingDistanceFinder();
             var ukeireFinder = new HKOSEfficientDrawsFinder();
 
-            while (true)
-            {
                 var g = new Game();
-                g.CurrentDeal.PlayDeal();
-                foreach (var p in g.Players)
-                {
-                    p.Hand.SortHand();
-                }
-                g.CurrentDeal.WriteGameState();
+                g.PlayGame();
+            //foreach (var p in g.Players)
+            //{
+            //    p.Hand.SortHand();
+            //}
+            //g.CurrentDeal.WriteGameState();
+            Console.WriteLine(">>>");
                 Console.ReadKey();
-            }
+
 
             while (true)
             {
@@ -101,11 +123,11 @@ namespace Fraser.Mahjong
                         }
                     }
                 }
-                var a = shantenFinder.GetWaitingDistance(tiles);
-                var b = ukeireFinder.GetEfficientDrawCount(tiles);
-                Console.WriteLine(a);
-                Console.WriteLine(b);
-                Console.WriteLine();
+                //var a = shantenFinder.GetWaitingDistance(tiles);
+                //var b = ukeireFinder.GetEfficientDrawCount(tiles);
+                //Console.WriteLine(a);
+                //Console.WriteLine(b);
+                //Console.WriteLine();
             }
         }
 

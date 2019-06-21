@@ -64,17 +64,6 @@ namespace Fraser.Mahjong
         private void DealInitialHands()
         {
             ShuffleTiles();
-            //RemainingTiles[RemainingTiles.Count - 1] = TileInstance.PlumBlossom;
-            //RemainingTiles[RemainingTiles.Count - 2] = TileInstance.Chrysanthemum;
-            //RemainingTiles[RemainingTiles.Count - 3] = TileInstance.BambooPlant;
-            //RemainingTiles[RemainingTiles.Count - 4] = TileInstance.Orchid;
-            //RemainingTiles[RemainingTiles.Count - 19] = TileInstance.Winter;
-            //RemainingTiles[RemainingTiles.Count - 18] = TileInstance.Summer;
-            //RemainingTiles[0] = TileInstance.Autumn;
-            //RemainingTiles[1] = TileInstance.Summer;
-            //RemainingTiles[2] = TileInstance.WestWind;
-            //RemainingTiles[3] = TileInstance.ThreeOfDots;
-            //RemainingTiles[RemainingTiles.Count - 16] = TileInstance.WhiteDragon;
             for (int timesToDrawInitialSetOfTiles = 0; timesToDrawInitialSetOfTiles < 3; timesToDrawInitialSetOfTiles++)
             {
                 foreach (var player in Round.GetPlayers())
@@ -90,38 +79,6 @@ namespace Fraser.Mahjong
                 GiveNextTileToPlayer(player);
             }
             mostRecentActionText = "";
-            //Round.GetPlayers()[0].Hand.UncalledTiles = new List<Tile>{
-            //    TileInstance.EastWind,
-            //    TileInstance.EastWind,
-            //    TileInstance.EastWind,
-            //    TileInstance.SouthWind,
-            //    TileInstance.SouthWind,
-            //    TileInstance.SouthWind,
-            //    TileInstance.WestWind,
-            //    TileInstance.WestWind,
-            //    TileInstance.WestWind,
-            //    TileInstance.NorthWind,
-            //    TileInstance.NorthWind,
-            //    TileInstance.NorthWind,
-            //    TileInstance.ThreeOfDots
-            //};
-            //Round.GetPlayers()[0].Hand.UncalledTiles = new List<Tile>{
-
-            //        TileInstance.TwoOfDots,
-            //        TileInstance.TwoOfDots,
-            //        TileInstance.ThreeOfDots,
-            //        TileInstance.ThreeOfDots,
-            //        TileInstance.NineOfDots,
-            //        TileInstance.NineOfDots,
-            //        TileInstance.NineOfDots,
-            //        //TileInstance.ThreeOfBamboo,
-            //        TileInstance.FiveOfBamboo,
-            //        TileInstance.FiveOfBamboo,
-            //        TileInstance.SevenOfBamboo,
-            //        TileInstance.SevenOfBamboo,
-            //        TileInstance.TwoOfCharacters,
-            //        TileInstance.WhiteDragon
-            //};
             foreach (var player in Round.GetPlayers())
             {
                 CheckForAndReplaceBonusTiles(player, false, 0);
@@ -201,7 +158,6 @@ namespace Fraser.Mahjong
             Console.WriteLine($"\n{mostRecentActionText}");
             DiscardedTilesPerPlayer[turnPlayer].Add(discardedTile);
 
-            //var playerCount = Round.GetPlayers().Length;
             var actionsToClaimDiscardedTile = PollPlayersForClaimingDiscardedTile(discardedTile, turnPlayer);
             foreach (var player in Round.GetPlayers())
             {
@@ -317,7 +273,6 @@ namespace Fraser.Mahjong
                     {
                         mostRecentActionText = $"{player.Name} uses the {tileInQuad} in their hand to make a promoted " +
                             $"quad.\n";
-                            //$"open triplet into an open quad.";
 
                         CheckForRobbingAQuad(player, tileInQuad);
                         if (DealIsOver)
@@ -415,7 +370,6 @@ namespace Fraser.Mahjong
             Console.WriteLine($"{winningPlayer.Name} says \"MAHJONG.\"");
             Console.ReadKey();
             Console.WriteLine();
-            //winningPlayer.Hand.SortHand();
             Round.GetHandScorer().Hand = winningPlayer.Hand;
             Round.GetHandScorer().SetCircumstantialValues(winningPlayer, this, replacementTilesThisTurn);
             int doubleCount;
@@ -573,16 +527,6 @@ namespace Fraser.Mahjong
             WriteAllPlayerData();
         }
 
-        //public void WriteGameState(string currentActionData)
-        //{
-        //    // Console.Clear();
-        //    Console.WriteLine("=====================================");
-        //    WriteGameStateWithoutPlayerData();
-        //    Console.WriteLine(currentActionData);
-        //    Console.WriteLine();
-        //    WriteAllPlayerData();
-        //}
-
         private void WriteGameStateWithoutPlayerData()
         {
             Console.WriteLine();
@@ -603,7 +547,6 @@ namespace Fraser.Mahjong
         private void WriteCurrentTurnData()
         {
             Console.WriteLine($"{RemainingTiles.Count} tiles remaining.");
-            //Console.WriteLine($"Player {IndexOfCurrentPlayer + 1}'s turn.\n");
             Console.WriteLine($"{Round.GetPlayers()[IndexOfCurrentPlayer].Name}'s turn.\n");
         }
 
@@ -627,7 +570,6 @@ namespace Fraser.Mahjong
             var maximumTilesPerDiscardedLine = (Console.WindowWidth - discardedTilesText.Length) / 4;
             var tilesWritten = 0;
 
-            // DiscardedTiles = new SuitedHonorTileSorter().SortTiles(DiscardedTiles);
             Console.Write(discardedTilesText);
             foreach (var tile in DiscardedTiles)
             {
@@ -765,7 +707,6 @@ namespace Fraser.Mahjong
         {
             var drawnTileData = player is HumanPlayer ?
                     player.Hand.UncalledTiles[player.Hand.UncalledTiles.Count - 1].ToString() : "a tile";
-            //Console.WriteLine($"{player.Name} draws {drawnTileData}.");
             return $"{player.Name} draws {drawnTileData}.";
         }
 
