@@ -692,9 +692,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Chad\\Desktop\\C#\\MahjongCalculator\\MahjongLogic\\MahjongLogic.csproj",
-      "projectName": "MahjongLogic",
-      "projectPath": "C:\\Users\\Chad\\Desktop\\C#\\MahjongCalculator\\MahjongLogic\\MahjongLogic.csproj",
+      "projectUniqueName": "C:\\Users\\Chad\\Desktop\\C#\\MahjongCalculator\\MahjongLogic\\Fraser.Mahjong.csproj",
+      "projectName": "Fraser.Mahjong",
+      "projectPath": "C:\\Users\\Chad\\Desktop\\C#\\MahjongCalculator\\MahjongLogic\\Fraser.Mahjong.csproj",
       "packagesPath": "C:\\Users\\Chad\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Chad\\Desktop\\C#\\MahjongCalculator\\MahjongLogic\\obj\\",
       "projectStyle": "PackageReference",
