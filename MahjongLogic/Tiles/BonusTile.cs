@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Mahjong
+namespace Fraser.Mahjong
 {
     public class BonusTile : Tile, IComparable, IComparable<BonusTile>
     {
@@ -58,6 +58,18 @@ namespace Mahjong
         public override bool IsPair(params Tile[] tiles)
         {
             return false;
+        }
+
+        public override void WriteShortColoredString()
+        {
+            Console.ForegroundColor = Suit.Color;
+            Console.Write($"[{Rank}{Suit.ShortName}]");
+            Console.ResetColor();
+        }
+
+        public override string GetShortName()
+        {
+            return $"{Rank}{Suit.ShortName}";
         }
 
         public override string ToString()

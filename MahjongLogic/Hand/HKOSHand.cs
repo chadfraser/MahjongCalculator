@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Mahjong
+namespace Fraser.Mahjong
 {
     public class HKOSHand : Hand
     {
@@ -10,11 +10,12 @@ namespace Mahjong
             BonusSets = new List<TileGrouping>();
             HandScorer = new HKOSHandScorer(this);
             TileSorter = new SuitedHonorBonusTileSorter();
-            TileGrouper = new SequenceTripletTileGrouper(TileSorter);
+            TileGrouper = new SequenceTripletQuadTileGrouper(TileSorter);
         }
 
         public IList<TileGrouping> BonusSets { get; set; }
         public HKOSHandScorer HandScorer { get; set; }
+        public IList<TileGrouping> BestWayToParseHand { get; set; }
 
         public override bool IsWinningHand()
         {
@@ -44,7 +45,7 @@ namespace Mahjong
 
         public int GetAdjustedCountOfPassedTiles(IList<Tile> uncalledTiles, IList<TileGrouping> calledSets)
         {
-            return uncalledTiles.Count + (3 * CalledSets.Count);
+            return uncalledTiles.Count + (3 * calledSets.Count);
         }
 
         public IList<IList<TileGrouping>> FindAllWaysToParseWinningHand()
@@ -60,27 +61,74 @@ namespace Mahjong
             }
 
             var waysToSplitTilesThatUseAllTiles = allWaysToSplitTiles.Where(
-                group => group.Sum(t => t.Count()) == UncalledTiles.Count()).ToList();
+                allGroups => allGroups.Sum(t => t.Count()) == UncalledTiles.Count() ||
+                allGroups.All(group => group.IsBonus())).ToList();
             return waysToSplitTilesThatUseAllTiles;
         }
 
-        public IList<TileGrouping> FindMostValuableWayToParseWinningHand()
+        private void CheckAndUpdateBestWayToParseWinningHand(IList<IList<TileGrouping>> allWaysToParseWinningHand)
         {
             var maxScore = 0;
-            IList<TileGrouping> bestWayToParseHand = null;
-
-            var waysToParseWinningHand = FindAllWaysToParseWinningHand();
-            foreach (var wayToParse in waysToParseWinningHand)
+            foreach (var wayToParse in allWaysToParseWinningHand)
             {
                 var tilesPlusCombinedSetsAndBonus = wayToParse.Concat(CalledSets).Concat(BonusSets).ToList();
                 var newScore = HandScorer.ScoreHand(tilesPlusCombinedSetsAndBonus);
-                if (newScore > maxScore)
+                if (newScore >= maxScore)
                 {
                     maxScore = newScore;
-                    bestWayToParseHand = tilesPlusCombinedSetsAndBonus;
+                    BestWayToParseHand = tilesPlusCombinedSetsAndBonus;
                 }
             }
-            return bestWayToParseHand;
+        }
+
+        public void FindMostValuableWayToParseWinningHand()
+        {
+            if (BestWayToParseHand != null)
+            {
+                return;
+            }
+
+            var allWaysToParseWinningHand = FindAllWaysToParseWinningHand();
+            if (allWaysToParseWinningHand.Count == 0)
+            {
+                if (BonusSets.Count > 6)
+                {
+                    BestWayToParseHand = CalledSets.Concat(BonusSets).ToList();
+                }
+                return;
+            }
+
+            CheckAndUpdateBestWayToParseWinningHand(allWaysToParseWinningHand);
+        }
+        
+        public void FindMostValuableWayToParseWinningHand(Tile winningDiscardedTile)
+        {
+            if (BestWayToParseHand != null)
+            {
+                return;
+            }
+
+            var allWaysToParseWinningHand = FindAllWaysToParseWinningHand();
+            if (allWaysToParseWinningHand.Count == 0)
+            {
+                return;
+            }
+
+            IList<IList<TileGrouping>> allWaysToParseWinningHandWithOpenSet = new List<IList<TileGrouping>>();
+            foreach (var wayToParse in allWaysToParseWinningHand)
+            {
+                foreach (var group in wayToParse.Where(g => !g.IsOpenGroup && g.Contains(winningDiscardedTile)))
+                {
+                    var temp = new List<TileGrouping>(wayToParse)
+                    {
+                        new TileGrouping(group.ToArray()) { IsOpenGroup = true }
+                    };
+                    temp.Remove(group);
+                    allWaysToParseWinningHandWithOpenSet.Add(temp);
+                }
+            }
+
+            CheckAndUpdateBestWayToParseWinningHand(allWaysToParseWinningHandWithOpenSet);
         }
 
         public IList<TileGrouping> ParseHandAsSevenPairs(IList<Tile> tiles)
@@ -99,12 +147,22 @@ namespace Mahjong
 
         public int FindScoreOfMostValuableHand()
         {
-            var mostValuableHand = FindMostValuableWayToParseWinningHand();
-            if (mostValuableHand == null)
+            FindMostValuableWayToParseWinningHand();
+            if (BestWayToParseHand == null)
             {
                 return 0;
             }
-            return HandScorer.ScoreHand(mostValuableHand);
+            return HandScorer.ScoreHand(BestWayToParseHand);
+        }
+
+        public int FindScoreOfMostValuableHand(Tile winningDiscardedTile)
+        {
+            FindMostValuableWayToParseWinningHand(winningDiscardedTile);
+            if (BestWayToParseHand == null)
+            {
+                return 0;
+            }
+            return HandScorer.ScoreHand(BestWayToParseHand);
         }
     }
 }

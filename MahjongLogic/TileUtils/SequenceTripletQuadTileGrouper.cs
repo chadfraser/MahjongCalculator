@@ -1,33 +1,18 @@
 ﻿using System.Collections.Generic;
 
-namespace Mahjong
+namespace Fraser.Mahjong
 {
     class SequenceTripletQuadTileGrouper : SequenceTripletTileGrouper, ITileGrouper
     {
-        public new static readonly int maximumGroupSize = 4;
+        public readonly int maximumGroupSize = 4;
 
         public SequenceTripletQuadTileGrouper(ITileSorter tileSorter) : base(tileSorter)
         {
         }
 
-        protected override bool CanGroupAllTilesAtOnce(IList<Tile> remainingTiles)
+        protected override int GetMaximumGroupSize()
         {
-            if (remainingTiles.Count == 0)
-            {
-                return true;
-            }
-            if (remainingTiles.Count < 3)
-            {
-                return false;
-            }
-
-            if (CanGroupAllTilesUsingSequenceStartingAtIndexN(remainingTiles, 0) ||
-                CanGroupAllTilesUsingTripletStartingAtIndexN(remainingTiles, 0) ||
-                CanGroupAllTilesUsingQuadStartingAtIndexN(remainingTiles, 0))
-            {
-                return true;
-            }
-            return false;
+            return 4;
         }
 
         protected bool CanGroupAllTilesUsingQuadStartingAtIndexN(IList<Tile> remainingTiles, int n)

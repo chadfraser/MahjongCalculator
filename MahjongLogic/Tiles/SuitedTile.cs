@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Mahjong
+namespace Fraser.Mahjong
 {
     public class SuitedTile : Tile, IComparable, IComparable<SuitedTile>
     {
@@ -97,6 +97,18 @@ namespace Mahjong
                 }
             }
             return true;
+        }
+
+        public override void WriteShortColoredString()
+        {
+            Console.ForegroundColor = Suit.Color;
+            Console.Write($"[{Rank}{Suit.ShortName}]");
+            Console.ResetColor();
+        }
+
+        public override string GetShortName()
+        {
+            return $"{Rank}{Suit.ShortName}";
         }
 
         public override string ToString()

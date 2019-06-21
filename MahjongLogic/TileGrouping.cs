@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Mahjong
+namespace Fraser.Mahjong
 {
     public class TileGrouping : ICollection<Tile>
     {
@@ -57,7 +57,7 @@ namespace Mahjong
         public bool IsBonus()
         {
             var firstTile = tiles.FirstOrDefault();
-            return !(firstTile is null) && tiles.First().GetType() == typeof(BonusTile) && tiles.Count == 1;
+            return !(firstTile is null) && tiles.All(t => t.GetType() == typeof(BonusTile));
         }
 
         public int Count { get => tiles.Count; }
@@ -99,6 +99,17 @@ namespace Mahjong
             return tiles.GetEnumerator();
         }
 
+        public override string ToString()
+        {
+            var text = "";
+            for (int i = 0; i < tiles.Count - 1; i++)
+            {
+                text = $"{text}{tiles[i].GetShortName()}, ";
+            }
+            text = $"{text}{tiles[tiles.Count - 1].GetShortName()}";
+            return text;
+        }
+
         public override bool Equals(Object obj)
         {
             if (obj is null || !GetType().Equals(obj.GetType()))
@@ -108,7 +119,8 @@ namespace Mahjong
             else
             {
                 TileGrouping t = (TileGrouping)obj;
-                return tiles.OrderBy(tile => tile).SequenceEqual(t.tiles.OrderBy(tile => tile));
+                return IsOpenGroup == t.IsOpenGroup &&
+                    tiles.OrderBy(tile => tile).SequenceEqual(t.tiles.OrderBy(tile => tile));
             }
         }
 
@@ -118,6 +130,7 @@ namespace Mahjong
             const int hashFactor = 91423;
 
             int hash = baseHash;
+            hash = (hash * hashFactor) ^ IsOpenGroup.GetHashCode();
             foreach (var tile in tiles)
             {
                 hash = (hash * hashFactor) ^ tile.GetHashCode();

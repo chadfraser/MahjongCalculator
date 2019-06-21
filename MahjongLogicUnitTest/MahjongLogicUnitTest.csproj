@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MahjongLogic\MahjongLogic.csproj" />
+    <ProjectReference Include="..\MahjongLogic\Fraser.Mahjong.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Mahjong
+namespace Fraser.Mahjong
 {
     public abstract class Tile
     {
@@ -18,6 +18,10 @@ namespace Mahjong
         public abstract bool IsGroup(params Tile[] tiles);
 
         public abstract bool IsSequence(params Tile[] tiles);
+
+        public abstract void WriteShortColoredString();
+
+        public abstract string GetShortName();
 
         public virtual bool IsPair(params Tile[] tiles)
         {

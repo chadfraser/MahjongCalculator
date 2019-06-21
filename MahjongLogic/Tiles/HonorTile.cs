@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Mahjong
+namespace Fraser.Mahjong
 {
     public class HonorTile : Tile, IComparable, IComparable<HonorTile>
     {
@@ -50,6 +50,19 @@ namespace Mahjong
         public override bool IsSequence(params Tile[] tiles)
         {
             return false;
+        }
+
+        public override void WriteShortColoredString()
+        {
+            Console.BackgroundColor = Suit.Color;
+            Console.ForegroundColor = HonorType.Color;
+            Console.Write($"[{HonorType.ShortName}{Suit.ShortName}]");
+            Console.ResetColor();
+        }
+
+        public override string GetShortName()
+        {
+            return $"{HonorType.ShortName}{Suit.ShortName}";
         }
 
         public override string ToString()

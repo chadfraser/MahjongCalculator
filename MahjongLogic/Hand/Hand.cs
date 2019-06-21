@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace Mahjong
+namespace Fraser.Mahjong
 {
     public class Hand
     {
@@ -15,7 +14,7 @@ namespace Mahjong
             CalledSets = new List<TileGrouping>();
             IsOpen = false;
             TileSorter = new SuitedHonorTileSorter();
-            TileGrouper = new SequenceTripletTileGrouper(TileSorter);
+            TileGrouper = new SequenceTripletQuadTileGrouper(TileSorter);
             RoundWind = HonorType.East;
             SeatWind = HonorType.East;
         }
@@ -42,6 +41,13 @@ namespace Mahjong
         public void SortHand()
         {
             UncalledTiles = TileSorter.SortTiles(UncalledTiles);
+        }
+
+        public bool ContainsQuad()
+        {
+            var allGroups = TileGrouper.FindAllGroupsInTiles(UncalledTiles);
+            return allGroups.Any(group => group.IsQuad()) ||
+                (CalledSets.Any(group => group.IsTriplet() && UncalledTiles.Contains(group.First())));
         }
 
         public IList<IList<TileGrouping>> FindAllWaysToGroupUncalledTiles()
